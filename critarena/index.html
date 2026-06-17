@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>CRIT ARENA</title>
+  <style>
+    :root {
+      --accent: #46e6c8;
+      --crit: #ffd24a;
+      --danger: #ff4d5e;
+      --ink: #eaf2ff;
+      --panel: rgba(10, 14, 26, 0.62);
+      --panel-edge: rgba(70, 110, 200, 0.35);
+    }
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0; padding: 0; height: 100%; overflow: hidden;
+      background: #0a0c16; color: var(--ink);
+      font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+      user-select: none; -webkit-user-select: none;
+    }
+    #scene { position: fixed; inset: 0; width: 100vw; height: 100vh; display: block; }
+
+    /* ---- screen-space overlay layer (damage numbers + arrows) ---- */
+    #overlay-layer {
+      position: fixed; inset: 0; pointer-events: none;
+      overflow: hidden; z-index: 5;
+    }
+    .dmg {
+      position: absolute; left: 0; top: 0;
+      font-weight: 800; font-size: 22px; line-height: 1;
+      color: #fff; text-shadow: 0 2px 6px rgba(0,0,0,0.85), 0 0 2px rgba(0,0,0,0.9);
+      will-change: transform, opacity; white-space: nowrap;
+      letter-spacing: 0.5px;
+    }
+    .dmg.crit {
+      font-size: 34px; color: var(--crit);
+      text-shadow: 0 2px 8px rgba(0,0,0,0.9), 0 0 10px rgba(255, 200, 60, 0.85);
+    }
+    .arrow {
+      position: absolute; left: 0; top: 0;
+      width: 34px; height: 34px;
+      display: flex; align-items: center; justify-content: center;
+      will-change: transform, opacity;
+      filter: drop-shadow(0 0 4px rgba(0,0,0,0.7));
+    }
+    .arrow-glyph {
+      font-size: 26px; line-height: 1; color: var(--danger);
+      text-shadow: 0 0 6px rgba(255, 77, 94, 0.7);
+    }
+
+    /* ---- HUD ---- */
+    #hud {
+      position: fixed; inset: 0; pointer-events: none; z-index: 10;
+      padding: 16px; display: flex; flex-direction: column; justify-content: space-between;
+    }
+    .hud-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+    .panel {
+      background: var(--panel); border: 1px solid var(--panel-edge);
+      border-radius: 12px; padding: 10px 14px; backdrop-filter: blur(6px);
+    }
+    .stat-label { font-size: 11px; letter-spacing: 2px; text-transform: uppercase; opacity: 0.7; }
+    .stat-value { font-size: 26px; font-weight: 800; line-height: 1.1; }
+    #hud-score { color: var(--crit); }
+    .hud-left { min-width: 120px; }
+    .hud-center { text-align: center; }
+    .hud-right { text-align: right; min-width: 120px; }
+
+    /* health bar */
+    .hp-wrap { width: 240px; }
+    .hp-bar {
+      height: 16px; border-radius: 8px; overflow: hidden;
+      background: rgba(255,255,255,0.12); margin-top: 4px;
+      border: 1px solid rgba(255,255,255,0.15);
+    }
+    #hud-hp-fill { height: 100%; width: 100%; background: var(--accent); transition: width 0.12s linear, background 0.2s; }
+    #hud-hp-text { font-size: 12px; opacity: 0.85; margin-top: 3px; }
+
+    /* wave announce */
+    #announce {
+      position: fixed; top: 22%; left: 0; right: 0; text-align: center;
+      font-size: 64px; font-weight: 900; letter-spacing: 8px;
+      color: #fff; text-shadow: 0 4px 24px rgba(0,0,0,0.8), 0 0 30px rgba(70,230,200,0.4);
+      pointer-events: none; opacity: 0; z-index: 11;
+    }
+    #announce.show { animation: announce 1.4s ease-out forwards; }
+    @keyframes announce {
+      0% { opacity: 0; transform: scale(1.4); letter-spacing: 24px; }
+      20% { opacity: 1; transform: scale(1); letter-spacing: 8px; }
+      80% { opacity: 1; }
+      100% { opacity: 0; transform: scale(0.96); }
+    }
+
+    /* damage vignette */
+    #damage-vignette {
+      position: fixed; inset: 0; pointer-events: none; z-index: 9; opacity: 0;
+      box-shadow: inset 0 0 160px 40px rgba(255, 30, 50, 0.55);
+    }
+    #damage-vignette.hit { animation: vign 0.45s ease-out; }
+    @keyframes vign { 0% { opacity: 0.9; } 100% { opacity: 0; } }
+
+    /* start / death overlay */
+    #overlay {
+      position: fixed; inset: 0; z-index: 20; display: flex;
+      flex-direction: column; align-items: center; justify-content: center;
+      background: radial-gradient(ellipse at center, rgba(10,14,26,0.55), rgba(6,8,16,0.92));
+      text-align: center; gap: 14px; opacity: 0; pointer-events: none;
+      transition: opacity 0.3s;
+    }
+    #overlay.show { opacity: 1; pointer-events: auto; }
+    #overlay-title { font-size: 72px; font-weight: 900; letter-spacing: 6px; margin: 0;
+      background: linear-gradient(180deg, #fff, var(--accent)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    #overlay-sub { font-size: 18px; opacity: 0.85; margin: 0; max-width: 520px; }
+    #start-btn {
+      margin-top: 12px; pointer-events: auto; cursor: pointer;
+      font-size: 20px; font-weight: 800; letter-spacing: 2px;
+      padding: 14px 36px; border-radius: 12px; border: none;
+      color: #062018; background: var(--accent);
+      box-shadow: 0 8px 30px rgba(70,230,200,0.35);
+    }
+    #start-btn:hover { filter: brightness(1.08); }
+    .controls { font-size: 13px; opacity: 0.7; margin-top: 8px; line-height: 1.7; }
+    kbd {
+      background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.25);
+      border-radius: 5px; padding: 1px 7px; font-size: 12px; font-family: inherit;
+    }
+  </style>
+
+  <!-- Vendored three.js for static hosting: no build step, served from /vendor -->
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "./vendor/three.module.js"
+    }
+  }
+  </script>
+</head>
+<body>
+  <canvas id="scene"></canvas>
+
+  <!-- screen-space overlay for the two signature features -->
+  <div id="overlay-layer"></div>
+
+  <div id="damage-vignette"></div>
+
+  <!-- HUD -->
+  <div id="hud">
+    <div class="hud-row">
+      <div class="panel hud-left">
+        <div class="stat-label">Wave</div>
+        <div class="stat-value" id="hud-wave">0</div>
+      </div>
+      <div class="panel hud-center">
+        <div class="stat-label">Score</div>
+        <div class="stat-value" id="hud-score">0</div>
+      </div>
+      <div class="panel hud-right">
+        <div class="stat-label">Enemies</div>
+        <div class="stat-value" id="hud-enemies">0</div>
+      </div>
+    </div>
+    <div class="hud-row">
+      <div class="panel hp-wrap">
+        <div class="stat-label">Health</div>
+        <div class="hp-bar"><div id="hud-hp-fill"></div></div>
+        <div id="hud-hp-text">100 / 100</div>
+      </div>
+      <div></div>
+    </div>
+  </div>
+
+  <div id="announce"></div>
+
+  <!-- start / game-over overlay -->
+  <div id="overlay" class="show">
+    <h1 id="overlay-title">CRIT ARENA</h1>
+    <p id="overlay-sub">Top-down wave-survival. Move, auto-fire, and survive as long as you can.</p>
+    <button id="start-btn">PLAY</button>
+    <div class="controls">
+      <div><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> move · <strong>auto-fire</strong> at nearest enemy</div>
+      <div>move the <strong>mouse</strong> to aim · <kbd>Space</kbd> to (re)start</div>
+    </div>
+  </div>
+
+  <script type="module" src="./src/main.js"></script>
+</body>
+</html>
