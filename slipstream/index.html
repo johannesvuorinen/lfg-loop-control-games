@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>SLIPSTREAM — comet dash</title>
+  <style>
+    :root { color-scheme: dark; }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { width: 100%; height: 100%; overflow: hidden; background: #05060f; }
+    body { font-family: "Trebuchet MS", "Segoe UI", system-ui, sans-serif; -webkit-user-select: none; user-select: none; }
+    #app { position: fixed; inset: 0; }
+    canvas { display: block; }
+
+    /* ---------- HUD ---------- */
+    #hud {
+      position: fixed; inset: 0; pointer-events: none;
+      text-shadow: 0 0 8px rgba(80,200,255,0.6);
+      color: #cfeaff;
+    }
+    .hud-corner { position: absolute; padding: 18px 22px; }
+    #hud-top-left { top: 0; left: 0; }
+    #hud-top-right { top: 0; right: 0; text-align: right; }
+    #hud-bottom { bottom: 0; left: 0; width: 100%; text-align: center; padding-bottom: 20px; }
+
+    .label { font-size: 11px; letter-spacing: 3px; opacity: 0.6; text-transform: uppercase; }
+    .value { font-size: 34px; font-weight: 700; line-height: 1.05; font-variant-numeric: tabular-nums; }
+    .value.small { font-size: 22px; }
+
+    #combo {
+      font-size: 40px; font-weight: 800; color: #ffd36b;
+      text-shadow: 0 0 14px rgba(255,180,60,0.8);
+      transition: transform 0.08s ease-out;
+    }
+    #combo.pulse { transform: scale(1.35); }
+
+    /* speed bar */
+    #speed-bar-wrap {
+      position: absolute; left: 22px; bottom: 26px; width: 220px; height: 10px;
+      border: 1px solid rgba(120,200,255,0.4); border-radius: 6px; overflow: hidden;
+      background: rgba(10,20,40,0.5);
+    }
+    #speed-bar {
+      height: 100%; width: 0%;
+      background: linear-gradient(90deg, #34e0ff, #7b5bff, #ff4fa3);
+      box-shadow: 0 0 12px rgba(80,200,255,0.9);
+      transition: width 0.05s linear;
+    }
+
+    /* center messages */
+    #overlay {
+      position: fixed; inset: 0; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; text-align: center;
+      background: radial-gradient(ellipse at center, rgba(8,10,30,0.55), rgba(3,4,12,0.92));
+      pointer-events: auto; gap: 14px; transition: opacity 0.4s;
+    }
+    #overlay.hidden { opacity: 0; pointer-events: none; }
+    #title {
+      font-size: 64px; font-weight: 900; letter-spacing: 8px;
+      background: linear-gradient(90deg, #34e0ff, #7b5bff, #ff4fa3);
+      -webkit-background-clip: text; background-clip: text; color: transparent;
+      filter: drop-shadow(0 0 18px rgba(120,90,255,0.7));
+    }
+    #subtitle { font-size: 15px; letter-spacing: 2px; color: #9fc6ff; opacity: 0.85; max-width: 520px; line-height: 1.6; }
+    .key { display: inline-block; padding: 2px 9px; margin: 0 2px; border: 1px solid #4a78b8; border-radius: 6px; background: rgba(40,70,120,0.4); font-size: 13px; }
+    #start-btn, #restart-btn {
+      pointer-events: auto; margin-top: 10px; cursor: pointer;
+      padding: 14px 40px; font-size: 16px; font-weight: 700; letter-spacing: 3px;
+      color: #061018; border: none; border-radius: 30px;
+      background: linear-gradient(90deg, #34e0ff, #7b5bff);
+      box-shadow: 0 0 24px rgba(80,150,255,0.7); text-transform: uppercase;
+    }
+    #start-btn:hover, #restart-btn:hover { filter: brightness(1.12); }
+    .stat-line { font-size: 20px; color: #cfeaff; }
+    .stat-line b { color: #ffd36b; }
+    #final-stats { display: flex; flex-direction: column; gap: 6px; margin: 8px 0; }
+    #flash { position: fixed; inset: 0; pointer-events: none; background: #fff; opacity: 0; }
+  </style>
+</head>
+<body>
+  <div id="app"></div>
+
+  <!-- HUD -->
+  <div id="hud">
+    <div class="hud-corner" id="hud-top-left">
+      <div class="label">Score</div>
+      <div class="value" id="score">0</div>
+    </div>
+    <div class="hud-corner" id="hud-top-right">
+      <div class="label">Rings</div>
+      <div class="value small" id="rings">0</div>
+      <div class="label" style="margin-top:10px">Orbs</div>
+      <div class="value small" id="orbs">0</div>
+    </div>
+    <div class="hud-corner" id="hud-bottom">
+      <div id="combo">x1</div>
+    </div>
+    <div class="label" style="position:absolute; left:22px; bottom:42px;">Speed</div>
+    <div id="speed-bar-wrap"><div id="speed-bar"></div></div>
+  </div>
+
+  <!-- start / end overlay -->
+  <div id="overlay">
+    <div id="title">SLIPSTREAM</div>
+    <div id="subtitle">
+      Pilot the comet. Thread the <b>rings</b>, scoop the <b>orbs</b>, ride your own light-trail.<br/>
+      Steer with <span class="key">W</span><span class="key">A</span><span class="key">S</span><span class="key">D</span>
+      / <span class="key">&larr;</span><span class="key">&uarr;</span><span class="key">&darr;</span><span class="key">&rarr;</span>
+      or <b>move the mouse</b> / drag on touch.<br/>
+      Clean rings chain your <b>combo</b> and boost your speed.
+    </div>
+    <div id="final-stats" style="display:none"></div>
+    <button id="start-btn">Launch</button>
+  </div>
+
+  <div id="flash"></div>
+
+  <!-- vendored three.js + addons, no build step -->
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "./vendor/three.module.js",
+      "three/addons/": "./vendor/"
+    }
+  }
+  </script>
+  <script type="module" src="./src/main.js"></script>
+</body>
+</html>
