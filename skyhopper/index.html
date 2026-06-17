@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sky Hopper — three.js control build</title>
+  <style>
+    :root { color-scheme: dark; }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { width: 100%; height: 100%; overflow: hidden; background: #0b1020; }
+    #game { display: block; width: 100vw; height: 100vh; touch-action: none; }
+
+    #hud {
+      position: fixed; inset: 0; pointer-events: none;
+      font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      color: #fff; text-shadow: 0 2px 8px rgba(0,0,0,.6);
+    }
+    .pill {
+      position: fixed; top: 16px; padding: 8px 16px; border-radius: 999px;
+      background: rgba(10,16,32,.55); backdrop-filter: blur(8px);
+      border: 1px solid rgba(255,255,255,.12); font-weight: 600; font-size: 16px;
+      letter-spacing: .3px;
+    }
+    #orbs  { left: 16px; }
+    #lives { left: 156px; }
+    #hint {
+      position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%);
+      padding: 8px 18px; border-radius: 999px; font-size: 14px; opacity: .9;
+      background: rgba(10,16,32,.5); border: 1px solid rgba(255,255,255,.1);
+      white-space: nowrap;
+    }
+    #msg {
+      position: fixed; inset: 0; display: none; flex-direction: column;
+      align-items: center; justify-content: center; gap: 10px;
+      background: radial-gradient(ellipse at center, rgba(8,10,24,.35), rgba(8,10,24,.7));
+      pointer-events: none;
+    }
+    #msg .big { font-size: 54px; font-weight: 800; letter-spacing: .5px; }
+    #msg .sub { font-size: 20px; opacity: .9; }
+    #title {
+      position: fixed; top: 16px; left: 50%; transform: translateX(-50%);
+      font-size: 15px; font-weight: 700; opacity: .55; letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+  </style>
+
+  <!--
+    Import map: three.js core + addons. Vendored LOCALLY under ./vendor so the
+    game is fully self-contained and runs offline (no build step, no CDN at
+    runtime). Swap these two URLs for the unpkg CDN equivalents if you'd rather
+    not ship the vendor/ folder:
+      "three": "https://unpkg.com/three@0.169.0/build/three.module.js",
+      "three/addons/": "https://unpkg.com/three@0.169.0/examples/jsm/"
+  -->
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "./vendor/three/build/three.module.js",
+      "three/addons/": "./vendor/three/jsm/"
+    }
+  }
+  </script>
+</head>
+<body>
+  <canvas id="game"></canvas>
+  <div id="hud">
+    <div id="title">Sky Hopper</div>
+    <div id="orbs" class="pill">Orbs 0/0</div>
+    <div id="lives" class="pill">Lives 3</div>
+    <div id="hint"></div>
+    <div id="msg"></div>
+  </div>
+
+  <script type="module" src="./src/main.js"></script>
+</body>
+</html>
