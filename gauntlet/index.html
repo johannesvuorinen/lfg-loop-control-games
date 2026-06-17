@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+    <title>GAUNTLET — top-down arena dodge &amp; collect</title>
+    <style>
+      :root {
+        --accent: #2bd4a8;
+        --orb: #ffd34d;
+        --bg: #05060c;
+      }
+      * { box-sizing: border-box; }
+      html, body {
+        margin: 0;
+        height: 100%;
+        background: var(--bg);
+        color: #e8eefc;
+        font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+        overflow: hidden;
+        -webkit-user-select: none;
+        user-select: none;
+        touch-action: none;
+      }
+      #game { display: block; width: 100vw; height: 100vh; }
+
+      /* HUD */
+      #hud {
+        position: fixed;
+        top: 0; left: 0; right: 0;
+        display: flex;
+        gap: 18px;
+        padding: 14px 18px;
+        pointer-events: none;
+        text-shadow: 0 2px 6px #000a;
+        font-size: clamp(13px, 2.4vw, 18px);
+      }
+      .hud-pill {
+        background: #0d1024cc;
+        border: 1px solid #2a335066;
+        border-radius: 10px;
+        padding: 8px 14px;
+        backdrop-filter: blur(4px);
+      }
+      .hud-pill .k { opacity: 0.6; margin-right: 8px; letter-spacing: 0.06em; }
+      #hud-orbs { color: var(--orb); }
+      #hud-lives { color: #ff7a8a; letter-spacing: 2px; }
+      #hud-level { color: var(--accent); }
+      .spacer { flex: 1; }
+      #hud-hint {
+        font-size: clamp(10px, 1.8vw, 13px);
+        opacity: 0.5;
+        align-self: center;
+      }
+
+      /* Overlay (start / level clear / dead / win) */
+      #overlay {
+        position: fixed;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        background: radial-gradient(ellipse at center, #0a0d1ccc 0%, #05060cf2 70%);
+        backdrop-filter: blur(3px);
+        transition: opacity 0.18s ease;
+        cursor: pointer;
+      }
+      #overlay.hidden { opacity: 0; pointer-events: none; }
+      #overlay-title {
+        font-size: clamp(34px, 8vw, 72px);
+        font-weight: 800;
+        letter-spacing: 0.06em;
+        margin: 0 0 14px;
+        color: var(--accent);
+        text-shadow: 0 0 28px #2bd4a877, 0 4px 10px #000;
+      }
+      #overlay-text {
+        font-size: clamp(14px, 3vw, 20px);
+        line-height: 1.7;
+        max-width: 560px;
+        opacity: 0.92;
+      }
+      #overlay-text b { color: var(--orb); }
+    </style>
+
+    <!-- Import map so bare 'three' resolves to the VENDORED ES module.
+         No build step: works on plain static hosting (GitHub Pages). -->
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "./vendor/three.module.js"
+        }
+      }
+    </script>
+  </head>
+  <body>
+    <canvas id="game"></canvas>
+
+    <div id="hud">
+      <div class="hud-pill"><span class="k">ORBS</span><span id="hud-orbs">0 / 0</span></div>
+      <div class="hud-pill"><span class="k">LIVES</span><span id="hud-lives">♥♥♥</span></div>
+      <div class="hud-pill"><span class="k">LEVEL</span><span id="hud-level">1</span></div>
+      <div class="spacer"></div>
+      <div id="hud-hint">WASD / arrows / drag &nbsp;·&nbsp; R = restart</div>
+    </div>
+
+    <div id="overlay">
+      <h1 id="overlay-title">GAUNTLET</h1>
+      <div id="overlay-text">Loading…</div>
+    </div>
+
+    <script type="module" src="./src/main.js"></script>
+  </body>
+</html>
