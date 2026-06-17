@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>WORD RUSH — a typing game</title>
+  <meta name="description" content="Type the falling words before they hit the bottom. A three.js typing game." />
+
+  <!-- Import map so plain ES modules can `import ... from 'three'` with NO build
+       step. Works on static hosting (e.g. GitHub Pages). -->
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "./vendor/three.module.js"
+    }
+  }
+  </script>
+
+  <style>
+    :root {
+      --bg: #05060f;
+      --ink: #e9eefc;
+      --dim: #8ea0cf;
+      --accent: #ff78dc;
+      --accent2: #5ef0a0;
+      --amber: #ffe14d;
+      --font: "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace;
+    }
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0; height: 100%; background: var(--bg); color: var(--ink);
+      font-family: var(--font); overflow: hidden; -webkit-font-smoothing: antialiased;
+      touch-action: none; user-select: none;
+    }
+    #stage { position: fixed; inset: 0; }
+    #gl { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+
+    /* HUD overlay */
+    #hud { position: absolute; inset: 0; pointer-events: none; }
+    #hud button { pointer-events: auto; }
+
+    #dmgflash {
+      position: absolute; inset: 0; background: radial-gradient(ellipse at center, transparent 40%, #ff2d55 140%);
+      opacity: 0; transition: opacity 0.12s ease-out; pointer-events: none; mix-blend-mode: screen;
+    }
+
+    #topbar {
+      position: absolute; top: 0; left: 0; right: 0;
+      display: flex; gap: clamp(10px, 3vw, 36px); align-items: flex-start;
+      padding: clamp(10px, 2.5vh, 22px) clamp(14px, 3vw, 34px);
+      background: linear-gradient(180deg, rgba(5,6,15,0.85), transparent);
+    }
+    .stat { display: flex; flex-direction: column; line-height: 1.05; }
+    .stat.right { margin-left: auto; align-items: flex-end; }
+    .stat + .stat.right { margin-left: auto; }
+    .stat label { font-size: clamp(9px, 1.3vw, 11px); letter-spacing: 0.18em; color: var(--dim); }
+    .stat > div { font-size: clamp(18px, 3.4vw, 30px); font-weight: 700; }
+    #score { color: var(--accent2); }
+    #highscore { color: var(--amber); }
+    #lives { color: var(--accent); font-size: clamp(18px, 3.6vw, 30px); letter-spacing: 2px; }
+
+    /* current typed buffer / targeted word */
+    #bufferwrap {
+      position: absolute; left: 50%; bottom: clamp(18px, 5vh, 46px); transform: translateX(-50%);
+      text-align: center; padding: 10px 22px; border-radius: 16px;
+      background: rgba(10,12,26,0.55); border: 1px solid rgba(120,140,220,0.25);
+      backdrop-filter: blur(6px); min-width: min(70vw, 420px);
+    }
+    #buffer { font-size: clamp(26px, 6vw, 44px); font-weight: 700; letter-spacing: 0.05em; min-height: 1.1em; }
+    #buffer .done { color: var(--accent2); }
+    #buffer .next { color: var(--amber); text-shadow: 0 0 14px var(--amber); }
+    #buffer .rest { color: var(--dim); }
+    #target { font-size: 11px; letter-spacing: 0.25em; color: var(--dim); text-transform: uppercase; height: 14px; }
+    #combo {
+      font-size: clamp(16px, 3vw, 24px); font-weight: 700; color: var(--accent);
+      text-shadow: 0 0 16px var(--accent); height: 1.1em; opacity: 0; transition: opacity 0.2s;
+    }
+    .pulse-complete { animation: popc 0.28s ease-out; }
+    .pulse-miss { animation: shakex 0.3s ease-out; }
+    .pulse-lock { animation: popl 0.18s ease-out; }
+    @keyframes popc { 0% { transform: translateX(-50%) scale(1);} 40%{ transform: translateX(-50%) scale(1.12);} 100%{ transform: translateX(-50%) scale(1);} }
+    @keyframes popl { 0% { transform: translateX(-50%) scale(1);} 50%{ transform: translateX(-50%) scale(1.04);} 100%{ transform: translateX(-50%) scale(1);} }
+    @keyframes shakex { 0%,100%{ transform: translateX(-50%);} 20%{ transform: translateX(calc(-50% - 8px)) ;} 60%{ transform: translateX(calc(-50% + 8px)); } }
+
+    /* full-screen menus */
+    .screen {
+      position: absolute; inset: 0; display: none; flex-direction: column;
+      align-items: center; justify-content: center; text-align: center;
+      background: radial-gradient(ellipse at center, rgba(8,8,24,0.55), rgba(3,4,12,0.92));
+      backdrop-filter: blur(3px); padding: 24px;
+    }
+    .screen h1 {
+      font-size: clamp(40px, 11vw, 92px); margin: 0 0 6px; letter-spacing: 0.04em;
+      background: linear-gradient(90deg, var(--accent), var(--amber), var(--accent2));
+      -webkit-background-clip: text; background-clip: text; color: transparent;
+      filter: drop-shadow(0 4px 30px rgba(255,120,220,0.35));
+    }
+    .screen h1.go { background: linear-gradient(90deg, #ff5d6c, var(--amber)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    .tag { color: var(--ink); font-size: clamp(14px, 2.6vw, 20px); margin: 4px 0 18px; max-width: 560px; }
+    .tag b { color: var(--amber); }
+    .rules { list-style: none; padding: 0; margin: 0 0 22px; color: var(--dim); font-size: clamp(12px, 2vw, 15px); line-height: 1.9; max-width: 520px; }
+    .rules b { color: var(--ink); }
+    .cta {
+      font-family: var(--font); font-size: clamp(15px, 2.4vw, 19px); font-weight: 700;
+      color: #0a0a14; background: linear-gradient(90deg, var(--accent2), var(--amber));
+      border: none; border-radius: 999px; padding: 14px 28px; cursor: pointer;
+      box-shadow: 0 8px 30px rgba(94,240,160,0.3); transition: transform 0.1s, box-shadow 0.2s;
+    }
+    .cta:hover { transform: translateY(-2px); box-shadow: 0 12px 40px rgba(94,240,160,0.45); }
+    .cta:active { transform: translateY(0); }
+    kbd {
+      font-family: var(--font); background: rgba(255,255,255,0.14); border: 1px solid rgba(255,255,255,0.25);
+      border-radius: 6px; padding: 1px 7px; font-size: 0.85em;
+    }
+    .menuhigh, .finalline { color: var(--amber); margin-top: 16px; font-size: clamp(13px, 2vw, 16px); }
+    .finalscore { font-size: clamp(48px, 12vw, 96px); font-weight: 700; color: var(--accent2); line-height: 1; margin: 6px 0; }
+    .finalline { color: var(--dim); }
+    .newhigh { color: var(--amber); font-weight: 700; letter-spacing: 0.2em; margin-bottom: 8px; animation: blink 0.8s steps(2,start) infinite; }
+    @keyframes blink { 50% { opacity: 0.35; } }
+
+    .hint { position: absolute; bottom: 8px; right: 12px; color: rgba(140,160,210,0.5); font-size: 11px; }
+  </style>
+</head>
+<body>
+  <div id="stage">
+    <canvas id="gl"></canvas>
+    <div id="hud"></div>
+    <div class="hint">three.js typing game</div>
+  </div>
+
+  <script type="module" src="./src/main.js"></script>
+</body>
+</html>
