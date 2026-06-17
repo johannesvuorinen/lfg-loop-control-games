@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <title>Bug Siege — three.js control build</title>
+  <style>
+    :root { --accent: #38e1c4; --warn: #ff5d6c; --gold: #ffcf4d; }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; height: 100%; overflow: hidden; background: #05070d;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; color: #e8f0ff;
+      -webkit-user-select: none; user-select: none; }
+    #app { position: fixed; inset: 0; }
+    canvas { display: block; touch-action: none; }
+
+    /* ---- HUD ---- */
+    #hud { position: fixed; top: 0; left: 0; right: 0; padding: 12px 14px;
+      display: flex; gap: 14px; align-items: center; pointer-events: none;
+      background: linear-gradient(#05070dcc, #05070d00); }
+    .stat { display: flex; flex-direction: column; line-height: 1.05; }
+    .stat b { font-size: 20px; font-variant-numeric: tabular-nums; }
+    .stat span { font-size: 10px; letter-spacing: .14em; text-transform: uppercase; opacity: .6; }
+    #life b { color: var(--warn); }
+    #cash b { color: var(--gold); }
+    #wave b { color: var(--accent); }
+    #spacer { flex: 1; }
+    button { pointer-events: auto; cursor: pointer; font: inherit; color: #e8f0ff;
+      border: 1px solid #2a3550; background: #121a2e; padding: 7px 12px; border-radius: 9px; }
+    button:hover { border-color: var(--accent); }
+    button:disabled { opacity: .4; cursor: not-allowed; }
+
+    #banner { position: fixed; top: 64px; left: 50%; transform: translateX(-50%);
+      font-size: 13px; letter-spacing: .12em; text-transform: uppercase; opacity: .85;
+      background: #0c1426cc; border: 1px solid #243150; padding: 7px 16px; border-radius: 20px;
+      pointer-events: none; transition: opacity .3s; }
+
+    /* ---- selection panel ---- */
+    #panel { position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%);
+      background: #0c1426ee; border: 1px solid #2a3550; border-radius: 14px; padding: 12px 14px;
+      display: none; min-width: 240px; box-shadow: 0 14px 40px #000a; }
+    #panel.show { display: block; }
+    #panel h3 { margin: 0 0 2px; font-size: 15px; }
+    #panel .meta { font-size: 11px; opacity: .7; margin-bottom: 10px; }
+    #panel .row { display: flex; gap: 8px; }
+    #panel .row button { flex: 1; }
+    #upBtn { border-color: #2f5a4f; } #upBtn:hover { border-color: var(--accent); }
+    #sellBtn { border-color: #5a2f37; } #sellBtn:hover { border-color: var(--warn); }
+
+    #hint { position: fixed; bottom: 18px; left: 14px; font-size: 11px; opacity: .5; max-width: 240px; }
+
+    /* ---- end overlay ---- */
+    #overlay { position: fixed; inset: 0; display: none; align-items: center; justify-content: center;
+      flex-direction: column; gap: 14px; background: #05070dcc; backdrop-filter: blur(3px); z-index: 5; }
+    #overlay.show { display: flex; }
+    #overlay h1 { font-size: 46px; margin: 0; letter-spacing: .04em; }
+    #overlay.win h1 { color: var(--accent); } #overlay.lose h1 { color: var(--warn); }
+    #overlay p { opacity: .7; margin: 0; }
+  </style>
+</head>
+<body>
+  <div id="app"></div>
+
+  <div id="hud">
+    <div class="stat" id="cash"><b id="cashV">0</b><span>Currency</span></div>
+    <div class="stat" id="life"><b id="lifeV">0</b><span>Lives</span></div>
+    <div class="stat" id="wave"><b id="waveV">0/0</b><span>Wave</span></div>
+    <div id="spacer"></div>
+    <button id="resetBtn">Reset</button>
+  </div>
+
+  <div id="banner">Tap a glowing pad to build a turret</div>
+
+  <div id="panel">
+    <h3 id="pTitle">Turret</h3>
+    <div class="meta" id="pMeta"></div>
+    <div class="row">
+      <button id="upBtn">Upgrade</button>
+      <button id="sellBtn">Sell</button>
+    </div>
+  </div>
+
+  <div id="hint">Drag to orbit · scroll to zoom · tap a pad to build · tap a turret to manage</div>
+
+  <div id="overlay">
+    <h1 id="ovTitle"></h1>
+    <p id="ovSub"></p>
+    <button id="ovBtn">Play again</button>
+  </div>
+
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.184.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.184.0/examples/jsm/"
+    }
+  }
+  </script>
+  <script type="module" src="./main.js"></script>
+</body>
+</html>
