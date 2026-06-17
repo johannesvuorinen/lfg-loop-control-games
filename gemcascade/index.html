@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Gem Cascade</title>
+    <!-- Vendored three.js, no build step. importmap resolves the bare 'three'
+         specifier used by src/*.js to the local ES module. -->
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "./vendor/three.module.js"
+        }
+      }
+    </script>
+    <style>
+      :root {
+        --bg-0: #0d1024;
+        --bg-1: #1b1f44;
+        --panel: rgba(20, 24, 56, 0.72);
+        --panel-edge: rgba(120, 140, 255, 0.25);
+        --text: #eaf0ff;
+        --muted: #9aa6d8;
+        --accent: #6ee7ff;
+        --accent-2: #c24dff;
+      }
+      * { box-sizing: border-box; }
+      html, body {
+        margin: 0;
+        height: 100%;
+        overflow: hidden;
+        font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+        color: var(--text);
+        background:
+          radial-gradient(1200px 800px at 50% -10%, #2a2f63 0%, var(--bg-1) 40%, var(--bg-0) 100%);
+        -webkit-user-select: none;
+        user-select: none;
+        -webkit-tap-highlight-color: transparent;
+        touch-action: none;
+      }
+      #app {
+        position: relative;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      header {
+        width: 100%;
+        max-width: 640px;
+        padding: 10px 16px 6px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+      }
+      .title {
+        font-weight: 800;
+        letter-spacing: 0.5px;
+        font-size: 20px;
+        background: linear-gradient(90deg, var(--accent), var(--accent-2));
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        white-space: nowrap;
+      }
+      .hud {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+      }
+      .stat {
+        background: var(--panel);
+        border: 1px solid var(--panel-edge);
+        border-radius: 10px;
+        padding: 4px 10px;
+        min-width: 56px;
+        text-align: center;
+        line-height: 1.1;
+        backdrop-filter: blur(6px);
+      }
+      .stat .label {
+        font-size: 9px;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        color: var(--muted);
+      }
+      .stat .value {
+        font-size: 18px;
+        font-weight: 700;
+        font-variant-numeric: tabular-nums;
+      }
+      #stage {
+        position: relative;
+        flex: 1;
+        width: 100%;
+        min-height: 0;
+      }
+      canvas#game {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        display: block;
+      }
+      #message {
+        position: absolute;
+        left: 50%;
+        bottom: 14px;
+        transform: translateX(-50%);
+        background: var(--panel);
+        border: 1px solid var(--panel-edge);
+        border-radius: 999px;
+        padding: 7px 16px;
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--text);
+        pointer-events: none;
+        white-space: nowrap;
+        max-width: 90vw;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      #message.pulse {
+        animation: pop 0.45s ease-out;
+      }
+      @keyframes pop {
+        0% { transform: translateX(-50%) scale(0.85); opacity: 0.4; }
+        50% { transform: translateX(-50%) scale(1.08); opacity: 1; }
+        100% { transform: translateX(-50%) scale(1); opacity: 1; }
+      }
+      footer {
+        width: 100%;
+        max-width: 640px;
+        padding: 6px 16px 12px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        color: var(--muted);
+        font-size: 12px;
+      }
+      button.btn {
+        background: linear-gradient(180deg, rgba(110,231,255,0.18), rgba(110,231,255,0.06));
+        color: var(--text);
+        border: 1px solid var(--panel-edge);
+        border-radius: 10px;
+        padding: 8px 14px;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+      }
+      button.btn:active { transform: translateY(1px); }
+
+      /* Menu overlay */
+      #menu {
+        position: absolute;
+        inset: 0;
+        background: rgba(7, 9, 24, 0.82);
+        backdrop-filter: blur(8px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 10;
+      }
+      #menu.hidden { display: none; }
+      .card {
+        background: var(--panel);
+        border: 1px solid var(--panel-edge);
+        border-radius: 18px;
+        padding: 24px 22px;
+        width: min(92vw, 360px);
+        text-align: center;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+      }
+      .card h1 {
+        margin: 0 0 4px;
+        font-size: 30px;
+        background: linear-gradient(90deg, var(--accent), var(--accent-2));
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+      }
+      .card p { margin: 0 0 16px; color: var(--muted); font-size: 13px; line-height: 1.5; }
+      .difficulties { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+      .difficulties .btn { width: 100%; padding: 12px 8px; font-size: 14px; }
+      .difficulties .btn small { display: block; color: var(--muted); font-weight: 500; font-size: 11px; margin-top: 2px; }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <header>
+        <div class="title">◆ GEM CASCADE</div>
+        <div class="hud">
+          <div class="stat"><div class="label">Score</div><div class="value" id="score">0</div></div>
+          <div class="stat"><div class="label">Best</div><div class="value" id="best">0</div></div>
+          <div class="stat"><div class="label">Moves</div><div class="value" id="moves">0</div></div>
+          <div class="stat"><div class="label">Chain</div><div class="value" id="chain">x1</div></div>
+          <div class="stat"><div class="label">Time</div><div class="value" id="timer">—</div></div>
+        </div>
+      </header>
+
+      <div id="stage">
+        <canvas id="game"></canvas>
+        <div id="message">Tap a gem, then a neighbor</div>
+      </div>
+
+      <footer>
+        <span>Tap a gem, then an adjacent gem to swap.</span>
+        <button class="btn" id="restart">Menu</button>
+      </footer>
+
+      <div id="menu">
+        <div class="card">
+          <h1>◆ Gem Cascade</h1>
+          <p>Swap adjacent gems to line up 3+ of a color. Clears trigger cascades — chain them for big scores!</p>
+          <div class="difficulties">
+            <button class="btn" data-diff="easy">Easy<small>7×8 · 5 colors</small></button>
+            <button class="btn" data-diff="normal">Normal<small>7×8 · 6 colors</small></button>
+            <button class="btn" data-diff="hard">Hard<small>8×9 · 7 colors</small></button>
+            <button class="btn" data-diff="timed">Time Rush<small>90 seconds</small></button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script type="module" src="./src/main.js"></script>
+  </body>
+</html>
