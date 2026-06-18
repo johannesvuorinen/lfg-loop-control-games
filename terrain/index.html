@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Terrain Flythrough — three.js control build</title>
+    <style>
+      :root {
+        --hud-fg: #eaf3ff;
+        --hud-dim: #9fb4cc;
+        --hud-bg: rgba(10, 18, 30, 0.55);
+        --hud-border: rgba(140, 180, 230, 0.25);
+        --accent: #7fd4ff;
+      }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 100%; height: 100%; overflow: hidden; background: #0a0f18; }
+      #app { position: fixed; inset: 0; }
+      canvas { display: block; }
+
+      .hud {
+        position: fixed;
+        font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+        color: var(--hud-fg);
+        pointer-events: none;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+        user-select: none;
+      }
+
+      /* Top-left instrument cluster: altitude / position / speed */
+      #instruments {
+        top: 16px;
+        left: 16px;
+        background: var(--hud-bg);
+        border: 1px solid var(--hud-border);
+        border-radius: 10px;
+        padding: 12px 16px;
+        min-width: 210px;
+        backdrop-filter: blur(6px);
+        line-height: 1.55;
+        font-size: 13px;
+      }
+      #instruments .title {
+        color: var(--accent);
+        font-weight: 600;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        font-size: 11px;
+        margin-bottom: 6px;
+      }
+      #instruments .row { display: flex; justify-content: space-between; gap: 18px; }
+      #instruments .k { color: var(--hud-dim); }
+      #instruments .v { color: var(--hud-fg); font-variant-numeric: tabular-nums; }
+
+      /* Top-right terrain-gen parameter panel */
+      #params {
+        top: 16px;
+        right: 16px;
+        background: var(--hud-bg);
+        border: 1px solid var(--hud-border);
+        border-radius: 10px;
+        padding: 12px 16px;
+        min-width: 230px;
+        backdrop-filter: blur(6px);
+        font-size: 13px;
+        line-height: 1.5;
+      }
+      #params .title {
+        color: var(--accent);
+        font-weight: 600;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        font-size: 11px;
+        margin-bottom: 6px;
+      }
+      #params .row { display: flex; justify-content: space-between; gap: 18px; }
+      #params .k { color: var(--hud-dim); }
+      #params .v { color: var(--hud-fg); font-variant-numeric: tabular-nums; }
+      #params .hint { color: var(--hud-dim); font-size: 11px; margin-top: 8px; opacity: 0.85; }
+
+      /* Bottom controls help */
+      #help {
+        bottom: 16px;
+        left: 16px;
+        background: var(--hud-bg);
+        border: 1px solid var(--hud-border);
+        border-radius: 10px;
+        padding: 10px 14px;
+        font-size: 12px;
+        color: var(--hud-dim);
+        line-height: 1.55;
+      }
+      #help b { color: var(--hud-fg); font-weight: 600; }
+      #help .key {
+        display: inline-block;
+        background: rgba(140, 180, 230, 0.16);
+        border: 1px solid var(--hud-border);
+        border-radius: 4px;
+        padding: 0 5px;
+        color: var(--hud-fg);
+        font-size: 11px;
+      }
+
+      /* Center compass / crosshair */
+      #compass {
+        top: 14px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 12px;
+        letter-spacing: 0.18em;
+        color: var(--hud-dim);
+        background: var(--hud-bg);
+        border: 1px solid var(--hud-border);
+        border-radius: 8px;
+        padding: 4px 12px;
+      }
+      #compass b { color: var(--accent); }
+    </style>
+    <script type="module" crossorigin src="./assets/index-mRxzr4sl.js"></script>
+  </head>
+  <body>
+    <div id="app"></div>
+
+    <div id="compass" class="hud">HDG <b id="hud-heading">000</b>&deg;</div>
+
+    <div id="instruments" class="hud">
+      <div class="title">Flight</div>
+      <div class="row"><span class="k">ALT</span><span class="v" id="hud-alt">0 m</span></div>
+      <div class="row"><span class="k">AGL</span><span class="v" id="hud-agl">0 m</span></div>
+      <div class="row"><span class="k">SPD</span><span class="v" id="hud-spd">0 m/s</span></div>
+      <div class="row"><span class="k">POS X</span><span class="v" id="hud-x">0</span></div>
+      <div class="row"><span class="k">POS Z</span><span class="v" id="hud-z">0</span></div>
+    </div>
+
+    <div id="params" class="hud">
+      <div class="title">Terrain</div>
+      <div class="row"><span class="k">Seed</span><span class="v" id="hud-seed">—</span></div>
+      <div class="row"><span class="k">Octaves</span><span class="v" id="hud-oct">—</span></div>
+      <div class="row"><span class="k">Amplitude</span><span class="v" id="hud-amp">—</span></div>
+      <div class="row"><span class="k">Frequency</span><span class="v" id="hud-freq">—</span></div>
+      <div class="row"><span class="k">Sea level</span><span class="v" id="hud-sea">—</span></div>
+      <div class="hint" id="hud-fps">— fps</div>
+    </div>
+
+    <div id="help" class="hud">
+      <b>Fly:</b> <span class="key">W</span><span class="key">A</span><span class="key">S</span><span class="key">D</span> move &nbsp;
+      <span class="key">Q</span>/<span class="key">E</span> down/up &nbsp;
+      <span class="key">Shift</span> boost<br />
+      <b>Look:</b> drag mouse &middot; or <span class="key">&larr;&uarr;&darr;&rarr;</span> &nbsp;|&nbsp;
+      <b>Terrain:</b> <span class="key">R</span> new seed &middot; <span class="key">[</span> <span class="key">]</span> amplitude
+    </div>
+
+  </body>
+</html>
