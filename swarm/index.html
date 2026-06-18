@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#0a0a16" />
+    <title>SWARM</title>
+    <script type="module" crossorigin src="./assets/index-DdZj9erb.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-Bu0xl3Br.css">
+  </head>
+  <body>
+    <div id="app">
+      <canvas id="game"></canvas>
+
+      <!-- HUD -->
+      <div id="hud" class="hidden">
+        <div class="hud-top">
+          <div class="hud-stat">
+            <span class="hud-label">TIME</span>
+            <span id="hud-time" class="hud-value">0:00</span>
+          </div>
+          <div class="hud-stat">
+            <span class="hud-label">KILLS</span>
+            <span id="hud-kills" class="hud-value">0</span>
+          </div>
+          <div class="hud-stat">
+            <span class="hud-label">LV</span>
+            <span id="hud-level" class="hud-value">1</span>
+          </div>
+        </div>
+
+        <div class="hud-bars">
+          <div class="bar bar-hp">
+            <div id="hp-fill" class="bar-fill"></div>
+            <span id="hp-text" class="bar-text">100</span>
+          </div>
+          <div class="bar bar-xp">
+            <div id="xp-fill" class="bar-fill"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Level-up flash -->
+      <div id="levelup" class="flash hidden">LEVEL UP</div>
+
+      <!-- Start / game-over overlay -->
+      <div id="overlay">
+        <div class="panel">
+          <h1 class="title">SWARM</h1>
+          <p id="overlay-sub" class="subtitle">
+            Survive the horde. You auto-fire at the nearest enemy.
+          </p>
+          <div id="overlay-stats" class="overlay-stats hidden"></div>
+          <button id="start-btn" class="btn">START</button>
+          <p class="hint">Drag anywhere to move &middot; or use WASD / arrows</p>
+        </div>
+      </div>
+    </div>
+
+  </body>
+</html>
