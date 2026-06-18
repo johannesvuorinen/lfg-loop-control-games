@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Echoes — find the chiming crystals by ear</title>
+    <style>
+      :root { color-scheme: dark; }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 100%; height: 100%; overflow: hidden; background: #070b12; }
+      #app { position: fixed; inset: 0; }
+      canvas { display: block; }
+
+      #hud {
+        position: fixed; inset: 0; pointer-events: none;
+        font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+        color: #eaf2ff; user-select: none;
+      }
+
+      /* ---------------- top status cards ---------------- */
+      .hud-top {
+        position: absolute; top: 16px; left: 50%; transform: translateX(-50%);
+        display: flex; gap: 14px; align-items: stretch;
+      }
+      .card {
+        background: rgba(10, 16, 28, 0.66);
+        border: 1px solid rgba(120, 180, 255, 0.22);
+        border-radius: 12px; padding: 8px 16px;
+        backdrop-filter: blur(6px);
+        box-shadow: 0 6px 22px rgba(0,0,0,0.45);
+        text-align: center; min-width: 96px;
+      }
+      .card .label { font-size: 11px; letter-spacing: 2px; text-transform: uppercase; opacity: 0.6; }
+      .card .value { font-size: 26px; font-weight: 700; line-height: 1.15; font-variant-numeric: tabular-nums; }
+      #timeCard .value.warn { color: #ff6b5e; }
+
+      #title {
+        position: absolute; top: 16px; left: 16px;
+        background: rgba(10,16,28,0.6); border: 1px solid rgba(120,180,255,0.2);
+        border-radius: 10px; padding: 8px 14px; max-width: 250px;
+      }
+      #title .label { font-size: 10px; letter-spacing: 3px; text-transform: uppercase; opacity: 0.55; }
+      #title .text { font-size: 17px; font-weight: 700; margin-top: 2px; letter-spacing: 1px; }
+      #title .hint { font-size: 11px; opacity: 0.6; margin-top: 3px; }
+
+      /* ---------------- spatial-audio readout (the probe make-visible panel) ---------------- */
+      #audio {
+        position: absolute; top: 16px; right: 16px; width: 300px;
+        background: rgba(10,16,28,0.72); border: 1px solid rgba(120,180,255,0.24);
+        border-radius: 12px; padding: 10px 12px 12px;
+        backdrop-filter: blur(6px); box-shadow: 0 6px 22px rgba(0,0,0,0.5);
+      }
+      #audio .head {
+        font-size: 10px; letter-spacing: 2px; text-transform: uppercase; opacity: 0.62;
+        display: flex; justify-content: space-between; margin-bottom: 8px;
+      }
+      #audio .head .eng { color: #7fe0a0; opacity: 0.95; }
+      .crow { margin: 7px 0; }
+      .crow.dead { opacity: 0.32; }
+      .crow .top { display: flex; align-items: center; gap: 7px; font-size: 12px; }
+      .crow .swatch { width: 10px; height: 10px; border-radius: 3px; flex: 0 0 auto; box-shadow: 0 0 6px currentColor; }
+      .crow .name { font-weight: 600; flex: 1 1 auto; }
+      .crow .lvl { font-variant-numeric: tabular-nums; opacity: 0.85; font-size: 11px; }
+      /* pan meter: center line with a dot that slides L<->R */
+      .pan {
+        position: relative; height: 10px; margin-top: 4px;
+        background: linear-gradient(90deg, rgba(90,150,255,0.16), rgba(255,255,255,0.05) 50%, rgba(255,150,90,0.16));
+        border-radius: 6px; border: 1px solid rgba(255,255,255,0.07);
+      }
+      .pan::before { /* center tick */
+        content: ''; position: absolute; left: 50%; top: -1px; bottom: -1px; width: 1px;
+        background: rgba(255,255,255,0.28);
+      }
+      .pan .dot {
+        position: absolute; top: 50%; width: 8px; height: 8px; border-radius: 50%;
+        background: #cfe2ff; transform: translate(-50%, -50%); transition: left 0.06s linear;
+        box-shadow: 0 0 6px rgba(180,210,255,0.9);
+      }
+      /* volume bar under the pan */
+      .vol { height: 4px; margin-top: 3px; background: rgba(255,255,255,0.07); border-radius: 3px; overflow: hidden; }
+      .vol .fill { height: 100%; width: 0%; background: linear-gradient(90deg,#39a9ff,#7fe0ff); transition: width 0.06s linear; }
+      .pansub { display: flex; justify-content: space-between; font-size: 9px; opacity: 0.5; margin-top: 2px; letter-spacing: 1px; }
+      #audio .foot { font-size: 9.5px; opacity: 0.48; margin-top: 9px; line-height: 1.5; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 7px; }
+
+      #help {
+        position: absolute; bottom: 16px; left: 18px;
+        font-size: 12px; line-height: 1.7; opacity: 0.62;
+      }
+      #help kbd {
+        background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.18);
+        border-radius: 5px; padding: 1px 6px; font-size: 11px; font-family: inherit;
+      }
+
+      #banner {
+        position: absolute; top: 40%; left: 50%; transform: translate(-50%,-50%);
+        text-align: center; opacity: 0; transition: opacity 0.25s ease;
+      }
+      #banner.show { opacity: 1; }
+      #banner .big { font-size: 50px; font-weight: 800; text-shadow: 0 4px 20px rgba(0,0,0,0.6); }
+      #banner .sub { font-size: 17px; opacity: 0.8; margin-top: 6px; }
+
+      #overlay {
+        position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+        background: radial-gradient(ellipse at center, rgba(6,10,18,0.5), rgba(6,10,18,0.85));
+        opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
+      }
+      #overlay.show { opacity: 1; pointer-events: auto; }
+      #overlay .panel {
+        background: rgba(12, 18, 30, 0.94); border: 1px solid rgba(120,180,255,0.25);
+        border-radius: 18px; padding: 32px 42px; text-align: center; max-width: 440px;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+      }
+      #overlay h1 { font-size: 40px; margin-bottom: 8px; letter-spacing: 2px; }
+      #overlay p { opacity: 0.8; font-size: 14.5px; line-height: 1.55; margin-bottom: 8px; }
+      #overlay .score { font-size: 22px; font-weight: 700; margin: 14px 0 18px; }
+      #overlay button {
+        pointer-events: auto; cursor: pointer; font: inherit; font-weight: 700; font-size: 16px;
+        color: #08121e; background: linear-gradient(180deg,#9fe0ff,#39a9ff);
+        border: none; border-radius: 10px; padding: 12px 30px;
+        box-shadow: 0 8px 24px rgba(57,169,255,0.4);
+      }
+      #overlay button:active { transform: translateY(1px); }
+    </style>
+    <script type="module" crossorigin src="./assets/index-X6J_Jhqc.js"></script>
+  </head>
+  <body>
+    <div id="app"></div>
+    <div id="hud">
+      <div id="title">
+        <div class="label">Echoes</div>
+        <div class="text">Find the crystals by ear</div>
+        <div class="hint">Each chimes — pan + volume guide you in.</div>
+      </div>
+
+      <div class="hud-top">
+        <div class="card" id="timeCard"><div class="label">Time</div><div class="value" id="timeVal">0.0</div></div>
+        <div class="card"><div class="label">Crystals</div><div class="value" id="crystalsVal">0 / 5</div></div>
+        <div class="card"><div class="label">Score</div><div class="value" id="scoreVal">0</div></div>
+      </div>
+
+      <!-- The probe make-visible panel: live pan + volume per crystal, read back
+           from each PositionalAudio's panner/gain nodes. -->
+      <div id="audio">
+        <div class="head"><span>Spatial audio · per crystal</span><span class="eng">PositionalAudio</span></div>
+        <div id="audioRows"></div>
+        <div class="foot">pan &amp; level read live from each crystal's
+          WebAudio PannerNode + GainNode — three.js computes them from the 3D
+          transforms; no manual pan/volume math.</div>
+      </div>
+
+      <div id="help">
+        <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> / <kbd>↑</kbd><kbd>←</kbd><kbd>↓</kbd><kbd>→</kbd> move &nbsp; — &nbsp; home in on the loudest, most-centered chime
+      </div>
+
+      <div id="banner"><div class="big" id="bannerBig"></div><div class="sub" id="bannerSub"></div></div>
+
+      <div id="overlay">
+        <div class="panel">
+          <h1>ECHOES</h1>
+          <p>Five crystals are scattered in the dark. Each one chimes a looping tone.
+             You can't see far — but you can <em>hear</em> them: a crystal on your left
+             pans left, on your right pans right, and grows louder as you close in.
+             Fly into each crystal to collect it. Get all five.</p>
+          <p style="opacity:0.6;font-size:13px">Headphones recommended for the stereo panning.</p>
+          <div class="score" id="ovScore"></div>
+          <button id="ovBtn">Start listening</button>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
