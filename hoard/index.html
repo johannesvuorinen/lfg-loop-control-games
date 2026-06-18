@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M8 1l5 5-5 9-5-9z' fill='%237df9ff'/%3E%3C/svg%3E" />
+    <title>Hoard — 3D Gem Mining</title>
+    <script type="module" crossorigin src="/assets/index-BBebQT6J.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-Dxtgpyz4.css">
+  </head>
+  <body>
+    <div id="app">
+      <canvas id="scene"></canvas>
+
+      <!-- Floating "+N" pop layer (HTML, positioned over the crystal) -->
+      <div id="pops"></div>
+
+      <!-- HUD -->
+      <header id="hud">
+        <div class="hud-gems">
+          <span class="gem-icon">◆</span>
+          <span id="gem-count">0</span>
+        </div>
+        <div class="hud-rate" id="rate-line">0 / sec</div>
+      </header>
+
+      <!-- Tap hint -->
+      <div id="hint">Tap the crystal to mine</div>
+
+      <!-- Upgrades panel -->
+      <aside id="panel">
+        <h2>Upgrades</h2>
+        <div id="upgrades"></div>
+        <button id="reset-btn" title="Wipe your hoard and start over">Reset hoard</button>
+      </aside>
+
+      <!-- Offline-earnings popup -->
+      <div id="away-overlay" class="hidden">
+        <div id="away-card">
+          <h3>While you were away</h3>
+          <p id="away-time"></p>
+          <div class="away-amount">
+            <span class="gem-icon">◆</span>
+            <span id="away-gems">0</span>
+          </div>
+          <button id="away-collect">Collect</button>
+        </div>
+      </div>
+    </div>
+
+  </body>
+</html>
