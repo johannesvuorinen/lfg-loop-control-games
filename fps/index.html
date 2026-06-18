@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>STRAY ROUNDS — three.js FPS</title>
+    <style>
+      :root { color-scheme: dark; }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 100%; height: 100%; overflow: hidden; background: #0a0d12; }
+      #app { position: fixed; inset: 0; }
+      canvas { display: block; }
+
+      #hud {
+        position: fixed; inset: 0; pointer-events: none;
+        font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+        color: #eef3f8; user-select: none;
+      }
+
+      /* ---------------- Crosshair ---------------- */
+      #crosshair {
+        position: absolute; top: 50%; left: 50%;
+        width: 26px; height: 26px; transform: translate(-50%, -50%);
+        transition: transform 0.06s ease-out;
+      }
+      #crosshair .line {
+        position: absolute; background: rgba(230, 245, 255, 0.92);
+        box-shadow: 0 0 3px rgba(0,0,0,0.8);
+      }
+      #crosshair .h { top: 50%; left: 0; width: 100%; height: 2px; transform: translateY(-50%); }
+      #crosshair .v { left: 50%; top: 0; height: 100%; width: 2px; transform: translateX(-50%); }
+      #crosshair .dot {
+        position: absolute; top: 50%; left: 50%; width: 3px; height: 3px;
+        background: #ff5544; border-radius: 50%; transform: translate(-50%,-50%);
+      }
+      #crosshair.gap .h { width: 40%; }
+      #crosshair.gap .h.r { left: 60%; }
+      /* split the crosshair into 4 ticks with a center gap */
+      #crosshair .tick { position: absolute; background: rgba(230,245,255,0.92); box-shadow: 0 0 3px rgba(0,0,0,0.8); }
+      #crosshair .tick.t { left: 50%; top: 0; width: 2px; height: 8px; transform: translateX(-50%); }
+      #crosshair .tick.b { left: 50%; bottom: 0; width: 2px; height: 8px; transform: translateX(-50%); }
+      #crosshair .tick.l { top: 50%; left: 0; height: 2px; width: 8px; transform: translateY(-50%); }
+      #crosshair .tick.r { top: 50%; right: 0; height: 2px; width: 8px; transform: translateY(-50%); }
+      #crosshair.kick { transform: translate(-50%,-50%) scale(1.35); }
+
+      /* ---------------- Bottom-left: health ---------------- */
+      #healthWrap {
+        position: absolute; left: 24px; bottom: 22px; width: 230px;
+      }
+      .stat-label { font-size: 11px; letter-spacing: 2px; text-transform: uppercase; opacity: 0.62; margin-bottom: 5px; display:flex; align-items:center; gap:7px;}
+      .stat-label .ic { font-size: 14px; }
+      #healthBarOuter {
+        height: 16px; border-radius: 8px; background: rgba(255,255,255,0.08);
+        border: 1px solid rgba(255,90,70,0.35); overflow: hidden;
+      }
+      #healthBar {
+        height: 100%; width: 100%;
+        background: linear-gradient(90deg, #ff4b3a, #ff7a5e);
+        border-radius: 8px; transition: width 0.18s ease;
+      }
+      #healthNum { font-size: 22px; font-weight: 800; margin-top: 3px; font-variant-numeric: tabular-nums; }
+
+      /* ---------------- Bottom-right: ammo ---------------- */
+      #ammoWrap {
+        position: absolute; right: 28px; bottom: 22px; text-align: right;
+      }
+      #ammoWrap .label { font-size: 11px; letter-spacing: 2px; text-transform: uppercase; opacity: 0.6; }
+      #ammoBig {
+        font-size: 52px; font-weight: 800; line-height: 1; font-variant-numeric: tabular-nums;
+        text-shadow: 0 3px 10px rgba(0,0,0,0.6);
+      }
+      #ammoBig .mag { color: #eef3f8; }
+      #ammoBig .sep { opacity: 0.35; font-size: 30px; margin: 0 2px; }
+      #ammoBig .res { opacity: 0.55; font-size: 30px; }
+      #ammoBig.low .mag { color: #ff5544; }
+      #reloadHint { font-size: 12px; letter-spacing: 1px; opacity: 0.0; color:#ffd166; margin-top:2px; transition: opacity 0.2s; }
+      #reloadHint.show { opacity: 0.9; }
+
+      /* ---------------- Top: score / enemies ---------------- */
+      #topBar {
+        position: absolute; top: 16px; left: 50%; transform: translateX(-50%);
+        display: flex; gap: 12px;
+      }
+      .card {
+        background: rgba(10, 16, 24, 0.6);
+        border: 1px solid rgba(120, 170, 220, 0.2);
+        border-radius: 11px; padding: 7px 16px; text-align: center; min-width: 96px;
+        backdrop-filter: blur(6px);
+      }
+      .card .l { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; opacity: 0.55; }
+      .card .v { font-size: 24px; font-weight: 800; font-variant-numeric: tabular-nums; line-height:1.2; }
+      #waveCard .v { color: #7fd1ff; }
+      #killCard .v { color: #ffd166; }
+
+      /* ---------------- Damage / hit feedback ---------------- */
+      #damageVignette {
+        position: absolute; inset: 0; pointer-events: none; opacity: 0;
+        box-shadow: inset 0 0 160px 40px rgba(200, 20, 20, 0.85);
+        transition: opacity 0.12s ease-out;
+      }
+      #hitMarker {
+        position: absolute; top: 50%; left: 50%; width: 22px; height: 22px;
+        transform: translate(-50%,-50%) rotate(45deg) scale(0.6); opacity: 0;
+      }
+      #hitMarker .hm { position:absolute; background:#fff; box-shadow:0 0 4px rgba(0,0,0,0.7); }
+      #hitMarker .hm.a { left:50%; top:0; width:2px; height:7px; transform:translateX(-50%); }
+      #hitMarker .hm.b { left:50%; bottom:0; width:2px; height:7px; transform:translateX(-50%); }
+      #hitMarker .hm.c { top:50%; left:0; height:2px; width:7px; transform:translateY(-50%); }
+      #hitMarker .hm.d { top:50%; right:0; height:2px; width:7px; transform:translateY(-50%); }
+
+      /* ---------------- Help / center prompt ---------------- */
+      #help {
+        position: absolute; top: 16px; left: 16px;
+        font-size: 12px; line-height: 1.7; opacity: 0.6;
+      }
+      #help kbd {
+        background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.18);
+        border-radius: 5px; padding: 1px 6px; font-size: 11px; font-family: inherit;
+      }
+      #prompt {
+        position: absolute; top: 50%; left: 50%; transform: translate(-50%, calc(-50% + 70px));
+        background: rgba(10,16,24,0.78); border: 1px solid rgba(120,170,220,0.3);
+        border-radius: 12px; padding: 14px 24px; text-align: center; font-size: 15px;
+        backdrop-filter: blur(6px); box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+      }
+      #prompt b { color: #7fd1ff; }
+      #prompt.hidden { display: none; }
+
+      /* ---------------- Banner (game over / wave) ---------------- */
+      #banner {
+        position: absolute; top: 40%; left: 50%; transform: translate(-50%,-50%);
+        text-align: center; opacity: 0; transition: opacity 0.3s ease; pointer-events: none;
+      }
+      #banner .big { font-size: 46px; font-weight: 900; letter-spacing: 1px; text-shadow: 0 4px 18px rgba(0,0,0,0.6); }
+      #banner .sub { font-size: 16px; opacity: 0.8; margin-top: 6px; }
+      #banner.show { opacity: 1; }
+    </style>
+    <script type="module" crossorigin src="./assets/index-CdUZDPV2.js"></script>
+  </head>
+  <body>
+    <div id="app"></div>
+    <div id="hud">
+      <div id="topBar">
+        <div class="card" id="waveCard"><div class="l">Wave</div><div class="v" id="waveVal">1</div></div>
+        <div class="card" id="killCard"><div class="l">Kills</div><div class="v" id="killVal">0</div></div>
+      </div>
+
+      <div id="crosshair">
+        <div class="tick t"></div>
+        <div class="tick b"></div>
+        <div class="tick l"></div>
+        <div class="tick r"></div>
+        <div class="dot"></div>
+      </div>
+      <div id="hitMarker"><div class="hm a"></div><div class="hm b"></div><div class="hm c"></div><div class="hm d"></div></div>
+
+      <div id="healthWrap">
+        <div class="stat-label"><span class="ic">&#10010;</span> Health</div>
+        <div id="healthBarOuter"><div id="healthBar"></div></div>
+        <div id="healthNum">100</div>
+      </div>
+
+      <div id="ammoWrap">
+        <div class="label">Ammo</div>
+        <div id="ammoBig"><span class="mag" id="magVal">12</span><span class="sep">/</span><span class="res" id="resVal">48</span></div>
+        <div id="reloadHint">RELOADING…</div>
+      </div>
+
+      <div id="help">
+        <kbd>Click</kbd> lock mouse &nbsp; <kbd>W A S D</kbd> move &nbsp; <kbd>Shift</kbd> sprint<br/>
+        <kbd>Mouse</kbd> look &nbsp; <kbd>L-Click</kbd> fire &nbsp; <kbd>R</kbd> reload &nbsp; <kbd>Space</kbd> jump
+      </div>
+
+      <div id="prompt">Click to play &nbsp;·&nbsp; <b>WASD</b> move, <b>mouse</b> aim, <b>click</b> to shoot</div>
+      <div id="damageVignette"></div>
+      <div id="banner"><div class="big" id="bannerBig"></div><div class="sub" id="bannerSub"></div></div>
+    </div>
+  </body>
+</html>
