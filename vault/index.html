@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+    <title>VAULT — 3rd-person parkour</title>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 100%; height: 100%; overflow: hidden; background: #0b0f1a; font-family: -apple-system, system-ui, sans-serif; }
+      #scene { display: block; width: 100vw; height: 100vh; touch-action: none; }
+
+      #hud {
+        position: fixed; inset: 0; pointer-events: none; color: #eaf2ff;
+        text-shadow: 0 1px 3px rgba(0,0,0,.6);
+      }
+      #state-badge {
+        position: absolute; top: 14px; left: 14px;
+        font-size: 13px; font-weight: 700; letter-spacing: .12em;
+        padding: 6px 12px; border-radius: 999px;
+        background: rgba(20,28,46,.72); border: 1px solid rgba(120,160,255,.35);
+        text-transform: uppercase;
+      }
+      #score {
+        position: absolute; top: 14px; right: 14px;
+        font-size: 13px; font-weight: 700; letter-spacing: .06em;
+        padding: 6px 12px; border-radius: 999px;
+        background: rgba(20,28,46,.72); border: 1px solid rgba(120,160,255,.35);
+      }
+      #speed-wrap {
+        position: absolute; left: 14px; bottom: 16px;
+        width: 160px; height: 8px; border-radius: 999px;
+        background: rgba(20,28,46,.7); border: 1px solid rgba(120,160,255,.3); overflow: hidden;
+      }
+      #speed-bar { height: 100%; width: 0%; background: linear-gradient(90deg,#4fd1ff,#7c5cff); transition: width .08s linear; }
+      #speed-label { position:absolute; left:14px; bottom:30px; font-size:11px; letter-spacing:.1em; opacity:.8; }
+      #hint {
+        position: absolute; left: 50%; bottom: 18px; transform: translateX(-50%);
+        font-size: 12px; letter-spacing: .04em; opacity: .82; text-align: center;
+        padding: 8px 14px; border-radius: 10px; background: rgba(20,28,46,.55); white-space: nowrap;
+      }
+      #win {
+        position: absolute; inset: 0; display: none; align-items: center; justify-content: center; flex-direction: column;
+        background: radial-gradient(circle at 50% 40%, rgba(20,40,80,.6), rgba(8,10,20,.92));
+      }
+      #win.show { display: flex; }
+      #win h1 { font-size: 44px; letter-spacing: .08em; color: #7cf0ff; }
+      #win p { margin-top: 10px; font-size: 14px; opacity: .85; }
+      #loader {
+        position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+        font-size: 13px; letter-spacing: .2em; color: #9fb8ff; background: #0b0f1a;
+      }
+      #loader.hide { display: none; }
+    </style>
+    <script type="module" crossorigin src="./assets/index-DqCZOoG2.js"></script>
+  </head>
+  <body>
+    <canvas id="scene"></canvas>
+    <div id="hud">
+      <div id="state-badge">IDLE</div>
+      <div id="score">DUMMIES 0 / 3</div>
+      <div id="speed-label">SPEED</div>
+      <div id="speed-wrap"><div id="speed-bar"></div></div>
+      <div id="hint">WASD / arrows move · hold Shift run · Space jump · J / click attack</div>
+      <div id="win"><h1>VAULT CLEARED</h1><p>You reached the goal.</p></div>
+    </div>
+    <div id="loader">LOADING…</div>
+  </body>
+</html>
