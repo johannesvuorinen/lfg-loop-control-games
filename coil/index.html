@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#070b1a" />
+    <title>Coil — 3D Snake</title>
+    <script type="module" crossorigin src="./assets/index-CRiQco0G.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-BzvJzIgl.css">
+  </head>
+  <body>
+    <canvas id="scene"></canvas>
+
+    <!-- HUD -->
+    <div id="hud" class="hud hidden">
+      <div class="hud-stat">
+        <span class="hud-label">LENGTH</span>
+        <span id="hud-length" class="hud-value">3</span>
+      </div>
+      <div class="hud-title">COIL</div>
+      <div class="hud-stat hud-stat--right">
+        <span class="hud-label">SCORE</span>
+        <span id="hud-score" class="hud-value">0</span>
+      </div>
+    </div>
+
+    <!-- Start / game-over overlay -->
+    <div id="overlay" class="overlay">
+      <div class="panel">
+        <h1 class="logo">COIL</h1>
+        <p id="overlay-sub" class="sub">Neon 3D Snake</p>
+        <p id="overlay-result" class="result hidden"></p>
+        <button id="play-btn" class="play-btn">TAP TO PLAY</button>
+        <p class="hint">
+          Swipe or use Arrow / WASD keys to turn.<br />
+          Eat the glowing orbs. Don't hit the walls or yourself.
+        </p>
+      </div>
+    </div>
+
+    <!-- On-screen D-pad for touch -->
+    <div id="dpad" class="dpad hidden" aria-hidden="true">
+      <button class="dbtn dbtn--up" data-dir="up">▲</button>
+      <button class="dbtn dbtn--left" data-dir="left">◀</button>
+      <button class="dbtn dbtn--right" data-dir="right">▶</button>
+      <button class="dbtn dbtn--down" data-dir="down">▼</button>
+    </div>
+
+  </body>
+</html>
