@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="data:," />
+    <title>Bulwark — maze tower defense</title>
+    <style>
+      :root {
+        --fg: #e8eefc;
+        --accent: #6cff8f;
+        --cyan: #16d0e0;
+      }
+      * { box-sizing: border-box; }
+      html, body {
+        margin: 0;
+        height: 100%;
+        background: #0e1320;
+        color: var(--fg);
+        font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+        overflow: hidden;
+      }
+      #scene { display: block; width: 100vw; height: 100vh; }
+
+      #hud {
+        position: fixed;
+        top: 0; left: 0; right: 0;
+        display: flex;
+        gap: 18px;
+        align-items: center;
+        padding: 12px 16px;
+        pointer-events: none;
+        text-shadow: 0 1px 3px rgba(0,0,0,0.7);
+        font-variant-numeric: tabular-nums;
+      }
+      #hud .stat { display: flex; flex-direction: column; line-height: 1.1; }
+      #hud .stat .label {
+        font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase;
+        opacity: 0.6;
+      }
+      #hud .stat .val { font-size: 20px; font-weight: 700; }
+      #hud .stat.hp .val { color: var(--cyan); }
+      #hud .stat.money .val { color: var(--accent); }
+
+      #title {
+        margin-left: auto;
+        text-align: right;
+      }
+      #title .name { font-weight: 800; letter-spacing: 0.04em; font-size: 18px; }
+      #title .hint { font-size: 11px; opacity: 0.6; }
+
+      .banner {
+        position: fixed;
+        top: 64px; left: 50%;
+        transform: translateX(-50%);
+        font-size: 22px; font-weight: 800;
+        letter-spacing: 0.03em;
+        padding: 0;
+        pointer-events: none;
+        text-shadow: 0 2px 8px rgba(0,0,0,0.8);
+      }
+      .banner.warn { color: #ffd24a; }
+      .banner.win { color: var(--accent); font-size: 32px; }
+      .banner.lose { color: #ff5a5a; font-size: 32px; }
+    </style>
+    <script type="module" crossorigin src="./assets/index-Dsm5ry22.js"></script>
+  </head>
+  <body>
+    <canvas id="scene"></canvas>
+    <div id="hud">
+      <div class="stat hp"><span class="label">Base HP</span><span class="val" id="hp">20</span></div>
+      <div class="stat money"><span class="label">Resources</span><span class="val" id="money">8</span></div>
+      <div class="stat"><span class="label">Wave</span><span class="val" id="wave">0/4</span></div>
+      <div class="stat"><span class="label">Creeps</span><span class="val" id="creeps">0</span></div>
+      <div id="title">
+        <div class="name">BULWARK</div>
+        <div class="hint">Click empty cells to build blocking towers · seal a path = rejected</div>
+      </div>
+    </div>
+    <div id="banner" class="banner"></div>
+  </body>
+</html>
