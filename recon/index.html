@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RECON · top-down infiltration</title>
+    <style>
+      :root {
+        --hud: #5dffc8;
+        --warn: #ff4d5e;
+        --dim: #0a1014;
+      }
+      * { box-sizing: border-box; }
+      html, body {
+        margin: 0; padding: 0; height: 100%; overflow: hidden;
+        background: #05080a; color: var(--hud);
+        font-family: "SFMono-Regular", ui-monospace, Menlo, Consolas, monospace;
+        -webkit-font-smoothing: antialiased;
+      }
+      #app { position: fixed; inset: 0; }
+      canvas#scene { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+
+      /* ---------- HUD ---------- */
+      #hud { position: absolute; inset: 0; pointer-events: none; }
+
+      /* top-left status */
+      #status {
+        position: absolute; top: 16px; left: 18px;
+        font-size: 13px; line-height: 1.7; text-shadow: 0 0 8px #0008;
+        letter-spacing: 0.04em;
+      }
+      #status .big { font-size: 22px; font-weight: 700; }
+      #status .cores { color: var(--hud); }
+      #status .label { opacity: 0.6; font-size: 11px; text-transform: uppercase; letter-spacing: 0.18em; }
+
+      /* radar (method 1: projection) — top-right circular */
+      #radar-wrap {
+        position: absolute; top: 16px; right: 16px;
+        width: 168px; height: 168px;
+      }
+      #radar {
+        width: 100%; height: 100%;
+        filter: drop-shadow(0 0 14px #0bffc833);
+      }
+      #radar-wrap .cap {
+        position: absolute; bottom: -16px; right: 2px;
+        font-size: 9px; opacity: 0.55; letter-spacing: 0.18em; text-transform: uppercase;
+      }
+
+      /* rendered minimap (method 2: render-to-texture) — bottom-right square */
+      #minimap-wrap {
+        position: absolute; bottom: 18px; right: 16px;
+        width: 156px; height: 156px;
+        border: 1px solid #1affc855;
+        border-radius: 6px; overflow: hidden;
+        box-shadow: 0 0 18px #0008, inset 0 0 24px #0bffc81a;
+        background: #03060a;
+      }
+      #minimap { width: 100%; height: 100%; display: block; }
+      #minimap-wrap .cap {
+        position: absolute; bottom: 3px; left: 6px;
+        font-size: 9px; opacity: 0.7; letter-spacing: 0.16em; text-transform: uppercase;
+        text-shadow: 0 0 6px #000;
+      }
+      #minimap-wrap .corner {
+        position: absolute; width: 9px; height: 9px;
+        border-color: var(--hud); border-style: solid; border-width: 0;
+      }
+      #minimap-wrap .c-tl { top: 4px; left: 4px; border-top-width: 2px; border-left-width: 2px; }
+      #minimap-wrap .c-tr { top: 4px; right: 4px; border-top-width: 2px; border-right-width: 2px; }
+      #minimap-wrap .c-bl { bottom: 4px; left: 4px; border-bottom-width: 2px; border-left-width: 2px; }
+      #minimap-wrap .c-br { bottom: 4px; right: 4px; border-bottom-width: 2px; border-right-width: 2px; }
+
+      /* center toast (win / lose / spotted) */
+      #toast {
+        position: absolute; top: 50%; left: 50%;
+        transform: translate(-50%, -50%);
+        text-align: center; opacity: 0; transition: opacity 0.25s;
+        text-shadow: 0 0 18px currentColor;
+      }
+      #toast.show { opacity: 1; }
+      #toast .t1 { font-size: 46px; font-weight: 800; letter-spacing: 0.06em; }
+      #toast .t2 { font-size: 14px; opacity: 0.8; margin-top: 8px; letter-spacing: 0.2em; text-transform: uppercase; }
+
+      /* alert vignette when a guard is looking */
+      #alert {
+        position: absolute; inset: 0; opacity: 0; transition: opacity 0.18s;
+        box-shadow: inset 0 0 160px 30px var(--warn);
+      }
+      #alert.on { opacity: 0.55; }
+
+      /* controls hint */
+      #hint {
+        position: absolute; bottom: 16px; left: 18px;
+        font-size: 11px; opacity: 0.5; line-height: 1.6; letter-spacing: 0.05em;
+      }
+      #hint kbd {
+        display: inline-block; padding: 1px 5px; border: 1px solid #2affc855;
+        border-radius: 3px; font-size: 10px; margin: 0 1px;
+      }
+    </style>
+    <script type="module" crossorigin src="/assets/index-BYJNDAyO.js"></script>
+  </head>
+  <body>
+    <div id="app">
+      <canvas id="scene"></canvas>
+      <div id="hud">
+        <div id="status">
+          <div class="label">data-cores</div>
+          <div class="big"><span class="cores" id="core-count">0</span> / 5</div>
+          <div class="label" style="margin-top:8px">status</div>
+          <div id="state-line" style="font-size:13px">infiltrating…</div>
+        </div>
+
+        <div id="radar-wrap">
+          <canvas id="radar" width="336" height="336"></canvas>
+          <div class="cap">radar · projection</div>
+        </div>
+
+        <div id="minimap-wrap">
+          <canvas id="minimap"></canvas>
+          <span class="corner c-tl"></span><span class="corner c-tr"></span>
+          <span class="corner c-bl"></span><span class="corner c-br"></span>
+          <div class="cap">render-to-texture</div>
+        </div>
+
+        <div id="alert"></div>
+        <div id="toast"><div class="t1"></div><div class="t2"></div></div>
+        <div id="hint">
+          <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> / arrows move &nbsp;·&nbsp; click to move &nbsp;·&nbsp; <kbd>R</kbd> reset
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
