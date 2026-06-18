@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <meta name="theme-color" content="#070b16" />
+    <title>Spike Run</title>
+    <style>
+      :root {
+        --neon: #43f4ff;
+        --orb: #ffd34d;
+        --danger: #ff3b6b;
+      }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 100%; height: 100%; overflow: hidden; background: #070b16; }
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+        -webkit-user-select: none;
+        user-select: none;
+        -webkit-tap-highlight-color: transparent;
+        color: #eaf6ff;
+        touch-action: none;
+      }
+      #app { position: fixed; inset: 0; }
+      canvas { display: block; }
+
+      /* ---------- HUD ---------- */
+      #hud {
+        position: fixed;
+        top: 0; left: 0; right: 0;
+        padding: max(14px, env(safe-area-inset-top)) 18px 14px;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        pointer-events: none;
+        z-index: 5;
+      }
+      .stat {
+        background: rgba(8, 14, 28, 0.55);
+        border: 1px solid rgba(67, 244, 255, 0.25);
+        border-radius: 14px;
+        padding: 8px 16px;
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        box-shadow: 0 2px 20px rgba(0, 0, 0, 0.35);
+      }
+      .stat .label {
+        font-size: 10px;
+        letter-spacing: 2.5px;
+        text-transform: uppercase;
+        opacity: 0.6;
+        font-weight: 600;
+      }
+      .stat .value {
+        font-size: 26px;
+        font-weight: 800;
+        line-height: 1.1;
+        font-variant-numeric: tabular-nums;
+      }
+      #score .value { color: var(--neon); text-shadow: 0 0 14px rgba(67, 244, 255, 0.6); }
+      #orbs .value  { color: var(--orb);  text-shadow: 0 0 14px rgba(255, 211, 77, 0.55); }
+      #orbs { text-align: right; }
+
+      /* ---------- Overlay ---------- */
+      #overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 10;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 24px;
+        background: radial-gradient(ellipse at center, rgba(8, 14, 30, 0.4) 0%, rgba(5, 8, 18, 0.82) 70%);
+        backdrop-filter: blur(3px);
+        -webkit-backdrop-filter: blur(3px);
+        transition: opacity 0.35s ease;
+      }
+      #overlay.hidden { opacity: 0; pointer-events: none; }
+      /* when hidden, no descendant (e.g. the button) may capture input over the canvas */
+      #overlay.hidden * { pointer-events: none !important; }
+      .title {
+        font-size: clamp(44px, 13vw, 86px);
+        font-weight: 900;
+        letter-spacing: 2px;
+        line-height: 0.95;
+        background: linear-gradient(180deg, #ffffff 0%, var(--neon) 100%);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        filter: drop-shadow(0 0 26px rgba(67, 244, 255, 0.45));
+      }
+      .subtitle {
+        margin-top: 14px;
+        font-size: 15px;
+        line-height: 1.55;
+        max-width: 340px;
+        opacity: 0.78;
+      }
+      .subtitle b { color: var(--orb); font-weight: 700; }
+      .subtitle .bad { color: var(--danger); font-weight: 700; }
+      #finalLine {
+        margin-top: 22px;
+        font-size: 18px;
+        font-weight: 600;
+        opacity: 0;
+        height: 0;
+        transition: opacity 0.3s ease;
+      }
+      #finalLine.show { opacity: 1; height: auto; }
+      #finalLine .big { color: var(--neon); font-weight: 800; font-size: 22px; }
+      button#play {
+        margin-top: 30px;
+        pointer-events: auto;
+        cursor: pointer;
+        border: none;
+        border-radius: 16px;
+        padding: 17px 52px;
+        font-size: 19px;
+        font-weight: 800;
+        letter-spacing: 1px;
+        color: #042027;
+        background: linear-gradient(180deg, #8dffe9 0%, var(--neon) 100%);
+        box-shadow: 0 8px 30px rgba(67, 244, 255, 0.4), inset 0 1px 0 rgba(255,255,255,0.6);
+        transition: transform 0.12s ease, box-shadow 0.12s ease;
+      }
+      button#play:active { transform: translateY(2px) scale(0.98); box-shadow: 0 4px 18px rgba(67, 244, 255, 0.35); }
+      .hint {
+        margin-top: 20px;
+        font-size: 12px;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        opacity: 0.45;
+      }
+      /* damage flash */
+      #flash {
+        position: fixed; inset: 0; z-index: 8; pointer-events: none;
+        background: var(--danger); opacity: 0;
+        transition: opacity 0.08s ease;
+        mix-blend-mode: screen;
+      }
+    </style>
+    <script type="module" crossorigin src="./assets/index-COgzOEQF.js"></script>
+  </head>
+  <body>
+    <div id="app"></div>
+
+    <div id="hud">
+      <div class="stat" id="score">
+        <div class="label">Score</div>
+        <div class="value" id="scoreValue">0</div>
+      </div>
+      <div class="stat" id="orbs">
+        <div class="label">Orbs</div>
+        <div class="value" id="orbsValue">0</div>
+      </div>
+    </div>
+
+    <div id="flash"></div>
+
+    <div id="overlay">
+      <div class="title">SPIKE<br />RUN</div>
+      <div class="subtitle" id="subtitle">
+        Pilot your craft. Collect <b>orbs</b>.<br />
+        Dodge the spinning <span class="bad">caltrops</span> — one touch ends the run.
+      </div>
+      <div id="finalLine"></div>
+      <button id="play">START</button>
+      <div class="hint" id="hint">Drag anywhere to move</div>
+    </div>
+
+  </body>
+</html>
