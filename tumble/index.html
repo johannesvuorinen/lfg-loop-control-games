@@ -1,47 +1,104 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <meta name="theme-color" content="#1b2a4a" />
-    <link
-      rel="icon"
-      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='20' r='12' fill='%23ffd27f'/%3E%3Crect x='24' y='30' width='16' height='22' rx='6' fill='%23ff5d73'/%3E%3C/svg%3E"
-    />
-    <title>Tumble — Ragdoll Launcher</title>
-    <script type="module" crossorigin src="./assets/index-DvqII2B2.js"></script>
-    <link rel="stylesheet" crossorigin href="./assets/index-83Tak7gp.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tumble Trials</title>
+    <style>
+      :root {
+        --accent: #ffcf3f;
+        --accent2: #ff5b8a;
+        --good: #4fe08b;
+      }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 100%; height: 100%; overflow: hidden; background: #1a1030; }
+      #app { position: fixed; inset: 0; }
+      canvas { display: block; }
+
+      #hud {
+        position: fixed; inset: 0; pointer-events: none;
+        font-family: 'Trebuchet MS', 'Segoe UI', system-ui, sans-serif;
+        color: #fff; user-select: none;
+      }
+
+      /* Top bar: objective + timer */
+      #topbar {
+        position: absolute; top: 18px; left: 0; right: 0;
+        display: flex; flex-direction: column; align-items: center; gap: 6px;
+      }
+      #objective {
+        font-size: 15px; font-weight: 600; letter-spacing: 0.5px;
+        background: rgba(26,16,48,0.55); padding: 6px 16px; border-radius: 999px;
+        text-shadow: 0 1px 2px rgba(0,0,0,0.6);
+      }
+      #timer {
+        font-size: 42px; font-weight: 800; font-variant-numeric: tabular-nums;
+        color: var(--accent);
+        text-shadow: 0 2px 0 #b9151c, 0 0 18px rgba(255,207,63,0.45);
+      }
+      #timer.danger { color: var(--accent2); text-shadow: 0 2px 0 #6a0b2a, 0 0 18px rgba(255,91,138,0.6); }
+
+      /* Checkpoint flash */
+      #checkpoint-toast {
+        position: absolute; top: 120px; left: 50%; transform: translateX(-50%) translateY(-8px);
+        font-size: 20px; font-weight: 800; color: var(--good);
+        text-shadow: 0 2px 4px rgba(0,0,0,0.7); opacity: 0;
+        transition: opacity 0.25s ease, transform 0.25s ease;
+      }
+      #checkpoint-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+      /* Countdown overlay */
+      #countdown {
+        position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+        font-size: 160px; font-weight: 900; color: #fff;
+        text-shadow: 0 6px 0 var(--accent2), 0 0 40px rgba(255,91,138,0.6);
+        opacity: 0; transition: opacity 0.15s ease;
+      }
+      #countdown.show { opacity: 1; }
+
+      /* Result callout */
+      #result {
+        position: absolute; inset: 0; display: none; flex-direction: column;
+        align-items: center; justify-content: center; gap: 14px;
+        background: rgba(16,8,32,0.6); backdrop-filter: blur(3px);
+      }
+      #result.show { display: flex; }
+      #result h1 {
+        font-size: 84px; font-weight: 900; letter-spacing: 2px;
+        text-shadow: 0 5px 0 #b9151c, 0 0 40px rgba(255,207,63,0.5);
+      }
+      #result.win h1 { color: var(--accent); }
+      #result.lose h1 { color: var(--accent2); }
+      #result p { font-size: 22px; font-weight: 600; opacity: 0.95; }
+      #result .hint { font-size: 16px; opacity: 0.7; margin-top: 8px; }
+
+      /* Controls hint */
+      #controls {
+        position: absolute; bottom: 16px; left: 16px;
+        font-size: 13px; line-height: 1.5; opacity: 0.65;
+        background: rgba(26,16,48,0.5); padding: 8px 12px; border-radius: 10px;
+      }
+      #controls b { color: var(--accent); }
+    </style>
+    <script type="module" crossorigin src="./assets/index-Cih7AIgb.js"></script>
   </head>
   <body>
-    <div id="app">
-      <canvas id="scene"></canvas>
-
-      <!-- HUD -->
-      <div id="hud">
-        <div class="stat">
-          <span class="label">DISTANCE</span>
-          <span class="value" id="distance">0.0 m</span>
-        </div>
-        <div class="stat">
-          <span class="label">BEST</span>
-          <span class="value" id="best">0.0 m</span>
-        </div>
+    <div id="app"></div>
+    <div id="hud">
+      <div id="topbar">
+        <div id="objective">Reach the finish arch!</div>
+        <div id="timer">60.0</div>
       </div>
-
-      <!-- Power / aim indicator -->
-      <div id="aim-hint">Drag back, release to launch</div>
-
-      <!-- Start / result overlay -->
-      <div id="overlay" class="visible">
-        <div class="card">
-          <h1>TUMBLE</h1>
-          <p class="tagline">Ragdoll launcher</p>
-          <p id="result"></p>
-          <button id="start-btn">LAUNCH</button>
-          <p class="hint">Drag anywhere to aim &amp; set power · release to fling</p>
-        </div>
+      <div id="checkpoint-toast">CHECKPOINT!</div>
+      <div id="countdown"></div>
+      <div id="result">
+        <h1>WIN!</h1>
+        <p id="result-sub"></p>
+        <div class="hint">Press <b>R</b> to race again</div>
+      </div>
+      <div id="controls">
+        <b>WASD</b> run &nbsp;·&nbsp; <b>Space</b> jump &nbsp;·&nbsp; <b>R</b> restart &nbsp;·&nbsp; <b>Mouse</b> orbit camera
       </div>
     </div>
-
   </body>
 </html>
