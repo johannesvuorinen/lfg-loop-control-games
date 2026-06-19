@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="data:," />
+    <title>Command Field — three.js RTS (Track B / control)</title>
+    <style>
+      :root { color-scheme: dark; }
+      html, body { margin: 0; height: 100%; overflow: hidden; background: #0b0f14; }
+      #app { position: fixed; inset: 0; }
+      canvas { display: block; }
+      #hud {
+        position: fixed; left: 12px; top: 10px; z-index: 10;
+        font: 12px/1.45 ui-monospace, SFMono-Regular, Menlo, monospace;
+        color: #aeb8c4; pointer-events: none; text-shadow: 0 1px 2px #000;
+        max-width: 360px;
+      }
+      #hud b { color: #e7eef6; }
+      #hud .k { color: #8be9fd; }
+      /* Drag-select rectangle overlay (screen-space DOM, the classic RTS way). */
+      #marquee {
+        position: fixed; z-index: 9; border: 1px solid #7CFC9A;
+        background: rgba(124, 252, 154, 0.12); pointer-events: none; display: none;
+      }
+    </style>
+    <script type="module" crossorigin src="./assets/index-ButTSwTc.js"></script>
+  </head>
+  <body>
+    <div id="app"></div>
+    <div id="hud">
+      <b>Command Field</b> — top-down RTS (three.js, no engine)<br />
+      <span class="k">Left-click</span> select &nbsp; <span class="k">Shift+click</span> add &nbsp;
+      <span class="k">Drag</span> box-select<br />
+      <span class="k">Right-click</span> move (A* around buildings) &nbsp; <span class="k">WASD/Arrows</span> pan
+    </div>
+    <div id="marquee"></div>
+  </body>
+</html>
