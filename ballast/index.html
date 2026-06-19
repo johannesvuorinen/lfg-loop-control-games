@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><circle cx='8' cy='8' r='6' fill='%23cfd6e0'/></svg>" />
+    <title>Ballast — marble tilt-maze</title>
+    <style>
+      :root { color-scheme: dark; }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 100%; height: 100%; overflow: hidden; background: #0a0d14; }
+      #app { position: fixed; inset: 0; }
+      canvas { display: block; }
+
+      /* ---- HUD ---- */
+      #hud {
+        position: fixed; inset: 0; pointer-events: none;
+        font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+        color: #e8eef6;
+      }
+      #timer {
+        position: absolute; top: 16px; left: 50%; transform: translateX(-50%);
+        font-size: 30px; font-weight: 700; letter-spacing: 2px;
+        padding: 6px 18px; border-radius: 10px;
+        background: rgba(10, 14, 22, 0.55);
+        border: 1px solid rgba(120, 160, 220, 0.25);
+        text-shadow: 0 1px 2px #000;
+      }
+      #help {
+        position: absolute; bottom: 14px; left: 50%; transform: translateX(-50%);
+        font-size: 13px; opacity: 0.72; text-align: center; line-height: 1.5;
+      }
+      #help kbd {
+        display: inline-block; padding: 1px 6px; margin: 0 1px;
+        border: 1px solid rgba(160,190,230,0.4); border-radius: 5px;
+        background: rgba(255,255,255,0.06); font-size: 12px;
+      }
+      #tiltreadout {
+        position: absolute; top: 16px; right: 16px;
+        font-size: 12px; opacity: 0.7; text-align: right; line-height: 1.6;
+        background: rgba(10,14,22,0.45); padding: 6px 10px; border-radius: 8px;
+      }
+
+      /* ---- banner ---- */
+      #banner {
+        position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+        text-align: center; display: none; pointer-events: none;
+      }
+      #banner.show { display: block; animation: pop 0.3s ease-out; }
+      @keyframes pop { from { transform: translate(-50%,-50%) scale(0.8); opacity: 0; } }
+      #banner .title { font-size: 72px; font-weight: 800; letter-spacing: 3px; text-shadow: 0 3px 16px rgba(0,0,0,0.7); }
+      #banner.win  .title { color: #57e08a; }
+      #banner.lose .title { color: #ff6b6b; }
+      #banner .sub { font-size: 18px; margin-top: 8px; opacity: 0.9; }
+      #banner .sub kbd {
+        display: inline-block; padding: 1px 7px;
+        border: 1px solid rgba(220,230,255,0.5); border-radius: 6px;
+        background: rgba(255,255,255,0.08);
+      }
+    </style>
+    <script type="module" crossorigin src="./assets/index-CNMIgl76.js"></script>
+  </head>
+  <body>
+    <div id="app"></div>
+    <div id="hud">
+      <div id="timer">0.00</div>
+      <div id="tiltreadout">tilt<br />0.0&deg; / 0.0&deg;</div>
+      <div id="banner"><div class="title"></div><div class="sub"></div></div>
+      <div id="help">
+        <kbd>&larr;</kbd><kbd>&uarr;</kbd><kbd>&darr;</kbd><kbd>&rarr;</kbd> tilt the tray &nbsp;&bull;&nbsp;
+        roll the ball to the <span style="color:#57e08a">green goal</span> &nbsp;&bull;&nbsp;
+        <kbd>R</kbd> restart
+      </div>
+    </div>
+  </body>
+</html>
