@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ronin Arena</title>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 100%; height: 100%; overflow: hidden; background: #0b0d12; font-family: -apple-system, "Segoe UI", system-ui, sans-serif; }
+      #app { width: 100vw; height: 100vh; display: block; }
+      canvas { display: block; }
+
+      /* ---- HUD ---- */
+      #hud { position: fixed; inset: 0; pointer-events: none; user-select: none; }
+
+      .hud-topleft { position: absolute; top: 18px; left: 18px; }
+      .hud-topright { position: absolute; top: 18px; right: 18px; text-align: right; }
+
+      .label { font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: #9aa4b2; margin-bottom: 4px; }
+
+      .healthbar-bg {
+        width: 280px; height: 22px; background: rgba(20,24,32,0.75);
+        border: 2px solid #2a3140; border-radius: 4px; overflow: hidden;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+      }
+      .healthbar-fill {
+        height: 100%; width: 100%;
+        background: linear-gradient(90deg, #e23b3b, #ff6b5e);
+        transition: width 0.15s ease-out;
+      }
+      .health-text { font-size: 13px; color: #e8edf4; margin-top: 4px; font-variant-numeric: tabular-nums; }
+
+      .score-value { font-size: 40px; font-weight: 700; color: #ffd84d; line-height: 1; text-shadow: 0 2px 12px rgba(255,200,40,0.4); font-variant-numeric: tabular-nums; }
+      .wave-value { font-size: 15px; color: #8fd0ff; margin-top: 6px; letter-spacing: 1px; }
+      .ammo-value { font-size: 14px; color: #cbd3df; margin-top: 8px; letter-spacing: 1px; font-variant-numeric: tabular-nums; }
+
+      /* crosshair */
+      #crosshair {
+        position: absolute; top: 50%; left: 50%; width: 22px; height: 22px;
+        transform: translate(-50%, -50%); pointer-events: none; opacity: 0.85;
+      }
+      #crosshair::before, #crosshair::after {
+        content: ""; position: absolute; background: #e8edf4; box-shadow: 0 0 3px rgba(0,0,0,0.8);
+      }
+      #crosshair::before { left: 50%; top: 0; width: 2px; height: 100%; transform: translateX(-50%); }
+      #crosshair::after { top: 50%; left: 0; height: 2px; width: 100%; transform: translateY(-50%); }
+
+      /* center messages */
+      #center-msg {
+        position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+        text-align: center; color: #fff;
+      }
+      #center-msg .big { font-size: 56px; font-weight: 800; letter-spacing: 2px; text-shadow: 0 4px 24px rgba(0,0,0,0.7); }
+      #center-msg .sub { font-size: 18px; color: #cbd3df; margin-top: 12px; }
+      #center-msg .hint { font-size: 14px; color: #8b94a3; margin-top: 22px; pointer-events: auto; }
+      #center-msg button {
+        pointer-events: auto; margin-top: 22px; padding: 12px 28px; font-size: 16px;
+        background: #ffd84d; color: #1a1d24; border: none; border-radius: 6px; cursor: pointer;
+        font-weight: 700; letter-spacing: 1px;
+      }
+      #center-msg button:hover { background: #ffe27a; }
+
+      .controls-hint {
+        position: absolute; bottom: 16px; left: 50%; transform: translateX(-50%);
+        font-size: 12px; color: #707a89; letter-spacing: 1px;
+        background: rgba(12,14,18,0.5); padding: 6px 14px; border-radius: 20px;
+      }
+
+      /* hit flash */
+      #damage-flash {
+        position: absolute; inset: 0; background: radial-gradient(circle, transparent 40%, rgba(200,30,30,0.0) 100%);
+        pointer-events: none; opacity: 0; transition: opacity 0.1s;
+      }
+      .hidden { display: none !important; }
+    </style>
+    <script type="module" crossorigin src="./assets/index-K7u4Yc3r.js"></script>
+  </head>
+  <body>
+    <canvas id="app"></canvas>
+    <div id="hud">
+      <div id="damage-flash"></div>
+      <div class="hud-topleft">
+        <div class="label">Health</div>
+        <div class="healthbar-bg"><div id="health-fill" class="healthbar-fill"></div></div>
+        <div id="health-text" class="health-text">100 / 100</div>
+      </div>
+      <div class="hud-topright">
+        <div class="label">Score</div>
+        <div id="score-value" class="score-value">0</div>
+        <div id="wave-value" class="wave-value">Wave 1</div>
+        <div id="ammo-value" class="ammo-value">Pistol 12/12</div>
+      </div>
+      <div id="crosshair"></div>
+      <div id="center-msg">
+        <div class="big">RONIN ARENA</div>
+        <div class="sub">Survive the waves of the fallen.</div>
+        <button id="start-btn">CLICK TO ENTER</button>
+        <div class="hint">WASD move &nbsp;·&nbsp; Mouse aim &nbsp;·&nbsp; Left-click shoot &nbsp;·&nbsp; F / Right-click slash &nbsp;·&nbsp; Space jump &nbsp;·&nbsp; R reload</div>
+      </div>
+      <div class="controls-hint">WASD move · mouse aim · LMB shoot · F slash · Space jump · R reload</div>
+    </div>
+  </body>
+</html>
