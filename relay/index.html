@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Relay — FP Checkpoint Runner</title>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 100%; height: 100%; overflow: hidden; background: #0b0e14; }
+      #app { position: fixed; inset: 0; }
+      canvas { display: block; }
+
+      /* ---- HUD ---- */
+      #hud {
+        position: fixed; inset: 0; pointer-events: none;
+        font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+        color: #e7ecf5; text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+      }
+      #timer {
+        position: absolute; top: 16px; left: 50%; transform: translateX(-50%);
+        font-size: 30px; font-weight: 700; letter-spacing: 1px;
+        font-variant-numeric: tabular-nums;
+      }
+      #progress {
+        position: absolute; top: 56px; left: 50%; transform: translateX(-50%);
+        font-size: 14px; color: #9fb0c8; letter-spacing: 2px;
+      }
+      #objective {
+        position: absolute; bottom: 22px; left: 50%; transform: translateX(-50%);
+        font-size: 15px; color: #ffd166; letter-spacing: 0.5px;
+      }
+      /* crosshair */
+      #crosshair {
+        position: absolute; top: 50%; left: 50%; width: 6px; height: 6px;
+        margin: -3px 0 0 -3px; border-radius: 50%;
+        background: rgba(255, 255, 255, 0.85);
+        box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.35);
+      }
+      /* overlays */
+      .overlay {
+        position: absolute; inset: 0; display: flex; flex-direction: column;
+        align-items: center; justify-content: center; gap: 14px;
+        background: rgba(8, 11, 18, 0.72); pointer-events: auto;
+        text-align: center; padding: 24px;
+      }
+      .overlay h1 { font-size: 40px; letter-spacing: 2px; }
+      .overlay p { font-size: 16px; color: #9fb0c8; max-width: 460px; line-height: 1.6; }
+      .overlay .big { font-size: 30px; color: #ffd166; font-weight: 700; }
+      .overlay button {
+        pointer-events: auto; margin-top: 8px; padding: 12px 28px;
+        font: inherit; font-size: 16px; font-weight: 700; letter-spacing: 1px;
+        color: #0b0e14; background: #ffd166; border: 0; border-radius: 8px;
+        cursor: pointer;
+      }
+      .overlay button:hover { background: #ffdd85; }
+      .hidden { display: none !important; }
+      kbd {
+        background: #1a2030; border: 1px solid #2c3650; border-radius: 4px;
+        padding: 1px 7px; font-size: 13px; color: #cdd7ea;
+      }
+    </style>
+    <script type="module" crossorigin src="./assets/index-WqSP5G7V.js"></script>
+  </head>
+  <body>
+    <div id="app"></div>
+    <div id="hud">
+      <div id="crosshair" class="hidden"></div>
+      <div id="timer" class="hidden">0.00</div>
+      <div id="progress" class="hidden"></div>
+      <div id="objective" class="hidden"></div>
+
+      <div id="start" class="overlay">
+        <h1>RELAY</h1>
+        <p>
+          First-person checkpoint runner. Touch all checkpoints
+          <b>in order</b>, then reach the green exit. Fastest time wins.
+        </p>
+        <p>
+          <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> move &nbsp;·&nbsp;
+          <kbd>Mouse</kbd> look &nbsp;·&nbsp; <kbd>Space</kbd> jump &nbsp;·&nbsp;
+          <kbd>R</kbd> restart &nbsp;·&nbsp; <kbd>Esc</kbd> release cursor
+        </p>
+        <button id="startBtn">CLICK TO PLAY</button>
+      </div>
+
+      <div id="win" class="overlay hidden">
+        <h1>FINISHED</h1>
+        <div class="big" id="winTime">0.00s</div>
+        <p>Press <kbd>R</kbd> or click to run it again.</p>
+        <button id="againBtn">RUN AGAIN</button>
+      </div>
+    </div>
+  </body>
+</html>
