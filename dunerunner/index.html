@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><text y='14' font-size='14'>%F0%9F%8F%9C</text></svg>" />
+    <title>Dunerunner</title>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 100%; height: 100%; overflow: hidden; background: #0a0a12; }
+      #app { width: 100vw; height: 100vh; }
+      canvas { display: block; }
+
+      #hud {
+        position: fixed;
+        left: 24px;
+        bottom: 24px;
+        font-family: "SF Mono", "Roboto Mono", Menlo, Consolas, monospace;
+        color: #fff;
+        pointer-events: none;
+        user-select: none;
+        text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+      }
+      #hud .speed {
+        font-size: 64px;
+        font-weight: 700;
+        line-height: 1;
+        letter-spacing: -2px;
+        font-variant-numeric: tabular-nums;
+      }
+      #hud .unit {
+        font-size: 20px;
+        font-weight: 500;
+        opacity: 0.7;
+        margin-left: 6px;
+      }
+      #hud .gear {
+        margin-top: 6px;
+        font-size: 14px;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        opacity: 0.55;
+      }
+
+      #help {
+        position: fixed;
+        right: 24px;
+        bottom: 24px;
+        font-family: "SF Mono", "Roboto Mono", Menlo, Consolas, monospace;
+        color: #fff;
+        opacity: 0.45;
+        font-size: 12px;
+        line-height: 1.6;
+        text-align: right;
+        pointer-events: none;
+        user-select: none;
+      }
+
+      #title {
+        position: fixed;
+        left: 24px;
+        top: 20px;
+        font-family: "SF Mono", "Roboto Mono", Menlo, Consolas, monospace;
+        color: #fff;
+        pointer-events: none;
+        user-select: none;
+      }
+      #title .name {
+        font-size: 22px;
+        font-weight: 700;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+      }
+      #title .sub {
+        font-size: 11px;
+        letter-spacing: 2px;
+        opacity: 0.5;
+        margin-top: 2px;
+      }
+    </style>
+    <script type="module" crossorigin src="./assets/index-DBlJaB5a.js"></script>
+  </head>
+  <body>
+    <div id="app"></div>
+    <div id="title">
+      <div class="name">Dunerunner</div>
+      <div class="sub">endless off-road</div>
+    </div>
+    <div id="hud">
+      <span class="speed" id="speed">0</span><span class="unit">km/h</span>
+      <div class="gear" id="gear">drive</div>
+    </div>
+    <div id="help">
+      W / &uarr;&nbsp;&nbsp;throttle<br />
+      S / &darr;&nbsp;&nbsp;brake / reverse<br />
+      A&nbsp;D / &larr;&rarr;&nbsp;&nbsp;steer
+    </div>
+  </body>
+</html>
