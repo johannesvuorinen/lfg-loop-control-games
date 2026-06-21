@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Strider — 3rd-person animated locomotion</title>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 100%; height: 100%; overflow: hidden; background: #0b0e14; }
+      #app { width: 100vw; height: 100vh; display: block; }
+      canvas { display: block; }
+
+      #hud {
+        position: fixed;
+        top: 16px;
+        left: 16px;
+        font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+        color: #e6edf3;
+        background: rgba(13, 17, 23, 0.72);
+        border: 1px solid rgba(110, 168, 254, 0.35);
+        border-radius: 10px;
+        padding: 12px 16px;
+        line-height: 1.55;
+        font-size: 13px;
+        backdrop-filter: blur(6px);
+        pointer-events: none;
+        user-select: none;
+        min-width: 210px;
+      }
+      #hud .title { font-weight: 700; letter-spacing: 0.5px; color: #6ea8fe; margin-bottom: 6px; }
+      #hud .state { font-size: 22px; font-weight: 700; color: #7ee787; margin: 2px 0 8px; }
+      #hud .row { display: flex; justify-content: space-between; gap: 18px; opacity: 0.92; }
+      #hud .row .k { color: #8b949e; }
+      #hud .bar { height: 6px; border-radius: 3px; background: rgba(255,255,255,0.12); margin-top: 3px; overflow: hidden; }
+      #hud .bar > i { display: block; height: 100%; background: linear-gradient(90deg,#3fb950,#d29922,#f85149); }
+      #hud .hint { margin-top: 10px; font-size: 11px; color: #8b949e; }
+
+      #loading {
+        position: fixed; inset: 0; display: flex; align-items: center; justify-content: center;
+        color: #e6edf3; font-family: ui-monospace, monospace; font-size: 15px; background: #0b0e14;
+        z-index: 10; transition: opacity 0.4s ease;
+      }
+    </style>
+    <script type="module" crossorigin src="./assets/index-BGLvuAgy.js"></script>
+  </head>
+  <body>
+    <canvas id="app"></canvas>
+    <div id="hud">
+      <div class="title">STRIDER</div>
+      <div class="state" id="hud-state">Idle</div>
+      <div class="row"><span class="k">speed</span><span id="hud-speed">0.00</span></div>
+      <div class="bar"><i id="hud-speedbar" style="width:0%"></i></div>
+      <div class="row" style="margin-top:6px"><span class="k">weights</span><span id="hud-weights">i100 w0 r0</span></div>
+      <div class="hint">WASD move &middot; Shift run &middot; Space action</div>
+    </div>
+    <div id="loading">Loading character &amp; animation clips&hellip;</div>
+  </body>
+</html>
