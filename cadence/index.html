@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cadence — 4-lane rhythm</title>
+    <style>
+      :root {
+        --bg: #07080f;
+        --fg: #e8ecff;
+        --dim: #8a90b8;
+        --accent: #4be3d1;
+      }
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      html, body {
+        width: 100%;
+        height: 100%;
+        background: var(--bg);
+        color: var(--fg);
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        overflow: hidden;
+      }
+      #app { position: fixed; inset: 0; }
+      canvas { display: block; }
+
+      /* ---- HUD (DOM overlay over the three.js canvas) ---- */
+      #hud {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        user-select: none;
+      }
+      .hud-top {
+        position: absolute;
+        top: 18px;
+        left: 0;
+        right: 0;
+        display: flex;
+        justify-content: space-between;
+        padding: 0 28px;
+      }
+      .stat { text-align: center; }
+      .stat .label {
+        font-size: 11px;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: var(--dim);
+      }
+      .stat .value {
+        font-size: 30px;
+        font-weight: 700;
+        font-variant-numeric: tabular-nums;
+      }
+      #combo-wrap { text-align: center; }
+      #combo {
+        font-size: 52px;
+        font-weight: 800;
+        color: var(--accent);
+        text-shadow: 0 0 18px rgba(75, 227, 209, 0.5);
+        line-height: 1;
+      }
+      #combo-label {
+        font-size: 12px;
+        letter-spacing: 3px;
+        color: var(--dim);
+        text-transform: uppercase;
+      }
+      #judgement {
+        position: absolute;
+        top: 46%;
+        left: 0;
+        right: 0;
+        text-align: center;
+        font-size: 40px;
+        font-weight: 800;
+        opacity: 0;
+        transition: opacity 0.08s ease-out;
+        text-shadow: 0 0 20px currentColor;
+      }
+      .title-screen, .end-screen {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background: rgba(7, 8, 15, 0.86);
+        backdrop-filter: blur(3px);
+        gap: 14px;
+        pointer-events: auto;
+      }
+      .hidden { display: none !important; }
+      h1 {
+        font-size: 64px;
+        font-weight: 900;
+        letter-spacing: 6px;
+        background: linear-gradient(90deg, #4be3d1, #7c6cff);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+      }
+      .sub { color: var(--dim); font-size: 16px; letter-spacing: 1px; }
+      .keys { display: flex; gap: 12px; margin-top: 10px; }
+      .key {
+        width: 52px; height: 52px;
+        border: 2px solid var(--dim);
+        border-radius: 10px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 22px; font-weight: 700;
+      }
+      .cta {
+        margin-top: 22px;
+        font-size: 18px;
+        color: var(--accent);
+        border: 2px solid var(--accent);
+        border-radius: 999px;
+        padding: 12px 30px;
+        font-weight: 700;
+      }
+      .end-grid {
+        display: grid;
+        grid-template-columns: auto auto;
+        gap: 8px 32px;
+        margin: 8px 0 4px;
+        font-size: 20px;
+      }
+      .end-grid .k { color: var(--dim); text-align: right; }
+      .end-grid .v { font-weight: 700; font-variant-numeric: tabular-nums; }
+      .rank { font-size: 92px; font-weight: 900; color: var(--accent); text-shadow: 0 0 30px rgba(75,227,209,0.6); }
+    </style>
+    <script type="module" crossorigin src="./assets/index-D6WuupLA.js"></script>
+  </head>
+  <body>
+    <div id="app"></div>
+    <div id="hud">
+      <div class="hud-top">
+        <div class="stat"><div class="label">Score</div><div class="value" id="score">0</div></div>
+        <div id="combo-wrap"><div id="combo"></div><div id="combo-label"></div></div>
+        <div class="stat"><div class="label">Accuracy</div><div class="value" id="accuracy">100%</div></div>
+      </div>
+      <div id="judgement"></div>
+
+      <div class="title-screen" id="title">
+        <h1>CADENCE</h1>
+        <div class="sub">A 4-lane note-highway rhythm game · 120 BPM</div>
+        <div class="keys">
+          <div class="key">D</div><div class="key">F</div><div class="key">J</div><div class="key">K</div>
+        </div>
+        <div class="sub">Hit each note as it crosses the line</div>
+        <div class="cta" id="start-cta">Press SPACE / click to start</div>
+      </div>
+
+      <div class="end-screen hidden" id="end">
+        <div class="sub">SONG COMPLETE</div>
+        <div class="rank" id="rank">S</div>
+        <div class="end-grid">
+          <div class="k">Score</div><div class="v" id="end-score">0</div>
+          <div class="k">Max Combo</div><div class="v" id="end-combo">0</div>
+          <div class="k">Accuracy</div><div class="v" id="end-acc">0%</div>
+          <div class="k">Perfect</div><div class="v" id="end-perfect">0</div>
+          <div class="k">Good</div><div class="v" id="end-good">0</div>
+          <div class="k">Miss</div><div class="v" id="end-miss">0</div>
+        </div>
+        <div class="cta" id="restart-cta">Press R to restart</div>
+      </div>
+    </div>
+  </body>
+</html>
