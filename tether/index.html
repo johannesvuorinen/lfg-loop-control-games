@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tether — cross the swaying bridge</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { width: 100%; height: 100%; overflow: hidden; background: #0b1020; font-family: -apple-system, system-ui, sans-serif; }
+    #app { width: 100vw; height: 100vh; display: block; }
+    #hud {
+      position: fixed; top: 0; left: 0; width: 100%; padding: 14px 18px;
+      color: #e8eefc; pointer-events: none; user-select: none; z-index: 10;
+      text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+    }
+    #title { font-size: 15px; font-weight: 700; letter-spacing: 0.5px; opacity: 0.9; }
+    #help  { font-size: 12px; opacity: 0.6; margin-top: 2px; }
+    #progress-wrap {
+      position: fixed; bottom: 22px; left: 50%; transform: translateX(-50%);
+      width: 340px; height: 10px; background: rgba(255,255,255,0.12);
+      border-radius: 6px; overflow: hidden; z-index: 10; pointer-events: none;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.15);
+    }
+    #progress-bar { height: 100%; width: 0%; background: linear-gradient(90deg,#37d6a0,#5ad1ff); transition: width 0.1s linear; }
+    #progress-label {
+      position: fixed; bottom: 36px; left: 50%; transform: translateX(-50%);
+      color: #cfe; font-size: 11px; z-index: 10; pointer-events: none; opacity: 0.8;
+    }
+    #banner {
+      position: fixed; top: 50%; left: 50%; transform: translate(-50%,-50%);
+      z-index: 20; text-align: center; pointer-events: none; opacity: 0;
+      transition: opacity 0.25s ease;
+    }
+    #banner.show { opacity: 1; }
+    #banner h1 { font-size: 54px; font-weight: 800; letter-spacing: 1px; }
+    #banner.win  h1 { color: #5ff0b5; text-shadow: 0 0 24px rgba(95,240,181,0.6); }
+    #banner.lose h1 { color: #ff7a7a; text-shadow: 0 0 24px rgba(255,122,122,0.5); }
+    #banner p { margin-top: 8px; font-size: 16px; color: #dde; opacity: 0.85; }
+  </style>
+  <script type="module" crossorigin src="./assets/index-CHu3XMmq.js"></script>
+</head>
+<body>
+  <canvas id="app"></canvas>
+  <div id="hud">
+    <div id="title">TETHER — reach the far platform</div>
+    <div id="help">WASD / arrows move · SPACE jump · R restart · avoid the swinging pendulums &amp; don't fall</div>
+  </div>
+  <div id="progress-label">PROGRESS</div>
+  <div id="progress-wrap"><div id="progress-bar"></div></div>
+  <div id="banner"><h1></h1><p></p></div>
+</body>
+</html>
