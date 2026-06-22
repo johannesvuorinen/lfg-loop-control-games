@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Reverse — rewind time to solve the hazard run</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { width: 100%; height: 100%; overflow: hidden; background: #0b0d12; }
+    #app { position: fixed; inset: 0; }
+    canvas { display: block; }
+
+    /* HUD */
+    #hud {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+      color: #e7ecf3;
+      user-select: none;
+    }
+    .panel {
+      position: absolute;
+      background: rgba(14, 18, 26, 0.62);
+      border: 1px solid rgba(120, 160, 220, 0.25);
+      border-radius: 10px;
+      padding: 10px 14px;
+      backdrop-filter: blur(6px);
+    }
+    #top-left { top: 16px; left: 16px; line-height: 1.55; font-size: 13px; }
+    #top-left b { color: #8fd0ff; }
+    #top-left .key {
+      display: inline-block; min-width: 20px; text-align: center;
+      padding: 1px 6px; margin: 0 1px;
+      background: rgba(143, 208, 255, 0.14);
+      border: 1px solid rgba(143, 208, 255, 0.3);
+      border-radius: 5px; font-size: 12px;
+    }
+
+    /* Rewind charge bar */
+    #charge-wrap { bottom: 26px; left: 50%; transform: translateX(-50%); width: 360px; padding: 12px 16px; }
+    #charge-label { font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: #9fb2cc; margin-bottom: 7px; display: flex; justify-content: space-between; }
+    #charge-track { height: 12px; border-radius: 6px; background: rgba(255,255,255,0.08); overflow: hidden; position: relative; }
+    #charge-fill { height: 100%; width: 100%; border-radius: 6px;
+      background: linear-gradient(90deg, #2f6df6, #5fa8ff); transition: width 0.05s linear; }
+    #charge-wrap.rewinding #charge-fill { background: linear-gradient(90deg, #ff6a3d, #ffd23d); }
+
+    /* Status / win banner */
+    #status { top: 16px; left: 50%; transform: translateX(-50%); text-align: center; font-size: 14px; letter-spacing: 0.1em; }
+    #status.rewind { color: #ffd23d; border-color: rgba(255, 210, 61, 0.5); }
+    #win {
+      position: absolute; inset: 0; display: none;
+      align-items: center; justify-content: center; flex-direction: column;
+      background: rgba(8, 11, 16, 0.55); backdrop-filter: blur(3px);
+    }
+    #win.show { display: flex; }
+    #win h1 { font-size: 54px; letter-spacing: 0.06em; color: #7CFFB2; text-shadow: 0 0 28px rgba(124,255,178,0.5); }
+    #win p { margin-top: 14px; font-size: 15px; color: #cfe0f0; }
+    #flash {
+      position: absolute; inset: 0; background: radial-gradient(circle at center, rgba(255,210,61,0.10), transparent 60%);
+      opacity: 0; transition: opacity 0.12s ease; pointer-events: none;
+    }
+    #flash.on { opacity: 1; }
+  </style>
+  <script type="module" crossorigin src="./assets/index-BFQqZ7k6.js"></script>
+</head>
+<body>
+  <div id="app"></div>
+  <div id="hud">
+    <div id="flash"></div>
+    <div class="panel" id="top-left">
+      <div><b>REVERSE</b> — reach the green goal pad</div>
+      <div><span class="key">W</span><span class="key">A</span><span class="key">S</span><span class="key">D</span> move &nbsp; <span class="key">⎵</span> jump</div>
+      <div>Hold <span class="key">R</span> to <b>rewind time</b> &middot; release to resume</div>
+    </div>
+    <div class="panel" id="status">FORWARD</div>
+    <div class="panel" id="charge-wrap">
+      <div id="charge-label"><span>REWIND CHARGE</span><span id="charge-secs">0.0s</span></div>
+      <div id="charge-track"><div id="charge-fill"></div></div>
+    </div>
+    <div id="win">
+      <h1>GOAL REACHED</h1>
+      <p>You bent time to beat the hazard run. Press <span style="color:#8fd0ff">Enter</span> to reset.</p>
+    </div>
+  </div>
+</body>
+</html>
