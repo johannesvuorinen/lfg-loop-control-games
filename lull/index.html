@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LULL — bullet-time arena</title>
+    <style>
+      :root {
+        color-scheme: dark;
+      }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 100%; height: 100%; overflow: hidden; background: #05060a; }
+      #app { position: fixed; inset: 0; }
+      canvas { display: block; }
+
+      /* ---------- HUD ---------- */
+      #hud {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+        color: #e8ecff;
+        user-select: none;
+      }
+      #hud .corner {
+        position: absolute;
+        padding: 14px 18px;
+      }
+      #topleft { top: 0; left: 0; }
+      #topright { top: 0; right: 0; text-align: right; }
+
+      .stat { font-size: 13px; letter-spacing: 0.12em; text-transform: uppercase; opacity: 0.7; }
+      .big { font-size: 30px; font-weight: 700; letter-spacing: 0.04em; line-height: 1.05; }
+      #score .big { color: #9ff7e0; }
+      #health .big { color: #ff9ab0; }
+
+      /* slow-mo energy meter */
+      #meterWrap {
+        position: fixed;
+        left: 50%;
+        bottom: 26px;
+        transform: translateX(-50%);
+        width: min(440px, 70vw);
+        text-align: center;
+      }
+      #meterLabel {
+        font-size: 12px;
+        letter-spacing: 0.35em;
+        text-transform: uppercase;
+        opacity: 0.6;
+        margin-bottom: 7px;
+      }
+      #meterTrack {
+        height: 10px;
+        border-radius: 6px;
+        background: rgba(120, 140, 200, 0.16);
+        overflow: hidden;
+        box-shadow: inset 0 0 0 1px rgba(150, 180, 255, 0.18);
+      }
+      #meterFill {
+        height: 100%;
+        width: 100%;
+        border-radius: 6px;
+        background: linear-gradient(90deg, #36e0c4, #5aa6ff);
+        transition: background 0.2s ease;
+      }
+      #meterFill.empty { background: linear-gradient(90deg, #ff6a6a, #ff9a5a); }
+
+      /* SLOW-MO banner */
+      #slowmo {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) scale(0.9);
+        font-size: clamp(40px, 11vw, 140px);
+        font-weight: 800;
+        letter-spacing: 0.18em;
+        color: rgba(150, 215, 255, 0.10);
+        text-shadow: 0 0 60px rgba(90, 170, 255, 0.35);
+        opacity: 0;
+        transition: opacity 0.18s ease, transform 0.18s ease;
+        pointer-events: none;
+        white-space: nowrap;
+      }
+      #slowmo.on { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+
+      /* vignette tint that fades in during slow-mo */
+      #tint {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity 0.2s ease;
+        background:
+          radial-gradient(120% 90% at 50% 50%, transparent 40%, rgba(20, 60, 130, 0.35) 100%);
+        mix-blend-mode: screen;
+      }
+      #tint.on { opacity: 1; }
+
+      /* help / hint line */
+      #hint {
+        position: fixed;
+        bottom: 64px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 12px;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        opacity: 0.45;
+        text-align: center;
+      }
+      kbd {
+        font-family: inherit;
+        background: rgba(150, 180, 255, 0.14);
+        border: 1px solid rgba(160, 190, 255, 0.25);
+        border-radius: 5px;
+        padding: 1px 7px;
+        font-size: 11px;
+      }
+
+      /* game over */
+      #over {
+        position: fixed;
+        inset: 0;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        background: rgba(5, 6, 12, 0.7);
+        backdrop-filter: blur(3px);
+        pointer-events: auto;
+      }
+      #over.show { display: flex; }
+      #over h1 { font-size: 64px; letter-spacing: 0.1em; color: #ff9ab0; font-weight: 800; }
+      #over p { margin-top: 12px; opacity: 0.75; letter-spacing: 0.1em; }
+      #over button {
+        margin-top: 26px;
+        font: inherit;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        padding: 12px 30px;
+        border-radius: 8px;
+        border: 1px solid rgba(160, 190, 255, 0.35);
+        background: rgba(90, 170, 255, 0.16);
+        color: #e8ecff;
+        cursor: pointer;
+      }
+      #over button:hover { background: rgba(90, 170, 255, 0.3); }
+    </style>
+    <script type="module" crossorigin src="./assets/index-QUfnN68c.js"></script>
+  </head>
+  <body>
+    <div id="app"></div>
+
+    <div id="hud">
+      <div id="topleft" class="corner">
+        <div id="score">
+          <div class="stat">Score</div>
+          <div class="big" data-score>0</div>
+        </div>
+      </div>
+      <div id="topright" class="corner">
+        <div id="health">
+          <div class="stat">Hull</div>
+          <div class="big" data-health>100</div>
+        </div>
+      </div>
+
+      <div id="slowmo">SLOW-MO</div>
+      <div id="tint"></div>
+
+      <div id="hint">
+        <kbd>WASD</kbd> move &nbsp;·&nbsp; <kbd>Mouse</kbd> aim &nbsp;·&nbsp;
+        <kbd>Click</kbd> fire &nbsp;·&nbsp; <kbd>Shift</kbd> / <kbd>Space</kbd> slow-mo
+      </div>
+
+      <div id="meterWrap">
+        <div id="meterLabel">Time Reserve</div>
+        <div id="meterTrack"><div id="meterFill"></div></div>
+      </div>
+    </div>
+
+    <div id="over">
+      <h1>FLATLINE</h1>
+      <p data-finalscore>Score: 0</p>
+      <button id="restart">Restart</button>
+    </div>
+
+  </body>
+</html>
