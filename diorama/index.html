@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Diorama — three.js build-a-scene</title>
+    <link rel="icon" href="data:," />
+
+    <style>
+      html,
+      body {
+        margin: 0;
+        height: 100%;
+        overflow: hidden;
+        background: #1a1d23;
+        font-family: system-ui, sans-serif;
+        color: #e8e8ec;
+      }
+      #app {
+        width: 100vw;
+        height: 100vh;
+        display: block;
+      }
+      #hud {
+        position: fixed;
+        left: 16px;
+        bottom: 16px;
+        font-size: 13px;
+        line-height: 1.5;
+        background: rgba(0, 0, 0, 0.35);
+        padding: 10px 14px;
+        border-radius: 8px;
+        backdrop-filter: blur(4px);
+        pointer-events: none;
+      }
+      #hud b {
+        color: #ffd479;
+      }
+      #title {
+        position: fixed;
+        left: 16px;
+        top: 14px;
+        font-size: 18px;
+        font-weight: 600;
+        letter-spacing: 0.3px;
+        text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+      }
+    </style>
+    <script type="module" crossorigin src="./assets/index-BAp5dpXz.js"></script>
+  </head>
+  <body>
+    <canvas id="app"></canvas>
+    <div id="title">Diorama</div>
+    <div id="hud">
+      <span id="selname">—</span><br />
+      <b>←/→</b> cycle prop &nbsp;·&nbsp; selected prop lifts &amp; glows
+    </div>
+  </body>
+</html>
