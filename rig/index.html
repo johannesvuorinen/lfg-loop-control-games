@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><text y='14' font-size='14'>🪡</text></svg>" />
+    <title>Rig — wind-blown rigging</title>
+    <style>
+      :root { color-scheme: dark; }
+      html, body { margin: 0; height: 100%; overflow: hidden; background: #0e1418; }
+      #app { position: fixed; inset: 0; }
+      canvas { display: block; }
+      #hud {
+        position: fixed; left: 14px; top: 12px; z-index: 10;
+        font: 13px/1.45 ui-monospace, SFMono-Regular, Menlo, monospace;
+        color: #cfe3ea; text-shadow: 0 1px 2px #000a; pointer-events: none;
+        max-width: 320px;
+      }
+      #hud b { color: #ffd27a; }
+      #hud .key {
+        display: inline-block; padding: 0 5px; border: 1px solid #5e7079;
+        border-radius: 4px; background: #1c262c; color: #e8f2f6;
+      }
+      #title { font-size: 16px; color: #ffd27a; margin-bottom: 6px; letter-spacing: .04em; }
+      #gust {
+        position: fixed; left: 50%; top: 18px; transform: translateX(-50%);
+        z-index: 10; font: 600 14px ui-monospace, monospace; color: #9fe0ff;
+        opacity: 0; transition: opacity .25s; text-shadow: 0 1px 3px #000;
+        pointer-events: none;
+      }
+      #gust.on { opacity: 1; }
+    </style>
+    <script type="module" crossorigin src="./assets/index-CyUoaWoS.js"></script>
+  </head>
+  <body>
+    <div id="app"></div>
+    <div id="hud">
+      <div id="title">RIG · wind-blown rigging</div>
+      <div><b>Click a rope</b> to cut it — the crate drops &amp; the rope whips.</div>
+      <div>Press <span class="key">G</span> for a wind <b>gust</b> (banners billow).</div>
+      <div>Drag to orbit · scroll to zoom.</div>
+    </div>
+    <div id="gust">⟿ WIND GUST ⟿</div>
+  </body>
+</html>
