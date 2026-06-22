@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Lob — artillery with predicted arc</title>
+    <style>
+      :root { color-scheme: dark; }
+      html, body { margin: 0; height: 100%; overflow: hidden; background: #0b1020; }
+      #app { position: fixed; inset: 0; }
+      canvas { display: block; }
+
+      #hud {
+        position: fixed;
+        top: 14px;
+        left: 14px;
+        font: 13px/1.45 ui-monospace, SFMono-Regular, Menlo, monospace;
+        color: #e8eefc;
+        text-shadow: 0 1px 2px rgba(0,0,0,0.8);
+        pointer-events: none;
+        user-select: none;
+      }
+      #hud .title { font-size: 18px; font-weight: 700; letter-spacing: 0.5px; margin-bottom: 8px; }
+      #hud .row { margin: 2px 0; }
+      #hud .k { color: #8fa6d8; }
+      #hud .v { color: #ffd166; font-weight: 700; }
+      #hud .remaining { color: #7CFFB2; font-weight: 700; }
+      #hud .hint { margin-top: 10px; color: #6b7ba6; font-size: 12px; }
+
+      #win {
+        position: fixed;
+        inset: 0;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        font: 700 42px/1.2 ui-sans-serif, system-ui, sans-serif;
+        color: #7CFFB2;
+        text-shadow: 0 2px 12px rgba(0,0,0,0.9);
+        pointer-events: none;
+      }
+    </style>
+    <script type="module" crossorigin src="./assets/index-DzRV7nQk.js"></script>
+  </head>
+  <body>
+    <div id="app"></div>
+    <div id="hud">
+      <div class="title">LOB</div>
+      <div class="row"><span class="k">angle</span> <span class="v" id="hud-angle">45.0°</span></div>
+      <div class="row"><span class="k">power</span> <span class="v" id="hud-power">18.0</span></div>
+      <div class="row"><span class="k">yaw</span>   <span class="v" id="hud-yaw">0.0°</span></div>
+      <div class="row"><span class="k">targets</span> <span class="remaining" id="hud-remaining">5 / 5</span></div>
+      <div class="hint">
+        ← → yaw &nbsp;·&nbsp; ↑ ↓ angle &nbsp;·&nbsp; W/S power &nbsp;·&nbsp; SPACE fire &nbsp;·&nbsp; R reset
+      </div>
+    </div>
+    <div id="win">ALL TARGETS DOWN</div>
+  </body>
+</html>
