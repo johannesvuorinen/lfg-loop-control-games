@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Creep — stealth with vision cones</title>
+    <style>
+      :root { color-scheme: dark; }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { height: 100%; background: #0a0d12; overflow: hidden; font-family: ui-monospace, "SF Mono", Menlo, monospace; }
+      #app { position: fixed; inset: 0; }
+      canvas { display: block; }
+
+      #hud {
+        position: fixed; top: 14px; left: 14px; z-index: 10;
+        color: #cfe3ff; font-size: 13px; line-height: 1.5;
+        text-shadow: 0 1px 3px rgba(0,0,0,0.9);
+        pointer-events: none; user-select: none;
+      }
+      #hud b { color: #fff; }
+      #status {
+        display: inline-block; margin-top: 6px; padding: 3px 10px;
+        border-radius: 999px; font-weight: 700; letter-spacing: 0.5px;
+      }
+      .ok    { background: rgba(40,200,120,0.18); color: #5fe39a; border: 1px solid rgba(95,227,154,0.5); }
+      .seen  { background: rgba(240,70,70,0.22);  color: #ff8a8a; border: 1px solid rgba(255,120,120,0.6); }
+      .won   { background: rgba(90,160,255,0.22);  color: #9fc4ff; border: 1px solid rgba(120,170,255,0.6); }
+
+      #banner {
+        position: fixed; inset: 0; z-index: 20; display: none;
+        align-items: center; justify-content: center; flex-direction: column;
+        text-align: center; pointer-events: none;
+      }
+      #banner.show { display: flex; }
+      #banner h1 { font-size: 54px; letter-spacing: 2px; }
+      #banner p  { margin-top: 8px; font-size: 15px; color: #b8c6da; }
+      #banner.caught h1 { color: #ff6b6b; }
+      #banner.win    h1 { color: #8fb6ff; }
+      #hint { margin-top: 10px; font-size: 12px; color: #7d8aa0; }
+    </style>
+    <script type="module" crossorigin src="./assets/index-BoD9DWQb.js"></script>
+  </head>
+  <body>
+    <div id="app"></div>
+    <div id="hud">
+      <div><b>CREEP</b> — sneak to the green exit. Avoid the cones.</div>
+      <div>WASD / arrows to move &nbsp;·&nbsp; Shift = sprint &nbsp;·&nbsp; R = restart</div>
+      <div id="status" class="ok">UNDETECTED</div>
+    </div>
+    <div id="banner">
+      <h1></h1>
+      <p></p>
+      <div id="hint">press <b>R</b> to retry</div>
+    </div>
+  </body>
+</html>
