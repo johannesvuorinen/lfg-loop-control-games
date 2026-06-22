@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Range</title>
+    <style>
+      :root { color-scheme: dark; }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 100%; height: 100%; overflow: hidden; background: #0a0e14; }
+      #app { width: 100vw; height: 100vh; display: block; }
+      canvas { display: block; }
+
+      #hud {
+        position: fixed;
+        top: 14px;
+        left: 14px;
+        font-family: ui-monospace, "SF Mono", Menlo, monospace;
+        font-size: 13px;
+        line-height: 1.5;
+        color: #d7e3ee;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+        pointer-events: none;
+        user-select: none;
+      }
+      #hud .title { font-size: 18px; font-weight: 700; letter-spacing: 0.06em; color: #ffd479; }
+      #hud .dist { color: #9fe6a0; }
+      #hud .keys { margin-top: 6px; color: #8aa0b4; font-size: 12px; }
+
+      #goal-banner {
+        position: fixed;
+        inset: 0;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        font-family: ui-monospace, "SF Mono", Menlo, monospace;
+        color: #fff;
+        background: radial-gradient(ellipse at center, rgba(255, 212, 121, 0.18), rgba(10, 14, 20, 0.55));
+        pointer-events: none;
+        text-align: center;
+      }
+      #goal-banner.show { display: flex; }
+      #goal-banner .big { font-size: 44px; font-weight: 800; color: #ffd479; letter-spacing: 0.08em; }
+      #goal-banner .sub { margin-top: 10px; font-size: 15px; color: #cfe; }
+    </style>
+    <script type="module" crossorigin src="./assets/index-D-zwFBhA.js"></script>
+  </head>
+  <body>
+    <canvas id="app"></canvas>
+    <div id="hud">
+      <div class="title">RANGE</div>
+      <div>dist to beacon: <span class="dist" id="dist">—</span> m</div>
+      <div>height (rover / terrain): <span id="height">—</span></div>
+      <div class="keys">WASD / arrows to drive &nbsp;·&nbsp; Space to hop &nbsp;·&nbsp; R to reset</div>
+    </div>
+    <div id="goal-banner">
+      <div class="big">BEACON REACHED</div>
+      <div class="sub">press R to roam again</div>
+    </div>
+  </body>
+</html>
