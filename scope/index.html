@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Scope — Long-Range Target Range</title>
+    <style>
+      :root { color-scheme: dark; }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 100%; height: 100%; overflow: hidden; background: #0a0d12; }
+      #app { position: fixed; inset: 0; }
+      canvas { display: block; }
+
+      #hud {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+        color: #e7eef6;
+        text-shadow: 0 1px 2px rgba(0,0,0,0.8);
+      }
+      #stats {
+        position: absolute;
+        top: 16px;
+        left: 18px;
+        font-size: 15px;
+        line-height: 1.5;
+        letter-spacing: 0.3px;
+      }
+      #stats .score { font-size: 26px; font-weight: 700; color: #ffd35c; }
+      #stats .row { opacity: 0.92; }
+      #stats b { color: #7fe3ff; }
+
+      #mode {
+        position: absolute;
+        top: 16px;
+        right: 18px;
+        text-align: right;
+        font-size: 13px;
+        line-height: 1.6;
+        opacity: 0.85;
+      }
+      #mode .scoped { color: #87ff9e; font-weight: 700; }
+
+      #help {
+        position: absolute;
+        bottom: 14px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 13px;
+        opacity: 0.72;
+        text-align: center;
+        white-space: nowrap;
+      }
+      #help kbd {
+        background: rgba(255,255,255,0.12);
+        border: 1px solid rgba(255,255,255,0.22);
+        border-radius: 4px;
+        padding: 1px 6px;
+        font-size: 12px;
+      }
+
+      /* center crosshair shown only when NOT scoped (hip-fire) */
+      #hipcross {
+        position: absolute;
+        left: 50%; top: 50%;
+        width: 26px; height: 26px;
+        transform: translate(-50%, -50%);
+        opacity: 0.8;
+      }
+      #hipcross::before, #hipcross::after {
+        content: ""; position: absolute; background: #d6f4ff;
+      }
+      #hipcross::before { left: 50%; top: 0; width: 2px; height: 100%; transform: translateX(-50%); }
+      #hipcross::after  { top: 50%; left: 0; height: 2px; width: 100%; transform: translateY(-50%); }
+
+      #overlay {
+        position: fixed; inset: 0;
+        display: flex; align-items: center; justify-content: center;
+        background: radial-gradient(circle at 50% 40%, rgba(20,28,40,0.65), rgba(6,9,13,0.92));
+        pointer-events: auto;
+        cursor: pointer;
+        z-index: 10;
+      }
+      #overlay .card {
+        text-align: center;
+        font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+        color: #e7eef6;
+        padding: 30px 42px;
+        border: 1px solid rgba(120,170,220,0.25);
+        border-radius: 14px;
+        background: rgba(12,18,26,0.55);
+        backdrop-filter: blur(3px);
+        max-width: 540px;
+      }
+      #overlay h1 { font-size: 30px; letter-spacing: 4px; margin-bottom: 6px; color: #ffd35c; }
+      #overlay p { font-size: 14px; line-height: 1.7; opacity: 0.9; margin-top: 10px; }
+      #overlay .go { margin-top: 22px; font-size: 15px; color: #87ff9e; font-weight: 700; }
+      #overlay small { opacity: 0.6; }
+    </style>
+    <script type="module" crossorigin src="./assets/index-BPwC_3k7.js"></script>
+  </head>
+  <body>
+    <div id="app"></div>
+
+    <div id="hud" aria-hidden="true">
+      <div id="stats">
+        <div class="score">SCORE <span id="score">0</span></div>
+        <div class="row">Hits <b id="hits">0</b> / Shots <b id="shots">0</b></div>
+        <div class="row">Acc <b id="acc">—</b></div>
+      </div>
+      <div id="mode">
+        <div id="modeLabel">HIP FIRE</div>
+        <div>FOV <span id="fov">—</span>°</div>
+      </div>
+      <div id="hipcross"></div>
+      <div id="help">
+        <kbd>Move mouse</kbd> aim &nbsp;·&nbsp; <kbd>RMB</kbd>/<kbd>Shift</kbd> scope &nbsp;·&nbsp; <kbd>LMB</kbd>/<kbd>Space</kbd> fire &nbsp;·&nbsp; <kbd>Wheel</kbd> zoom
+      </div>
+    </div>
+
+    <div id="overlay">
+      <div class="card">
+        <h1>S C O P E</h1>
+        <p>A long-range target range. Aim down the scope for a real magnified
+           picture-in-picture view rendered by a second camera, and pick off
+           distant targets.</p>
+        <p><small>Hold <b>Right-Mouse</b> (or <b>Shift</b>) to scope · <b>Left-Mouse</b> / <b>Space</b> to fire</small></p>
+        <div class="go">Click to start</div>
+      </div>
+    </div>
+
+  </body>
+</html>
