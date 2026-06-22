@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Stash — loot &amp; drag-drop inventory</title>
+    <script type="module" crossorigin src="./assets/index-BrZD2yWF.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-VSzPA1Eh.css">
+  </head>
+  <body>
+    <div id="app">
+      <canvas id="scene"></canvas>
+
+      <!-- HUD over the canvas -->
+      <div id="hud">
+        <div id="hint">
+          <b>Stash</b> — WASD / arrows to move. Walk over loot to pick it up.
+          Drag items between slots, onto <span class="tag equip">EQUIP</span> or
+          <span class="tag trash">TRASH</span>.
+        </div>
+        <div id="status"></div>
+      </div>
+
+      <!-- Inventory panel: plain DOM over the WebGL canvas -->
+      <div id="panel">
+        <div class="panel-title">INVENTORY</div>
+        <div id="grid" class="grid" aria-label="inventory grid"></div>
+
+        <div class="special-row">
+          <div class="special-slot equip" data-special="equip">
+            <div class="special-label">EQUIP</div>
+          </div>
+          <div class="special-slot trash" data-special="trash">
+            <div class="special-label">TRASH</div>
+          </div>
+        </div>
+
+        <div id="equipped" class="equipped">Equipped: <span>—</span></div>
+      </div>
+    </div>
+
+    <!-- Floating drag image follows the pointer (pointer-events DnD) -->
+    <div id="drag-ghost" class="drag-ghost" aria-hidden="true"></div>
+
+  </body>
+</html>
