@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Wisp</title>
+    <style>
+      :root { color-scheme: dark; }
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      html, body { width: 100%; height: 100%; overflow: hidden; background: #05060a; }
+      #app { position: fixed; inset: 0; }
+      canvas { display: block; }
+
+      #hint {
+        position: fixed; left: 50%; bottom: 18px; transform: translateX(-50%);
+        font: 13px/1.4 ui-monospace, "SF Mono", Menlo, monospace;
+        color: #9fb3c8; letter-spacing: .04em; text-align: center;
+        pointer-events: none; text-shadow: 0 1px 3px rgba(0,0,0,.8);
+        opacity: .85;
+      }
+
+      /* ---- Dialogue box: a DOM/HTML overlay div ---- */
+      #dialogue {
+        position: fixed; left: 50%; bottom: 56px; transform: translateX(-50%);
+        width: min(620px, calc(100vw - 48px));
+        background: linear-gradient(180deg, rgba(12,16,28,.92), rgba(8,10,20,.96));
+        border: 1px solid rgba(120,160,220,.35);
+        border-radius: 12px;
+        box-shadow: 0 12px 40px rgba(0,0,0,.55), 0 0 0 1px rgba(0,0,0,.4) inset,
+                    0 0 28px rgba(80,140,255,.10);
+        padding: 18px 20px 16px;
+        color: #e8eef7;
+        font: 17px/1.55 ui-rounded, "Segoe UI", system-ui, sans-serif;
+        display: none;
+        backdrop-filter: blur(3px);
+      }
+      #dialogue.open { display: block; }
+      #speaker {
+        font: 600 12px/1 ui-monospace, monospace; letter-spacing: .12em;
+        text-transform: uppercase; color: #7fc8ff; margin-bottom: 8px;
+        text-shadow: 0 0 10px rgba(80,160,255,.5);
+      }
+      /* The key line for word-wrap: normal wrapping, the browser breaks on
+         whitespace only, never mid-word. Fixed box width => automatic wrap. */
+      #text {
+        min-height: 3.1em; white-space: normal; overflow-wrap: normal;
+        word-break: normal; hyphens: none;
+      }
+      /* The typewriter caret */
+      #text .caret {
+        display: inline-block; width: .55ch; margin-left: 1px;
+        background: #cfe2ff; color: transparent;
+        animation: blink 1s steps(1) infinite; border-radius: 1px;
+      }
+      @keyframes blink { 50% { opacity: 0; } }
+
+      #choices { margin-top: 12px; display: none; flex-direction: column; gap: 4px; }
+      #choices.show { display: flex; }
+      .choice {
+        padding: 7px 12px; border-radius: 8px; color: #b9c8db;
+        border: 1px solid transparent; cursor: default;
+        transition: background .08s, color .08s, border-color .08s;
+      }
+      .choice .arrow { opacity: 0; margin-right: 8px; color: #7fc8ff; }
+      .choice.sel {
+        background: rgba(80,140,255,.16); color: #ffffff;
+        border-color: rgba(120,180,255,.45);
+      }
+      .choice.sel .arrow { opacity: 1; }
+
+      #prompt {
+        margin-top: 10px; text-align: right;
+        font: 12px/1 ui-monospace, monospace; color: #6f86a3;
+        letter-spacing: .06em;
+      }
+      #prompt.hide { visibility: hidden; }
+    </style>
+    <script type="module" crossorigin src="/assets/index-D73UoBIj.js"></script>
+  </head>
+  <body>
+    <div id="app"></div>
+    <div id="hint">WASD / arrows to walk &nbsp;·&nbsp; approach a wisp to talk</div>
+
+    <div id="dialogue" aria-live="polite">
+      <div id="speaker">Wisp</div>
+      <div id="text"></div>
+      <div id="choices"></div>
+      <div id="prompt">space / click ▾</div>
+    </div>
+
+  </body>
+</html>
