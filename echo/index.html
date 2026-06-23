@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Echo — navigate by sound</title>
+    <!-- inline favicon (a sonar dot) so no extra file ships and no 404 -->
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='15' fill='%23071018'/%3E%3Ccircle cx='16' cy='16' r='10' fill='none' stroke='%236ff0ff' stroke-opacity='.5'/%3E%3Ccircle cx='16' cy='16' r='3' fill='%236ff0ff'/%3E%3C/svg%3E"
+    />
+    <style>
+      :root {
+        color-scheme: dark;
+      }
+      * { box-sizing: border-box; }
+      html, body {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        overflow: hidden;
+        background: #05070d;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        color: #cfe6ff;
+      }
+      #app { position: fixed; inset: 0; }
+      canvas { display: block; }
+
+      /* ---- HUD ---- */
+      #hud {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        z-index: 10;
+      }
+      .stat {
+        position: absolute;
+        top: 16px;
+        font-variant-numeric: tabular-nums;
+        text-shadow: 0 1px 6px rgba(0, 0, 0, 0.8);
+        letter-spacing: 0.04em;
+      }
+      #score { left: 18px; font-size: 22px; font-weight: 600; }
+      #timer { right: 18px; font-size: 22px; font-weight: 600; }
+      #hint {
+        position: absolute;
+        top: 50px;
+        left: 18px;
+        font-size: 13px;
+        opacity: 0.6;
+      }
+      #proximity {
+        position: absolute;
+        left: 50%;
+        top: 16px;
+        transform: translateX(-50%);
+        font-size: 13px;
+        opacity: 0.75;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      /* ---- Sonar / direction HUD ---- */
+      #sonar {
+        position: absolute;
+        left: 50%;
+        bottom: 26px;
+        transform: translateX(-50%);
+        width: 168px;
+        height: 168px;
+        opacity: 0.95;
+        filter: drop-shadow(0 0 10px rgba(80, 200, 255, 0.25));
+      }
+
+      /* ---- Start overlay (gesture needed to unlock WebAudio) ---- */
+      #start {
+        position: fixed;
+        inset: 0;
+        z-index: 20;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 18px;
+        background: radial-gradient(60% 60% at 50% 45%, rgba(20, 40, 70, 0.55), rgba(5, 7, 13, 0.92));
+        text-align: center;
+        cursor: pointer;
+      }
+      #start h1 {
+        margin: 0;
+        font-size: 44px;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        color: #eaf6ff;
+        text-shadow: 0 0 22px rgba(90, 190, 255, 0.5);
+      }
+      #start p { margin: 0; max-width: 460px; line-height: 1.6; opacity: 0.8; font-size: 15px; }
+      #start .cta {
+        margin-top: 10px;
+        padding: 12px 26px;
+        border: 1px solid rgba(120, 210, 255, 0.5);
+        border-radius: 999px;
+        font-size: 15px;
+        letter-spacing: 0.06em;
+        color: #eaf6ff;
+        background: rgba(40, 90, 140, 0.25);
+      }
+      #start.hidden { display: none; }
+      kbd {
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        border-radius: 5px;
+        padding: 1px 7px;
+        font-size: 12px;
+      }
+    </style>
+    <script type="module" crossorigin src="./assets/index-BS54xG0Z.js"></script>
+  </head>
+  <body>
+    <div id="app"></div>
+
+    <div id="hud">
+      <div id="score" class="stat">SCORE 0</div>
+      <div id="timer" class="stat">60.0</div>
+      <div id="proximity">listen…</div>
+      <div id="hint">
+        <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> move ·
+        <kbd>drag</kbd> look · find the hum
+      </div>
+      <svg id="sonar" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"></svg>
+    </div>
+
+    <div id="start">
+      <h1>ECHO</h1>
+      <p>
+        Somewhere in the fog a beacon is humming. You can't see it — only
+        <em>hear</em> it. The sound grows louder as you near it and pans to the
+        side it lies on. Hunt it down by ear, get close, and it reveals itself.
+      </p>
+      <div class="cta">Click to listen &amp; play</div>
+    </div>
+
+  </body>
+</html>
