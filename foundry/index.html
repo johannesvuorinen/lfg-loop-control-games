@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Foundry — conveyor automation</title>
+    <!-- inline favicon to avoid a 404 -->
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' rx='3' fill='%23ff7a3c'/%3E%3C/svg%3E"
+    />
+    <style>
+      :root { color-scheme: dark; }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 100%; height: 100%; overflow: hidden; background: #0b0f14; }
+      #app { position: fixed; inset: 0; }
+      canvas { display: block; }
+
+      #hud {
+        position: fixed;
+        top: 14px;
+        left: 14px;
+        font: 13px/1.45 ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+        color: #e8eef4;
+        background: rgba(12, 18, 26, 0.72);
+        border: 1px solid rgba(120, 160, 200, 0.25);
+        border-radius: 10px;
+        padding: 12px 14px;
+        backdrop-filter: blur(6px);
+        pointer-events: none;
+        min-width: 220px;
+      }
+      #hud h1 {
+        font-size: 14px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: #9fd0ff;
+        margin-bottom: 8px;
+        font-weight: 700;
+      }
+      #hud .row { display: flex; justify-content: space-between; gap: 16px; }
+      #hud .row + .row { margin-top: 3px; }
+      #hud .k { color: #8aa0b4; }
+      #hud .v { color: #fff; font-weight: 600; }
+      #hud .order { margin-top: 9px; padding-top: 9px; border-top: 1px solid rgba(120,160,200,0.18); }
+      #hud .chip {
+        display: inline-block; width: 11px; height: 11px; border-radius: 3px;
+        vertical-align: middle; margin-right: 5px; transform: translateY(-1px);
+      }
+
+      #help {
+        position: fixed; bottom: 12px; left: 14px;
+        font: 12px/1.5 ui-monospace, Menlo, monospace;
+        color: #6f8498; background: rgba(12,18,26,0.6);
+        border: 1px solid rgba(120,160,200,0.18);
+        border-radius: 8px; padding: 8px 11px; pointer-events: none; max-width: 360px;
+      }
+      #help b { color: #9fd0ff; }
+    </style>
+    <script type="module" crossorigin src="./assets/index-D_PL-rCt.js"></script>
+  </head>
+  <body>
+    <div id="app"></div>
+
+    <div id="hud">
+      <h1>Foundry</h1>
+      <div class="row"><span class="k">Throughput</span><span class="v" id="hud-tpm">0 / min</span></div>
+      <div class="row"><span class="k">Sorted</span><span class="v" id="hud-sorted">0</span></div>
+      <div class="row"><span class="k">Mis-routed</span><span class="v" id="hud-miss">0</span></div>
+      <div class="row"><span class="k">In flight</span><span class="v" id="hud-flight">0</span></div>
+      <div class="order">
+        <div class="row"><span class="k">Order</span><span class="v" id="hud-order-name">—</span></div>
+        <div class="row"><span class="k" id="hud-order-prog">0 / 0</span><span class="v" id="hud-order-pct">0%</span></div>
+      </div>
+    </div>
+
+    <div id="help">
+      <b>Foundry</b> — items spawn at sources, ride belts, sort into colour bins.
+      <b>Click</b> a belt tile to rotate it. <b>Drag</b> to orbit · <b>scroll</b> to zoom.
+    </div>
+
+  </body>
+</html>
