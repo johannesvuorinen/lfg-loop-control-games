@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Showroom — Polish to Match</title>
+    <link
+      rel="icon"
+      href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='42' fill='%2358e1ff'/></svg>"
+    />
+    <style>
+      :root {
+        --panel-bg: rgba(14, 16, 22, 0.82);
+        --panel-stroke: rgba(255, 255, 255, 0.12);
+        --accent: #58e1ff;
+        --good: #5dff9b;
+        --text: #eef2f7;
+        --muted: #9aa6b6;
+      }
+      * { box-sizing: border-box; }
+      html, body { margin: 0; height: 100%; overflow: hidden; background: #05070b; }
+      body {
+        font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+        color: var(--text);
+        -webkit-font-smoothing: antialiased;
+      }
+      #app { position: fixed; inset: 0; }
+      canvas { display: block; width: 100%; height: 100%; }
+
+      .hud {
+        position: fixed;
+        z-index: 10;
+        pointer-events: none;
+      }
+      #title {
+        top: 18px; left: 20px;
+      }
+      #title h1 {
+        margin: 0;
+        font-size: 20px;
+        letter-spacing: 0.04em;
+        font-weight: 650;
+      }
+      #title p {
+        margin: 4px 0 0;
+        font-size: 12.5px;
+        color: var(--muted);
+        max-width: 360px;
+        line-height: 1.4;
+      }
+
+      #panel {
+        bottom: 20px; left: 20px;
+        width: 320px;
+        background: var(--panel-bg);
+        border: 1px solid var(--panel-stroke);
+        border-radius: 14px;
+        padding: 16px 18px 18px;
+        backdrop-filter: blur(10px);
+        pointer-events: auto;
+        box-shadow: 0 18px 50px rgba(0,0,0,0.45);
+      }
+      #panel .obj-name {
+        font-size: 13px;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        color: var(--accent);
+        margin-bottom: 12px;
+      }
+      .row { margin: 12px 0; }
+      .row label {
+        display: flex;
+        justify-content: space-between;
+        font-size: 12px;
+        color: var(--muted);
+        margin-bottom: 6px;
+      }
+      .row label b { color: var(--text); font-variant-numeric: tabular-nums; }
+      input[type="range"] {
+        width: 100%;
+        accent-color: var(--accent);
+        cursor: pointer;
+      }
+
+      .score-wrap { margin-top: 16px; }
+      .score-bar {
+        height: 10px;
+        border-radius: 6px;
+        background: rgba(255,255,255,0.08);
+        overflow: hidden;
+      }
+      .score-fill {
+        height: 100%;
+        width: 0%;
+        background: linear-gradient(90deg, #ff6b6b, #ffd166, var(--good));
+        transition: width 0.12s ease;
+      }
+      .score-line {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        margin-top: 8px;
+      }
+      .score-line .pct { font-size: 26px; font-weight: 700; font-variant-numeric: tabular-nums; }
+      .score-line .lbl { font-size: 12px; color: var(--muted); }
+      #verdict { color: var(--good); font-weight: 600; }
+
+      .hint {
+        bottom: 22px; right: 22px;
+        text-align: right;
+        font-size: 11.5px;
+        color: var(--muted);
+        line-height: 1.5;
+      }
+      .hint b { color: var(--text); }
+      .swatch {
+        display: inline-block;
+        width: 9px; height: 9px;
+        border-radius: 2px;
+        margin-right: 4px;
+        vertical-align: middle;
+        background: var(--good);
+      }
+    </style>
+    <script type="module" crossorigin src="./assets/index-XjjHjhjd.js"></script>
+  </head>
+  <body>
+    <div id="app"></div>
+
+    <div id="title" class="hud">
+      <h1>SHOWROOM</h1>
+      <p>Click a turntable object, then tune its metalness &amp; roughness to match the target sheen. The mirror floor reflects the real objects.</p>
+    </div>
+
+    <div id="panel" class="hud">
+      <div class="obj-name" id="objName">Chrome Sphere</div>
+      <div class="row">
+        <label>Metalness <b id="metalVal">1.00</b></label>
+        <input id="metal" type="range" min="0" max="1" step="0.01" value="1" />
+      </div>
+      <div class="row">
+        <label>Roughness <b id="roughVal">0.05</b></label>
+        <input id="rough" type="range" min="0" max="1" step="0.01" value="0.05" />
+      </div>
+      <div class="score-wrap">
+        <div class="score-bar"><div class="score-fill" id="scoreFill"></div></div>
+        <div class="score-line">
+          <span class="pct" id="scorePct">0%</span>
+          <span class="lbl"><span class="swatch"></span>match <span id="verdict"></span></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="hint hud">
+      <div><b>Drag</b> to orbit &middot; <b>Scroll</b> to zoom</div>
+      <div><b>1 / 2 / 3</b> select object &middot; <b>Click</b> object</div>
+    </div>
+
+  </body>
+</html>
