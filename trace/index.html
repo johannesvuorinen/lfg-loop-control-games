@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Trace — race your ghost</title>
+    <style>
+      :root { color-scheme: dark; }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 100%; height: 100%; overflow: hidden; background: #05070d; }
+      #app { position: fixed; inset: 0; }
+      canvas { display: block; width: 100%; height: 100%; }
+
+      #hud {
+        position: fixed;
+        top: 16px;
+        left: 16px;
+        font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+        color: #eaf2ff;
+        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+        pointer-events: none;
+        user-select: none;
+        line-height: 1.45;
+      }
+      #hud .time { font-size: 34px; font-weight: 700; letter-spacing: 1px; }
+      #hud .best { font-size: 16px; color: #8fe9c5; margin-top: 2px; }
+      #hud .row  { font-size: 13px; color: #9fb0cc; margin-top: 6px; }
+      #hud .ghost { color: #c9a7ff; }
+
+      #help {
+        position: fixed;
+        bottom: 14px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+        font-size: 12px;
+        color: #7e8db0;
+        text-align: center;
+        pointer-events: none;
+        user-select: none;
+      }
+      #help b { color: #b9c6e6; }
+      #banner {
+        position: fixed;
+        top: 40%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+        font-size: 22px;
+        font-weight: 700;
+        color: #ffe9a8;
+        text-shadow: 0 2px 8px rgba(0, 0, 0, 0.9);
+        opacity: 0;
+        transition: opacity 0.25s ease;
+        pointer-events: none;
+        user-select: none;
+        text-align: center;
+      }
+    </style>
+    <script type="module" crossorigin src="./assets/index-CiXP54B2.js"></script>
+  </head>
+  <body>
+    <div id="app"></div>
+    <div id="hud">
+      <div class="time" id="t-cur">0.00</div>
+      <div class="best" id="t-best">best —</div>
+      <div class="row">lap <span id="t-lap">1</span> · gate <span id="t-gate">0</span>/<span id="t-gatetotal">4</span></div>
+      <div class="row ghost" id="t-ghost">ghost: waiting for first lap</div>
+    </div>
+    <div id="banner"></div>
+    <div id="help">
+      <b>W/S</b> throttle · <b>A/D</b> steer · <b>R</b> reset lap · pass through the glowing gates · beat your ghost
+    </div>
+  </body>
+</html>
