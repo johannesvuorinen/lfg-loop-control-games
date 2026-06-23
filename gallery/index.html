@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gallery — a museum of imported 3D models</title>
+    <style>
+      :root { color-scheme: dark; }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 100%; height: 100%; overflow: hidden; background: #0a0a0f; }
+      #app { position: fixed; inset: 0; }
+      canvas { display: block; }
+
+      /* Center crosshair */
+      #crosshair {
+        position: fixed; left: 50%; top: 50%;
+        width: 6px; height: 6px; margin: -3px 0 0 -3px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.55);
+        box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.4);
+        pointer-events: none; z-index: 10;
+      }
+
+      /* Proximity label shown near the bottom of the screen */
+      #label {
+        position: fixed; left: 50%; bottom: 11%;
+        transform: translateX(-50%) translateY(8px);
+        max-width: 80vw;
+        padding: 14px 22px;
+        background: rgba(12, 12, 18, 0.82);
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        border-radius: 12px;
+        backdrop-filter: blur(8px);
+        text-align: center;
+        font-family: "Georgia", "Times New Roman", serif;
+        color: #f3efe6;
+        opacity: 0; transition: opacity 0.25s ease, transform 0.25s ease;
+        pointer-events: none; z-index: 10;
+      }
+      #label.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+      #label .title { font-size: 22px; letter-spacing: 0.5px; }
+      #label .meta { margin-top: 5px; font-size: 13px; color: #b9b2a4; font-style: italic; }
+
+      /* HUD: controls hint + title card */
+      #hud {
+        position: fixed; left: 18px; top: 16px; z-index: 10;
+        font-family: ui-monospace, "SF Mono", Menlo, monospace;
+        font-size: 12px; line-height: 1.55; color: rgba(235, 232, 224, 0.78);
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6); pointer-events: none;
+      }
+      #hud b { color: #fff; font-weight: 600; }
+      #hud .name { font-family: "Georgia", serif; font-size: 17px; color: #fff; margin-bottom: 6px; }
+
+      /* Click-to-start overlay (pointer lock requires a user gesture) */
+      #start {
+        position: fixed; inset: 0; z-index: 20;
+        display: flex; flex-direction: column; align-items: center; justify-content: center;
+        gap: 10px; cursor: pointer;
+        background: radial-gradient(ellipse at center, rgba(20,20,30,0.55), rgba(5,5,9,0.92));
+        font-family: "Georgia", serif; color: #f3efe6; text-align: center;
+      }
+      #start h1 { font-size: 40px; font-weight: 400; letter-spacing: 2px; }
+      #start p { font-size: 15px; color: #c7c0b2; }
+      #start .go {
+        margin-top: 14px; padding: 12px 26px;
+        border: 1px solid rgba(255,255,255,0.3); border-radius: 30px;
+        font-family: ui-monospace, monospace; font-size: 13px; letter-spacing: 1px;
+      }
+      #start.hidden { display: none; }
+    </style>
+    <script type="module" crossorigin src="./assets/index-CBxwloxe.js"></script>
+  </head>
+  <body>
+    <div id="app"></div>
+    <div id="crosshair"></div>
+    <div id="label"><div class="title"></div><div class="meta"></div></div>
+    <div id="hud">
+      <div class="name">The Gallery</div>
+      <div><b>WASD</b> / arrows — walk &nbsp; · &nbsp; <b>mouse</b> — look &nbsp; · &nbsp; <b>Esc</b> — release</div>
+      <div>Walk up to a pedestal to read its label.</div>
+    </div>
+    <div id="start">
+      <h1>THE&nbsp;GALLERY</h1>
+      <p>A small museum of imported 3D artifacts.</p>
+      <div class="go">CLICK TO ENTER</div>
+    </div>
+  </body>
+</html>
