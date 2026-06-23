@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Rally — shared arena (single-player build)</title>
+    <style>
+      :root {
+        color-scheme: dark;
+      }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 100%; height: 100%; overflow: hidden; background: #0b1020; }
+      #app { position: fixed; inset: 0; }
+      canvas { display: block; }
+
+      #hud {
+        position: fixed;
+        top: 14px;
+        left: 14px;
+        font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+        color: #cfe3ff;
+        font-size: 13px;
+        line-height: 1.5;
+        pointer-events: none;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+        user-select: none;
+      }
+      #hud .score { font-size: 22px; font-weight: 700; color: #9af5c0; }
+      #hud .keys { margin-top: 8px; opacity: 0.78; }
+      #hud .keys b { color: #ffd479; }
+
+      #netbadge {
+        position: fixed;
+        top: 14px;
+        right: 14px;
+        max-width: 320px;
+        font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+        color: #ffd0d0;
+        font-size: 12px;
+        line-height: 1.5;
+        text-align: right;
+        background: rgba(60, 12, 12, 0.55);
+        border: 1px solid rgba(255, 90, 90, 0.45);
+        border-radius: 8px;
+        padding: 8px 11px;
+        pointer-events: none;
+        user-select: none;
+      }
+      #netbadge b { color: #ff8a8a; }
+
+      #legend {
+        position: fixed;
+        bottom: 14px;
+        left: 14px;
+        font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+        color: #aebfdd;
+        font-size: 12px;
+        line-height: 1.6;
+        pointer-events: none;
+        user-select: none;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+      }
+      #legend .dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 6px; vertical-align: middle; }
+    </style>
+    <script type="module" crossorigin src="./assets/index-2Ou01Ftg.js"></script>
+  </head>
+  <body>
+    <div id="app"></div>
+
+    <div id="hud">
+      <div>Pickups: <span class="score" id="score">0</span> / <span id="total">0</span></div>
+      <div class="keys">Move: <b>WASD</b> / <b>Arrows</b> &nbsp;·&nbsp; collect the glowing orbs</div>
+    </div>
+
+    <div id="netbadge">
+      <div><b>SINGLE-PLAYER</b> build</div>
+      <div>three.js has no networked multiplayer.</div>
+      <div>The other avatars are <b>local bots</b>, not peers.</div>
+    </div>
+
+    <div id="legend">
+      <div><span class="dot" style="background:#46b1ff"></span>you (player)</div>
+      <div><span class="dot" style="background:#ff7a7a"></span>local bot (scripted, not networked)</div>
+      <div><span class="dot" style="background:#ffd479"></span>pickup orb</div>
+    </div>
+
+  </body>
+</html>
