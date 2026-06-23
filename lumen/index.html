@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Lumen</title>
+    <style>
+      :root {
+        color-scheme: dark;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        height: 100%;
+        overflow: hidden;
+        background: #000;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          Helvetica, Arial, sans-serif;
+        color: #e8e8f0;
+      }
+      #app {
+        position: fixed;
+        inset: 0;
+      }
+      canvas {
+        display: block;
+      }
+
+      /* ---------- HUD ---------- */
+      #hud {
+        position: fixed;
+        top: 18px;
+        left: 18px;
+        z-index: 10;
+        pointer-events: none;
+        text-shadow: 0 1px 4px rgba(0, 0, 0, 0.9);
+        user-select: none;
+      }
+      #crystal-count {
+        font-size: 22px;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      #crystal-count .gem {
+        color: #7fe7ff;
+        filter: drop-shadow(0 0 6px #2bd3ff);
+        font-size: 24px;
+      }
+      #orb-count {
+        margin-top: 6px;
+        font-size: 13px;
+        opacity: 0.7;
+      }
+
+      /* crosshair */
+      #crosshair {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        width: 6px;
+        height: 6px;
+        margin: -3px 0 0 -3px;
+        border-radius: 50%;
+        background: rgba(255, 220, 150, 0.85);
+        box-shadow: 0 0 6px rgba(255, 190, 90, 0.9);
+        z-index: 10;
+        pointer-events: none;
+        display: none;
+      }
+
+      /* ---------- Overlays (start / win) ---------- */
+      .overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 20;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 32px;
+        background: radial-gradient(
+          ellipse at center,
+          rgba(10, 12, 22, 0.82) 0%,
+          rgba(2, 3, 8, 0.96) 70%
+        );
+        backdrop-filter: blur(2px);
+        cursor: pointer;
+      }
+      .overlay.hidden {
+        display: none;
+      }
+      .overlay h1 {
+        font-size: 64px;
+        font-weight: 800;
+        letter-spacing: 6px;
+        margin-bottom: 8px;
+        background: linear-gradient(180deg, #ffe9b8 0%, #ff9d3d 100%);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        filter: drop-shadow(0 0 24px rgba(255, 150, 50, 0.45));
+      }
+      .overlay h2 {
+        font-size: 38px;
+        font-weight: 800;
+        letter-spacing: 3px;
+        margin-bottom: 12px;
+        color: #7fe7ff;
+        filter: drop-shadow(0 0 20px rgba(40, 200, 255, 0.5));
+      }
+      .overlay p {
+        max-width: 540px;
+        line-height: 1.6;
+        font-size: 16px;
+        opacity: 0.88;
+        margin: 6px 0;
+      }
+      .overlay .keys {
+        margin-top: 22px;
+        font-size: 14px;
+        opacity: 0.7;
+      }
+      .overlay kbd {
+        display: inline-block;
+        padding: 2px 8px;
+        margin: 0 2px;
+        border-radius: 5px;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        font-family: ui-monospace, "SF Mono", Menlo, monospace;
+        font-size: 13px;
+      }
+      .overlay .cta {
+        margin-top: 30px;
+        font-size: 15px;
+        font-weight: 600;
+        letter-spacing: 1px;
+        padding: 12px 26px;
+        border-radius: 999px;
+        background: linear-gradient(180deg, #ffcf86, #ff8f2e);
+        color: #1a1206;
+        box-shadow: 0 6px 24px rgba(255, 140, 40, 0.35);
+        animation: pulse 2s ease-in-out infinite;
+      }
+      @keyframes pulse {
+        0%,
+        100% {
+          transform: scale(1);
+          opacity: 0.95;
+        }
+        50% {
+          transform: scale(1.04);
+          opacity: 1;
+        }
+      }
+    </style>
+    <script type="module" crossorigin src="./assets/index-Qwd3BsIg.js"></script>
+  </head>
+  <body>
+    <div id="app"></div>
+
+    <!-- In-game HUD -->
+    <div id="hud" style="display: none">
+      <div id="crystal-count">
+        <span class="gem">◆</span><span id="count-text">0 / 5</span>
+      </div>
+      <div id="orb-count">orbs ready: 8</div>
+    </div>
+    <div id="crosshair"></div>
+
+    <!-- Start overlay -->
+    <div id="start-overlay" class="overlay">
+      <h1>LUMEN</h1>
+      <p>
+        You are lost in a pitch-dark cavern. Five crystals glimmer somewhere in
+        the blackness.
+      </p>
+      <p>
+        You cannot see — but you can <strong>throw light</strong>. Hurl glowing
+        orbs into the dark; where they land, the walls, floor and any nearby
+        crystals catch fire with light. Walk into a revealed crystal to collect
+        it.
+      </p>
+      <div class="keys">
+        <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> move &nbsp;·&nbsp;
+        <kbd>mouse</kbd> look &nbsp;·&nbsp;
+        <kbd>Click</kbd> / <kbd>Space</kbd> throw orb &nbsp;·&nbsp;
+        <kbd>Shift</kbd> sprint
+      </div>
+      <div class="cta">Click to enter the dark</div>
+    </div>
+
+    <!-- Win overlay -->
+    <div id="win-overlay" class="overlay hidden">
+      <h2>ALL CRYSTALS FOUND</h2>
+      <p>You lit the dark and gathered every shard of light.</p>
+      <p id="win-stats" style="opacity: 0.7; font-size: 14px"></p>
+      <div class="cta">Click to play again</div>
+    </div>
+
+  </body>
+</html>
