@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Glide</title>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 100%; height: 100%; overflow: hidden; background: #0b1020; }
+      #app { position: fixed; inset: 0; }
+      canvas { display: block; }
+
+      #hud {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+        color: #eaf6ff;
+        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+      }
+      .panel {
+        position: absolute;
+        background: rgba(8, 16, 32, 0.42);
+        border: 1px solid rgba(140, 200, 255, 0.28);
+        border-radius: 10px;
+        padding: 10px 14px;
+        backdrop-filter: blur(3px);
+      }
+      #stats { top: 16px; left: 16px; line-height: 1.55; font-size: 14px; }
+      #stats .v { color: #8fe3ff; font-weight: 700; }
+      #stats .big { font-size: 20px; }
+      #goal { top: 16px; right: 16px; text-align: right; font-size: 13px; max-width: 240px; line-height: 1.5; }
+      #goal .ring-finish { color: #ffd76a; font-weight: 700; }
+
+      #center {
+        position: absolute;
+        top: 50%; left: 50%;
+        transform: translate(-50%, -50%);
+        text-align: center;
+      }
+      #banner {
+        font-size: 40px;
+        font-weight: 800;
+        letter-spacing: 1px;
+        color: #ffd76a;
+        opacity: 0;
+        transition: opacity 0.4s ease;
+      }
+      #banner.show { opacity: 1; }
+      #subbanner { font-size: 16px; margin-top: 6px; opacity: 0; transition: opacity 0.4s ease; }
+      #subbanner.show { opacity: 0.85; }
+
+      #help {
+        position: absolute;
+        bottom: 16px; left: 50%;
+        transform: translateX(-50%);
+        font-size: 12.5px;
+        text-align: center;
+        opacity: 0.85;
+        line-height: 1.6;
+      }
+      kbd {
+        background: rgba(140, 200, 255, 0.18);
+        border: 1px solid rgba(140, 200, 255, 0.35);
+        border-radius: 4px;
+        padding: 1px 6px;
+        font-weight: 700;
+        color: #cdeeff;
+      }
+
+      /* Banking indicator (artificial horizon-ish roll readout) */
+      #bank { bottom: 16px; right: 16px; width: 132px; height: 132px; padding: 0; overflow: hidden; }
+      #bank svg { width: 100%; height: 100%; display: block; }
+    </style>
+    <script type="module" crossorigin src="./assets/index-C7_niCJp.js"></script>
+  </head>
+  <body>
+    <div id="app"></div>
+    <div id="hud">
+      <div class="panel" id="stats">
+        <div><span class="big v" id="speed">0</span> <span style="font-size:12px;opacity:.7">km/h</span></div>
+        <div>ALT <span class="v" id="alt">0</span> m</div>
+        <div>RINGS <span class="v" id="rings">0 / 0</span></div>
+      </div>
+      <div class="panel" id="goal">
+        <div><b>GLIDE</b></div>
+        <div style="margin-top:6px">Fly through every floating ring, then cross the <span class="ring-finish">FINISH</span> ring.</div>
+      </div>
+      <div id="center">
+        <div id="banner"></div>
+        <div id="subbanner"></div>
+      </div>
+      <div class="panel" id="bank" title="bank / roll indicator">
+        <svg viewBox="-66 -66 132 132">
+          <!-- fixed reference -->
+          <line x1="-58" y1="0" x2="-30" y2="0" stroke="#5fd0ff" stroke-width="3" stroke-linecap="round"/>
+          <line x1="58" y1="0" x2="30" y2="0" stroke="#5fd0ff" stroke-width="3" stroke-linecap="round"/>
+          <circle cx="0" cy="0" r="3.5" fill="#5fd0ff"/>
+          <!-- rolling glider ticks -->
+          <g id="bankRoll">
+            <line x1="-24" y1="0" x2="24" y2="0" stroke="#ffd76a" stroke-width="3.5" stroke-linecap="round"/>
+            <line x1="0" y1="0" x2="0" y2="-12" stroke="#ffd76a" stroke-width="3.5" stroke-linecap="round"/>
+          </g>
+        </svg>
+      </div>
+      <div id="help">
+        <kbd>W</kbd>/<kbd>S</kbd> pitch &nbsp; <kbd>A</kbd>/<kbd>D</kbd> turn (banks) &nbsp; dive to gain speed, climb to bleed it &nbsp; <kbd>R</kbd> restart
+      </div>
+    </div>
+  </body>
+</html>
