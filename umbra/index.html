@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Umbra — shadow stealth</title>
+    <style>
+      :root { color-scheme: dark; }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body {
+        width: 100%; height: 100%; overflow: hidden;
+        background: #0a0c12;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      }
+      #app { position: fixed; inset: 0; }
+      canvas { display: block; }
+
+      /* ---------- HUD ---------- */
+      #hud {
+        position: fixed; inset: 0; pointer-events: none;
+        color: #e8eef7; text-shadow: 0 1px 3px rgba(0, 0, 0, 0.85);
+      }
+      #objective {
+        position: absolute; top: 18px; left: 50%; transform: translateX(-50%);
+        font-size: 15px; letter-spacing: 0.5px; font-weight: 600;
+        padding: 8px 16px; background: rgba(10, 14, 22, 0.55);
+        border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 999px;
+        backdrop-filter: blur(4px);
+      }
+      #meterWrap {
+        position: absolute; top: 64px; left: 50%; transform: translateX(-50%);
+        width: 320px; max-width: 70vw;
+      }
+      #meterLabel {
+        display: flex; justify-content: space-between; font-size: 12px;
+        letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 5px; opacity: 0.92;
+      }
+      #meterTrack {
+        height: 12px; border-radius: 8px; background: rgba(0, 0, 0, 0.45);
+        border: 1px solid rgba(255, 255, 255, 0.18); overflow: hidden;
+        box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.6);
+      }
+      #meterFill {
+        height: 100%; width: 0%; border-radius: 8px;
+        background: linear-gradient(90deg, #ffd966, #ff8c42, #ff3b3b);
+        transition: width 0.08s linear;
+      }
+      #status {
+        position: absolute; bottom: 80px; left: 50%; transform: translateX(-50%);
+        font-size: 22px; font-weight: 700; letter-spacing: 1px;
+      }
+      #status.safe { color: #7ee0a8; }
+      #status.lit { color: #ff7a59; }
+      #help {
+        position: absolute; bottom: 18px; left: 50%; transform: translateX(-50%);
+        font-size: 12.5px; opacity: 0.72; letter-spacing: 0.4px;
+      }
+      #banner {
+        position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+        text-align: center; font-size: 44px; font-weight: 800; letter-spacing: 2px;
+        opacity: 0; transition: opacity 0.4s ease;
+      }
+      #banner.show { opacity: 1; }
+      #banner .sub {
+        display: block; margin-top: 10px; font-size: 16px; font-weight: 500;
+        letter-spacing: 1px; opacity: 0.85;
+      }
+      #banner.win { color: #8affc1; }
+      #banner.lose { color: #ff6b6b; }
+    </style>
+    <script type="module" crossorigin src="./assets/index-D6WHvA08.js"></script>
+  </head>
+  <body>
+    <div id="app"></div>
+    <div id="hud">
+      <div id="objective">◆ Reach the glowing vault — stay in the shadows</div>
+      <div id="meterWrap">
+        <div id="meterLabel"><span>SKY-EYE DETECTION</span><span id="meterPct">0%</span></div>
+        <div id="meterTrack"><div id="meterFill"></div></div>
+      </div>
+      <div id="status" class="safe">IN SHADOW</div>
+      <div id="help">WASD / arrows to move &nbsp;·&nbsp; R to restart</div>
+      <div id="banner"></div>
+    </div>
+  </body>
+</html>
