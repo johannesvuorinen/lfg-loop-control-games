@@ -1,110 +1,39 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Ricochet — bounce the beam</title>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><circle cx='8' cy='8' r='6' fill='%237ef0ff'/></svg>" />
-
+    <title>Ricochet</title>
     <style>
       :root { color-scheme: dark; }
       * { margin: 0; padding: 0; box-sizing: border-box; }
-      html, body { width: 100%; height: 100%; overflow: hidden; background: #070b12; }
-      #app { position: fixed; inset: 0; }
-      canvas { display: block; }
-
-      /* ---------------- HUD ---------------- */
-      #hud {
-        position: fixed; inset: 0; pointer-events: none;
-        font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
-        color: #eaf2fb; user-select: none;
+      html, body {
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background: #07080f;
+        font-family: 'Trebuchet MS', 'Segoe UI', system-ui, sans-serif;
       }
-      .hud-top {
-        position: absolute; top: 16px; left: 50%; transform: translateX(-50%);
-        display: flex; gap: 14px; align-items: stretch;
+      #app {
+        position: fixed;
+        inset: 0;
+        display: grid;
+        place-items: center;
       }
-      .card {
-        background: rgba(9, 15, 24, 0.66);
-        border: 1px solid rgba(120, 170, 220, 0.22);
-        border-radius: 12px; padding: 8px 18px;
-        backdrop-filter: blur(6px);
-        box-shadow: 0 6px 22px rgba(0,0,0,0.45);
-        text-align: center; min-width: 96px;
+      /* The renderer canvas keeps a fixed aspect and is letterboxed by CSS. */
+      #game-canvas {
+        display: block;
+        background: #0a0c18;
+        box-shadow: 0 0 60px rgba(80, 120, 255, 0.25);
+        touch-action: none;
+        cursor: none;
       }
-      .card .label { font-size: 11px; letter-spacing: 2px; text-transform: uppercase; opacity: 0.6; }
-      .card .value { font-size: 26px; font-weight: 700; line-height: 1.15; font-variant-numeric: tabular-nums; }
-      #shotsCard .value.warn { color: #ff6b5e; }
-      #objective {
-        position: absolute; top: 16px; left: 16px;
-        background: rgba(9,15,24,0.6); border: 1px solid rgba(120,170,220,0.2);
-        border-radius: 10px; padding: 8px 14px; max-width: 250px;
-      }
-      #objective .label { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; opacity: 0.55; }
-      #objective .text { font-size: 14px; font-weight: 600; margin-top: 3px; line-height: 1.35; }
-      #help {
-        position: absolute; bottom: 18px; left: 22px;
-        font-size: 12px; line-height: 1.8; opacity: 0.66;
-      }
-      #help kbd {
-        background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.18);
-        border-radius: 5px; padding: 1px 7px; font-size: 11px; font-family: inherit;
-      }
-      #angle {
-        position: absolute; bottom: 18px; right: 24px; text-align: right;
-      }
-      #angle .value { font-size: 38px; font-weight: 800; font-variant-numeric: tabular-nums; }
-      #angle .unit { font-size: 13px; letter-spacing: 2px; opacity: 0.6; }
-
-      /* ---------------- Banner ---------------- */
-      #banner {
-        position: absolute; top: 40%; left: 50%; transform: translate(-50%,-50%);
-        text-align: center; opacity: 0; transition: opacity 0.3s ease;
-      }
-      #banner.show { opacity: 1; }
-      #banner .big {
-        font-size: 54px; font-weight: 900; letter-spacing: 1px;
-        text-shadow: 0 4px 28px rgba(0,0,0,0.7);
-      }
-      #banner .sub { font-size: 17px; opacity: 0.8; margin-top: 8px; }
-      #banner.win .big { color: #7ef0a0; }
-      #banner.lose .big { color: #ff7a6b; }
     </style>
-    <script type="module" crossorigin src="./assets/index-XhIS2OaM.js"></script>
+    <script type="module" crossorigin src="./assets/index-DyxOPpKq.js"></script>
   </head>
   <body>
-    <div id="app"></div>
-    <div id="hud">
-      <div class="hud-top">
-        <div class="card" id="scoreCard">
-          <div class="label">Targets</div>
-          <div class="value"><span id="hit">0</span>/<span id="total">0</span></div>
-        </div>
-        <div class="card" id="shotsCard">
-          <div class="label">Shots</div>
-          <div class="value" id="shots">10</div>
-        </div>
-        <div class="card" id="bounceCard">
-          <div class="label">Bounces</div>
-          <div class="value" id="bounces">0</div>
-        </div>
-      </div>
-
-      <div id="objective">
-        <div class="label">Objective</div>
-        <div class="text">Bounce the beam off the angled mirrors to hit every target node. Some hide behind cover.</div>
-      </div>
-
-      <div id="angle">
-        <div class="value" id="angleVal">90&deg;</div>
-        <div class="unit">aim</div>
-      </div>
-
-      <div id="help">
-        <kbd>A</kbd> / <kbd>&larr;</kbd> &nbsp; <kbd>D</kbd> / <kbd>&rarr;</kbd> &nbsp; rotate turret &nbsp;&middot;&nbsp;
-        <kbd>Space</kbd> / <kbd>F</kbd> fire beam &nbsp;&middot;&nbsp; <kbd>R</kbd> reset
-      </div>
-
-      <div id="banner"><div class="big"></div><div class="sub"></div></div>
+    <div id="app">
+      <canvas id="game-canvas"></canvas>
     </div>
   </body>
 </html>
