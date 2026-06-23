@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Putt — three.js mini-golf</title>
+    <style>
+      :root { color-scheme: dark; }
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      html, body { height: 100%; overflow: hidden; background: #0b1622; }
+      body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+      #app { position: fixed; inset: 0; }
+      canvas { display: block; }
+
+      /* ---------- HUD ---------- */
+      #hud {
+        position: fixed; inset: 0; pointer-events: none;
+        color: #eaf2ff; text-shadow: 0 1px 3px rgba(0,0,0,0.7);
+        user-select: none;
+      }
+      .panel {
+        position: absolute; background: rgba(10, 22, 36, 0.66);
+        border: 1px solid rgba(255,255,255,0.14); border-radius: 12px;
+        backdrop-filter: blur(6px); padding: 10px 14px;
+      }
+      #scorebar {
+        top: 14px; left: 14px; display: flex; gap: 22px; align-items: center;
+        font-variant-numeric: tabular-nums;
+      }
+      #scorebar .big { font-size: 26px; font-weight: 700; line-height: 1; }
+      #scorebar .lbl { font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; opacity: 0.7; }
+      #scorebar .cell { display: flex; flex-direction: column; gap: 3px; }
+      #parState { font-size: 13px; opacity: 0.85; }
+
+      #help { bottom: 14px; left: 14px; right: 14px; max-width: 540px; font-size: 13px; line-height: 1.5; opacity: 0.92; }
+      #help b { color: #8fd3ff; }
+
+      /* ---------- Power meter ---------- */
+      #power {
+        bottom: 14px; right: 14px; width: 200px; text-align: center;
+      }
+      #power .lbl { font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; opacity: 0.7; margin-bottom: 6px; }
+      #powerTrack {
+        height: 16px; border-radius: 8px; overflow: hidden;
+        background: rgba(0,0,0,0.45); border: 1px solid rgba(255,255,255,0.18);
+      }
+      #powerFill {
+        height: 100%; width: 0%;
+        background: linear-gradient(90deg, #36d27a 0%, #f6e05e 55%, #f56565 100%);
+        transition: width 0.02s linear;
+      }
+
+      /* ---------- Toast / messages ---------- */
+      #toast {
+        top: 84px; left: 50%; transform: translateX(-50%);
+        text-align: center; font-size: 22px; font-weight: 700; padding: 12px 26px;
+        opacity: 0; transition: opacity 0.25s; pointer-events: none;
+      }
+      #toast.show { opacity: 1; }
+
+      /* ---------- Scorecard overlay ---------- */
+      #card {
+        position: fixed; inset: 0; display: none; place-items: center;
+        background: rgba(6, 14, 24, 0.82); pointer-events: auto; z-index: 10;
+      }
+      #card.show { display: grid; }
+      #cardInner {
+        background: #11243a; border: 1px solid rgba(255,255,255,0.16);
+        border-radius: 16px; padding: 28px 34px; min-width: 320px;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+      }
+      #cardInner h1 { font-size: 24px; margin-bottom: 4px; }
+      #cardInner .sub { opacity: 0.7; font-size: 13px; margin-bottom: 18px; }
+      table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+      th, td { padding: 7px 10px; text-align: right; }
+      th:first-child, td:first-child { text-align: left; }
+      thead th { font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; opacity: 0.6; border-bottom: 1px solid rgba(255,255,255,0.18); }
+      tbody tr:not(:last-child) td { border-bottom: 1px solid rgba(255,255,255,0.07); }
+      tfoot td { border-top: 2px solid rgba(255,255,255,0.22); font-weight: 700; font-size: 16px; }
+      .total-good { color: #6ee7a8; }
+      .total-bad { color: #fca5a5; }
+      #playAgain {
+        margin-top: 20px; width: 100%; padding: 11px; font-size: 15px; font-weight: 600;
+        background: #2f7de0; color: white; border: none; border-radius: 10px; cursor: pointer;
+      }
+      #playAgain:hover { background: #3b8af0; }
+    </style>
+    <script type="module" crossorigin src="./assets/index-B9kAZCVe.js"></script>
+  </head>
+  <body>
+    <div id="app"></div>
+    <div id="hud">
+      <div id="scorebar" class="panel">
+        <div class="cell"><span class="lbl">Hole</span><span class="big" id="holeNum">1</span></div>
+        <div class="cell"><span class="lbl">Par</span><span class="big" id="holePar">2</span></div>
+        <div class="cell"><span class="lbl">Strokes</span><span class="big" id="strokeCount">0</span></div>
+        <div class="cell"><span class="lbl">Total</span><span class="big" id="totalScore">E</span></div>
+      </div>
+      <div id="power" class="panel">
+        <div class="lbl">Power — hold <b>Space</b> / mouse</div>
+        <div id="powerTrack"><div id="powerFill"></div></div>
+      </div>
+      <div id="help" class="panel">
+        <b>Aim</b> with the mouse (drag to rotate view). <b>Hold</b> Space or click-hold to charge power, <b>release</b> to putt.
+        The ball rolls, bounces off walls/bumpers, and over the ramp. Sink it in the cup in as few strokes as you can.
+      </div>
+      <div id="toast" class="panel"></div>
+    </div>
+    <div id="card">
+      <div id="cardInner">
+        <h1>Final Scorecard</h1>
+        <div class="sub">3-hole course — Putt (three.js)</div>
+        <table id="cardTable"></table>
+        <button id="playAgain">Play again</button>
+      </div>
+    </div>
+  </body>
+</html>
