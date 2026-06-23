@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Delve — procedural dungeon crawler</title>
+    <style>
+      html, body {
+        margin: 0;
+        height: 100%;
+        background: #05060a;
+        overflow: hidden;
+        font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+        color: #cdd6e4;
+      }
+      #app { position: fixed; inset: 0; }
+      canvas { display: block; }
+      #hud {
+        position: fixed;
+        top: 12px;
+        left: 14px;
+        font-size: 13px;
+        line-height: 1.5;
+        text-shadow: 0 1px 2px #000;
+        pointer-events: none;
+        user-select: none;
+      }
+      #hud .title { font-size: 16px; font-weight: 700; color: #ffd27d; }
+      #hud .key { color: #7fd0ff; }
+      #toast {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        padding: 18px 26px;
+        background: rgba(8, 10, 18, 0.82);
+        border: 1px solid #2c3550;
+        border-radius: 10px;
+        font-size: 22px;
+        font-weight: 700;
+        color: #ffe6a0;
+        text-align: center;
+        opacity: 0;
+        transition: opacity 0.35s ease;
+        pointer-events: none;
+      }
+      #toast.show { opacity: 1; }
+    </style>
+    <script type="module" crossorigin src="./assets/index-BJ7OGfNU.js"></script>
+  </head>
+  <body>
+    <div id="app"></div>
+    <div id="hud">
+      <div class="title">DELVE</div>
+      <div><span class="key">WASD</span> / arrows&nbsp; move</div>
+      <div>collect <span style="color:#ffd27d">gold</span>, avoid the <span style="color:#ff7a7a">crawlers</span></div>
+      <div>reach the <span style="color:#7dff9e">exit</span></div>
+      <div id="stats"></div>
+    </div>
+    <div id="toast"></div>
+  </body>
+</html>
