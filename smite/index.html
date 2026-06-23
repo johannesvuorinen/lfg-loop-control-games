@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+    <title>Smite</title>
+    <style>
+      :root { color-scheme: dark; }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { height: 100%; overflow: hidden; background: #0a0c14; }
+      #app { position: fixed; inset: 0; }
+
+      /* CSS2DRenderer overlay sits on top of the WebGL canvas.
+         pointer-events:none lets clicks pass through to the game. */
+      #labels { position: fixed; inset: 0; pointer-events: none; overflow: hidden; }
+
+      .dmg {
+        position: absolute;
+        font-family: "Trebuchet MS", system-ui, sans-serif;
+        font-weight: 900;
+        font-size: 30px;
+        line-height: 1;
+        white-space: nowrap;
+        letter-spacing: -0.5px;
+        color: #ffe14d;
+        text-shadow:
+          0 0 6px rgba(0,0,0,0.9),
+          0 2px 0 #7a3b00,
+          0 0 14px rgba(255,170,0,0.55);
+        /* transform/opacity set per-frame from JS; translate(-50%,-50%) keeps anchor centered */
+        will-change: transform, opacity;
+      }
+      .dmg.crit  { color: #ff5a4d; font-size: 44px; text-shadow: 0 0 8px rgba(0,0,0,0.95), 0 2px 0 #7a0000, 0 0 18px rgba(255,60,40,0.7); }
+      .dmg.kill  { color: #9dff5a; }
+
+      #hud {
+        position: fixed; left: 14px; top: 12px; pointer-events: none;
+        font-family: "Trebuchet MS", system-ui, sans-serif; color: #e7ecff;
+        text-shadow: 0 1px 3px rgba(0,0,0,0.8); user-select: none;
+      }
+      #combo { font-weight: 900; font-size: 40px; line-height: 1; color: #ffd24a; transition: transform .08s ease-out; }
+      #combo.bump { transform: scale(1.25); }
+      #combo .x { font-size: 24px; opacity: .8; }
+      #combo.hide { opacity: 0; }
+      #sub { font-size: 13px; opacity: .75; margin-top: 4px; font-weight: 600; }
+
+      #help {
+        position: fixed; left: 50%; bottom: 18px; transform: translateX(-50%);
+        pointer-events: none; font-family: system-ui, sans-serif; font-size: 13px;
+        color: #aab2cc; text-align: center; user-select: none;
+        text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+      }
+      #help b { color: #ffd24a; }
+    </style>
+    <script type="module" crossorigin src="./assets/index-BPbhdD7h.js"></script>
+  </head>
+  <body>
+    <div id="app"></div>
+    <div id="labels"></div>
+    <div id="hud">
+      <div id="combo" class="hide">0<span class="x">x</span></div>
+      <div id="sub">COMBO</div>
+    </div>
+    <div id="help">Move <b>WASD</b> &nbsp;·&nbsp; Aim <b>Mouse</b> &nbsp;·&nbsp; Attack <b>Click</b> / <b>Space</b></div>
+  </body>
+</html>
