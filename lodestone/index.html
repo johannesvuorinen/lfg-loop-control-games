@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Lodestone</title>
+    <style>
+      :root {
+        --accent: #4fd0ff;
+        --accent-warm: #ffb347;
+        --bg: #05060d;
+        --hud-fg: #cfe9ff;
+      }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body {
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background: var(--bg);
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        color: var(--hud-fg);
+        user-select: none;
+      }
+      #app { position: fixed; inset: 0; }
+      canvas { display: block; }
+
+      /* ---------- HUD ---------- */
+      #hud {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        z-index: 10;
+      }
+      .panel {
+        position: absolute;
+        background: rgba(8, 14, 28, 0.55);
+        border: 1px solid rgba(79, 208, 255, 0.25);
+        border-radius: 10px;
+        padding: 12px 16px;
+        backdrop-filter: blur(6px);
+        -webkit-backdrop-filter: blur(6px);
+      }
+      #stats {
+        top: 16px;
+        left: 16px;
+        min-width: 180px;
+      }
+      .stat-row {
+        display: flex;
+        justify-content: space-between;
+        gap: 18px;
+        font-size: 14px;
+        line-height: 1.7;
+      }
+      .stat-row .label { color: rgba(207, 233, 255, 0.6); text-transform: uppercase; letter-spacing: 0.06em; font-size: 11px; }
+      .stat-row .value { font-variant-numeric: tabular-nums; font-weight: 600; color: var(--accent); }
+      #target-row .value { color: var(--accent-warm); }
+
+      #perf {
+        top: 16px;
+        right: 16px;
+        font-size: 12px;
+        font-variant-numeric: tabular-nums;
+        color: rgba(207, 233, 255, 0.55);
+        text-align: right;
+      }
+      #perf .fps { color: var(--accent); font-weight: 600; font-size: 14px; }
+
+      #help {
+        bottom: 16px;
+        left: 16px;
+        font-size: 12px;
+        color: rgba(207, 233, 255, 0.65);
+        line-height: 1.8;
+      }
+      #help kbd {
+        background: rgba(79, 208, 255, 0.12);
+        border: 1px solid rgba(79, 208, 255, 0.3);
+        border-radius: 4px;
+        padding: 1px 7px;
+        font-family: inherit;
+        font-size: 11px;
+        color: var(--accent);
+      }
+      .mode-pill {
+        display: inline-block;
+        margin-left: 6px;
+        padding: 1px 8px;
+        border-radius: 999px;
+        font-size: 11px;
+        font-weight: 600;
+      }
+      .mode-attract { background: rgba(79,208,255,0.2); color: var(--accent); }
+      .mode-repel { background: rgba(255,99,99,0.2); color: #ff6b6b; }
+
+      /* ---------- Banner / win ---------- */
+      #banner {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        text-align: center;
+        opacity: 0;
+        transition: opacity 0.4s ease;
+      }
+      #banner.show { opacity: 1; }
+      #banner h1 {
+        font-size: 52px;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+        background: linear-gradient(135deg, var(--accent), #b388ff);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        margin-bottom: 8px;
+      }
+      #banner p { font-size: 16px; color: rgba(207,233,255,0.7); }
+      #banner .hint { margin-top: 18px; font-size: 13px; color: rgba(207,233,255,0.5); }
+
+      /* crosshair */
+      #crosshair {
+        position: fixed;
+        width: 22px; height: 22px;
+        margin-left: -11px; margin-top: -11px;
+        pointer-events: none;
+        z-index: 9;
+        opacity: 0.8;
+      }
+      #crosshair::before, #crosshair::after {
+        content: ""; position: absolute; background: var(--accent);
+      }
+      #crosshair::before { left: 50%; top: 0; width: 2px; height: 100%; margin-left: -1px; }
+      #crosshair::after { top: 50%; left: 0; height: 2px; width: 100%; margin-top: -1px; }
+    </style>
+    <script type="module" crossorigin src="./assets/index-B4apv7Si.js"></script>
+  </head>
+  <body>
+    <div id="app"></div>
+
+    <div id="hud">
+      <div id="stats" class="panel">
+        <div class="stat-row"><span class="label">Score</span><span class="value" id="score">0</span></div>
+        <div class="stat-row" id="target-row"><span class="label">Collected</span><span class="value" id="collected">0 / 0</span></div>
+        <div class="stat-row"><span class="label">Field</span><span class="value" id="field">0</span></div>
+        <div class="stat-row"><span class="label">Time</span><span class="value" id="time">0.0s</span></div>
+      </div>
+
+      <div id="perf" class="panel">
+        <span class="fps" id="fps">– fps</span><br />
+        <span id="bodies">0 bodies</span>
+      </div>
+
+      <div id="help" class="panel">
+        <div><kbd>WASD</kbd> move &nbsp; <kbd>Space</kbd>/<kbd>Ctrl</kbd> up/down &nbsp; <kbd>Mouse</kbd> aim</div>
+        <div><kbd>Hold LMB</kbd> tractor beam &nbsp; <kbd>RMB</kbd> repel &nbsp; <kbd>R</kbd> reset</div>
+        <div>Mode:<span class="mode-pill mode-attract" id="mode">ATTRACT</span></div>
+      </div>
+
+      <div id="banner">
+        <h1 id="banner-title">FIELD CLEARED</h1>
+        <p id="banner-sub">All ore recovered</p>
+        <div class="hint">Press <kbd>R</kbd> to play again</div>
+      </div>
+    </div>
+    <div id="crosshair"></div>
+
+  </body>
+</html>
