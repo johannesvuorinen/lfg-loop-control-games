@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Flipper — three.js Pinball</title>
+    <style>
+      :root {
+        color-scheme: dark;
+      }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body {
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background: #05060d;
+        font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        user-select: none;
+      }
+      #app { position: fixed; inset: 0; }
+      canvas { display: block; }
+
+      /* ---- HUD ---- */
+      #hud {
+        position: fixed;
+        top: 0; left: 0; right: 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        padding: 18px 24px;
+        pointer-events: none;
+        z-index: 10;
+        text-shadow: 0 2px 8px rgba(0,0,0,0.8);
+      }
+      .hud-block { display: flex; flex-direction: column; gap: 2px; }
+      .hud-label {
+        font-size: 12px;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        color: #6cf3ff;
+        opacity: 0.85;
+      }
+      .hud-value {
+        font-size: 34px;
+        font-weight: 800;
+        color: #ffffff;
+        font-variant-numeric: tabular-nums;
+        line-height: 1;
+      }
+      #balls-row { display: flex; gap: 7px; margin-top: 4px; }
+      .ball-pip {
+        width: 14px; height: 14px; border-radius: 50%;
+        background: radial-gradient(circle at 35% 30%, #fff, #ff5a8a 60%, #b01050);
+        box-shadow: 0 0 8px #ff5a8a;
+      }
+      .ball-pip.spent { background: #2a2f44; box-shadow: none; opacity: 0.5; }
+
+      #title-tag {
+        position: fixed;
+        top: 14px; left: 50%; transform: translateX(-50%);
+        font-size: 13px; letter-spacing: 6px; text-transform: uppercase;
+        color: #ffd86c; opacity: 0.9; z-index: 10; pointer-events: none;
+        text-shadow: 0 0 12px rgba(255,180,40,0.6);
+      }
+
+      /* ---- center messages ---- */
+      #overlay {
+        position: fixed; inset: 0;
+        display: flex; flex-direction: column;
+        align-items: center; justify-content: center;
+        gap: 18px; z-index: 20; pointer-events: none;
+        text-align: center;
+      }
+      #overlay.hidden { display: none; }
+      #overlay-title {
+        font-size: 64px; font-weight: 900; letter-spacing: 2px;
+        color: #ffffff;
+        text-shadow: 0 0 30px rgba(108,243,255,0.7), 0 4px 12px rgba(0,0,0,0.9);
+      }
+      #overlay-sub {
+        font-size: 19px; color: #cfe9ff; max-width: 540px; line-height: 1.55;
+      }
+      .key {
+        display: inline-block; padding: 2px 9px; margin: 0 2px;
+        border-radius: 6px; background: #1b2236;
+        border: 1px solid #3a4668; color: #9fd8ff; font-weight: 700;
+        font-size: 15px;
+      }
+      #flash {
+        position: fixed; left: 50%; top: 38%; transform: translateX(-50%);
+        font-size: 40px; font-weight: 900; color: #ffd86c; z-index: 15;
+        pointer-events: none; opacity: 0; text-shadow: 0 0 20px rgba(255,180,40,0.9);
+        transition: opacity 0.15s ease;
+      }
+    </style>
+    <script type="module" crossorigin src="./assets/index-BLh5U8L7.js"></script>
+  </head>
+  <body>
+    <div id="app"></div>
+
+    <div id="title-tag">◆ Flipper ◆</div>
+
+    <div id="hud">
+      <div class="hud-block">
+        <span class="hud-label">Score</span>
+        <span class="hud-value" id="score">0</span>
+      </div>
+      <div class="hud-block" style="align-items:flex-end;">
+        <span class="hud-label">Balls</span>
+        <div id="balls-row"></div>
+      </div>
+    </div>
+
+    <div id="flash"></div>
+
+    <div id="overlay">
+      <div id="overlay-title">FLIPPER</div>
+      <div id="overlay-sub"></div>
+    </div>
+
+  </body>
+</html>
