@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dual — Twin-Stick Arena</title>
+    <style>
+      :root { color-scheme: dark; }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 100%; height: 100%; overflow: hidden; background: #05060a; }
+      #app { position: fixed; inset: 0; }
+      canvas { display: block; }
+
+      /* ---- HUD ---- */
+      #hud {
+        position: fixed; inset: 0; pointer-events: none;
+        font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+        color: #e8f6ff; user-select: none;
+      }
+      #hud .row {
+        position: absolute; top: 14px; left: 0; right: 0;
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 0 22px;
+      }
+      #score { font-size: 30px; font-weight: 700; letter-spacing: 1px;
+        text-shadow: 0 0 12px rgba(80,200,255,.6); }
+      #score small { font-size: 13px; font-weight: 500; opacity: .6; letter-spacing: 2px; }
+      #wave { font-size: 18px; font-weight: 600; opacity: .9;
+        text-shadow: 0 0 10px rgba(255,120,80,.5); }
+
+      /* health bar */
+      #healthWrap {
+        position: absolute; left: 22px; bottom: 22px;
+        width: 230px; height: 16px; border-radius: 9px;
+        background: rgba(255,255,255,.08);
+        border: 1px solid rgba(255,255,255,.18);
+        overflow: hidden;
+        box-shadow: 0 0 18px rgba(0,0,0,.5);
+      }
+      #healthFill {
+        height: 100%; width: 100%;
+        background: linear-gradient(90deg, #36f1a3, #7ef9c8);
+        box-shadow: 0 0 14px rgba(60,240,160,.7) inset;
+        transition: width .12s ease-out, background .2s;
+      }
+      #healthLabel {
+        position: absolute; left: 24px; bottom: 42px;
+        font-size: 11px; letter-spacing: 3px; opacity: .55; font-weight: 600;
+      }
+
+      /* input source pill */
+      #inputSrc {
+        position: absolute; right: 22px; bottom: 22px;
+        font-size: 12px; letter-spacing: 2px; opacity: .5; font-weight: 600;
+      }
+
+      /* center overlays */
+      #overlay {
+        position: absolute; inset: 0; display: flex;
+        flex-direction: column; align-items: center; justify-content: center;
+        text-align: center; gap: 14px; pointer-events: auto;
+        background: radial-gradient(ellipse at center, rgba(5,6,10,.35), rgba(5,6,10,.82));
+        backdrop-filter: blur(2px);
+      }
+      #overlay.hidden { display: none; }
+      #overlay h1 { font-size: 64px; font-weight: 800; letter-spacing: 8px;
+        text-shadow: 0 0 24px rgba(80,200,255,.7); }
+      #overlay h1 .x { color: #ff7a55; text-shadow: 0 0 24px rgba(255,120,80,.8); }
+      #overlay p { font-size: 16px; opacity: .8; max-width: 440px; line-height: 1.5; }
+      #overlay .keys { font-size: 13px; opacity: .55; letter-spacing: 1px; }
+      #overlay .start {
+        margin-top: 8px; font-size: 18px; font-weight: 700; letter-spacing: 2px;
+        color: #36f1a3; animation: pulse 1.4s ease-in-out infinite;
+      }
+      #overlay .final { font-size: 22px; font-weight: 700; color: #ffd27a; }
+      @keyframes pulse { 0%,100%{opacity:.5} 50%{opacity:1} }
+    </style>
+    <script type="module" crossorigin src="./assets/index-ChhWCXDc.js"></script>
+  </head>
+  <body>
+    <div id="app"></div>
+
+    <div id="hud">
+      <div class="row">
+        <div id="score">0 <small>SCORE</small></div>
+        <div id="wave">WAVE 1</div>
+      </div>
+      <div id="healthLabel">HULL</div>
+      <div id="healthWrap"><div id="healthFill"></div></div>
+      <div id="inputSrc">KEYBOARD + MOUSE</div>
+    </div>
+
+    <div id="overlay">
+      <h1>DUAL</h1>
+      <p>Top-down twin-stick arena shooter. Move and aim independently — survive the waves.</p>
+      <div class="keys">WASD / left stick = move &nbsp;·&nbsp; mouse / right stick = aim &amp; auto-fire</div>
+      <div class="start">PRESS ANY KEY · CLICK · OR GAMEPAD TO START</div>
+    </div>
+
+  </body>
+</html>
