@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Buoy — a tiny buoyancy sandbox</title>
+    <!-- inline favicon (no extra request / no 404) -->
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230a1726'/%3E%3Cpath d='M2 22c4 0 4 3 8 3s4-3 8-3 4 3 8 3 6-3 6-3v8H2z' fill='%232f7fb8'/%3E%3Ccircle cx='16' cy='14' r='6' fill='%23ff5c5c'/%3E%3Ccircle cx='16' cy='14' r='2.4' fill='%23ffcf5c'/%3E%3C/svg%3E" />
+    <style>
+      :root {
+        --ui-bg: rgba(8, 22, 38, 0.72);
+        --ui-border: rgba(120, 200, 255, 0.28);
+        --accent: #46c8ff;
+        --accent-warm: #ffcf5c;
+        --good: #5cffa6;
+      }
+      * { box-sizing: border-box; }
+      html, body {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        overflow: hidden;
+        background: #0a1726;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        color: #eaf6ff;
+        -webkit-user-select: none;
+        user-select: none;
+        touch-action: none;
+      }
+      #app { position: fixed; inset: 0; }
+      canvas { display: block; }
+
+      /* ---------- HUD ---------- */
+      #hud {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      }
+      .panel {
+        background: var(--ui-bg);
+        border: 1px solid var(--ui-border);
+        border-radius: 14px;
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        box-shadow: 0 6px 24px rgba(0, 0, 0, 0.35);
+      }
+
+      #topbar {
+        margin: 14px;
+        padding: 12px 16px;
+        display: flex;
+        gap: 22px;
+        align-items: center;
+        align-self: flex-start;
+        pointer-events: auto;
+      }
+      .stat { display: flex; flex-direction: column; line-height: 1.1; }
+      .stat .label {
+        font-size: 10px;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: #9cc6e6;
+      }
+      .stat .value {
+        font-size: 22px;
+        font-weight: 700;
+        font-variant-numeric: tabular-nums;
+      }
+      .stat .value.good { color: var(--good); }
+      .stat .value.warm { color: var(--accent-warm); }
+
+      #title {
+        font-size: 17px;
+        font-weight: 800;
+        letter-spacing: 0.02em;
+        padding-right: 10px;
+        border-right: 1px solid var(--ui-border);
+        margin-right: 4px;
+      }
+      #title small {
+        display: block;
+        font-size: 10px;
+        font-weight: 500;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: #7fb8dd;
+      }
+
+      #goalbar {
+        align-self: center;
+        margin-top: 14px;
+        padding: 8px 18px;
+        font-size: 13px;
+        color: #cfeaff;
+        pointer-events: auto;
+      }
+      #goalbar b { color: var(--accent-warm); }
+
+      #bottombar {
+        margin: 14px;
+        padding: 12px;
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        align-self: center;
+        pointer-events: auto;
+      }
+      button.btn {
+        pointer-events: auto;
+        cursor: pointer;
+        border: 1px solid var(--ui-border);
+        background: linear-gradient(180deg, rgba(40, 90, 130, 0.55), rgba(20, 50, 80, 0.55));
+        color: #eaf6ff;
+        font-size: 14px;
+        font-weight: 600;
+        padding: 11px 16px;
+        border-radius: 11px;
+        transition: transform 0.06s ease, background 0.15s ease, border 0.15s ease;
+        min-width: 96px;
+      }
+      button.btn:hover { background: linear-gradient(180deg, rgba(55, 115, 165, 0.7), rgba(28, 66, 100, 0.7)); }
+      button.btn:active { transform: translateY(1px) scale(0.98); }
+      button.btn .key {
+        display: inline-block;
+        font-size: 10px;
+        opacity: 0.7;
+        margin-left: 6px;
+        padding: 1px 5px;
+        border: 1px solid rgba(255,255,255,0.25);
+        border-radius: 5px;
+      }
+      button.btn.primary { background: linear-gradient(180deg, #2f93d6, #1d6fb0); border-color: #6fd0ff; }
+      button.btn.warm { background: linear-gradient(180deg, #d68a2f, #b0631d); border-color: #ffcf5c; }
+      button.btn.ghost { background: rgba(20, 40, 60, 0.45); }
+
+      #hint {
+        position: fixed;
+        bottom: 86px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 12px;
+        color: #9cc6e6;
+        text-align: center;
+        pointer-events: none;
+        text-shadow: 0 1px 4px rgba(0,0,0,0.6);
+        width: 90%;
+      }
+
+      /* toast */
+      #toast {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) scale(0.9);
+        padding: 14px 26px;
+        font-size: 20px;
+        font-weight: 800;
+        color: #06231a;
+        background: var(--good);
+        border-radius: 14px;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.25s ease, transform 0.25s ease;
+        box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+      }
+      #toast.show { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+
+      @media (max-width: 560px) {
+        #topbar { gap: 14px; padding: 10px 12px; }
+        .stat .value { font-size: 18px; }
+        button.btn { min-width: 0; flex: 1 1 30%; padding: 12px 8px; font-size: 13px; }
+        #title { font-size: 14px; }
+      }
+    </style>
+    <script type="module" crossorigin src="./assets/index-DC35dF-0.js"></script>
+  </head>
+  <body>
+    <div id="app"></div>
+
+    <div id="hud">
+      <div style="display:flex; flex-direction:column; align-items:center;">
+        <div id="topbar" class="panel">
+          <div id="title">BUOY<small>buoyancy sandbox</small></div>
+          <div class="stat">
+            <span class="label">Score</span>
+            <span class="value good" id="stat-score">0</span>
+          </div>
+          <div class="stat">
+            <span class="label">In zone</span>
+            <span class="value warm" id="stat-inzone">0</span>
+          </div>
+          <div class="stat">
+            <span class="label">Floating</span>
+            <span class="value" id="stat-floating">0</span>
+          </div>
+        </div>
+        <div id="goalbar" class="panel">
+          Float <b id="goal-need">3</b> objects into the glowing ring and hold them there.
+        </div>
+      </div>
+
+      <div>
+        <div id="hint">Drag to orbit · scroll to zoom · drop objects and guide them into the ring</div>
+        <div id="bottombar" class="panel">
+          <button class="btn primary" id="btn-drop">Drop Crate <span class="key">SPACE</span></button>
+          <button class="btn warm" id="btn-drop-heavy">Drop Barrel <span class="key">H</span></button>
+          <button class="btn" id="btn-nudge">Nudge <span class="key">N</span></button>
+          <button class="btn ghost" id="btn-reset">Reset <span class="key">R</span></button>
+        </div>
+      </div>
+    </div>
+
+    <div id="toast"></div>
+
+  </body>
+</html>
