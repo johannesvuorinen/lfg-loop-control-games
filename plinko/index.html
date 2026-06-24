@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Plinko — three.js</title>
+    <style>
+      :root { color-scheme: dark; }
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      html, body { height: 100%; overflow: hidden; background: #0a0e1a; font-family: ui-monospace, "SF Mono", Menlo, monospace; }
+      #app { position: fixed; inset: 0; }
+      canvas { display: block; }
+
+      #hud {
+        position: fixed; top: 16px; left: 16px; z-index: 10;
+        display: flex; gap: 14px; align-items: stretch;
+        pointer-events: none;
+      }
+      .stat {
+        background: rgba(14, 22, 44, 0.78);
+        border: 1px solid rgba(120, 160, 255, 0.35);
+        border-radius: 12px;
+        padding: 10px 16px;
+        min-width: 110px;
+        box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+        backdrop-filter: blur(6px);
+      }
+      .stat .label { font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: #6f86c9; }
+      .stat .value { font-size: 26px; font-weight: 700; color: #eaf0ff; line-height: 1.1; margin-top: 2px; }
+      .stat .value.score { color: #ffd55e; }
+      .stat .delta { font-size: 12px; color: #5dffa0; height: 14px; }
+
+      #controls {
+        position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%);
+        z-index: 10; display: flex; gap: 10px; align-items: center;
+        background: rgba(14, 22, 44, 0.82);
+        border: 1px solid rgba(120, 160, 255, 0.3);
+        border-radius: 14px; padding: 10px 14px;
+        box-shadow: 0 6px 30px rgba(0,0,0,0.5);
+        backdrop-filter: blur(8px);
+      }
+      button {
+        font-family: inherit; font-size: 13px; font-weight: 600;
+        color: #eaf0ff; background: linear-gradient(180deg,#2b3c74,#1d2b5a);
+        border: 1px solid rgba(140,180,255,0.4); border-radius: 10px;
+        padding: 9px 16px; cursor: pointer; transition: transform .06s ease, filter .12s ease;
+      }
+      button:hover { filter: brightness(1.18); }
+      button:active { transform: translateY(1px) scale(0.98); }
+      button.burst { background: linear-gradient(180deg,#a23bd6,#6e2ba8); border-color: rgba(220,150,255,0.5); }
+      button.auto.on { background: linear-gradient(180deg,#2bd6a2,#1a9e78); border-color: rgba(150,255,220,0.5); }
+      .hint { color: #6f86c9; font-size: 12px; padding: 0 6px; }
+
+      #title {
+        position: fixed; top: 16px; right: 18px; z-index: 10; text-align: right;
+        pointer-events: none;
+      }
+      #title h1 { font-size: 22px; letter-spacing: 4px; color: #eaf0ff; text-shadow: 0 2px 12px rgba(120,160,255,.5); }
+      #title p { font-size: 11px; color: #6f86c9; letter-spacing: 2px; }
+    </style>
+    <script type="module" crossorigin src="./assets/index-CcQweDxQ.js"></script>
+  </head>
+  <body>
+    <div id="app"></div>
+
+    <div id="hud">
+      <div class="stat">
+        <div class="label">Score</div>
+        <div class="value score" id="score">0</div>
+        <div class="delta" id="delta"></div>
+      </div>
+      <div class="stat">
+        <div class="label">Balls</div>
+        <div class="value" id="balls">0</div>
+        <div class="delta"></div>
+      </div>
+      <div class="stat">
+        <div class="label">In Play</div>
+        <div class="value" id="active">0</div>
+        <div class="delta"></div>
+      </div>
+    </div>
+
+    <div id="title">
+      <h1>PLINKO</h1>
+      <p>three.js · hand-rolled physics</p>
+    </div>
+
+    <div id="controls">
+      <span class="hint">Click board / ← → to aim · Space = drop</span>
+      <button id="drop">Drop ●</button>
+      <button id="burst" class="burst">Drop a Burst ✦</button>
+      <button id="auto" class="auto">Auto</button>
+    </div>
+
+  </body>
+</html>
