@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Barrage</title>
+    <!-- inline SVG favicon (a glowing bullet) — avoids a 404 /favicon.ico request -->
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='9' fill='%23ff4d6d'/%3E%3Ccircle cx='16' cy='16' r='4' fill='%23ffe14d'/%3E%3C/svg%3E" />
+    <style>
+      :root { color-scheme: dark; }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 100%; height: 100%; overflow: hidden; background: #05060d; }
+      body { font-family: "Segoe UI", system-ui, sans-serif; }
+      #app { position: fixed; inset: 0; }
+      canvas { display: block; width: 100%; height: 100%; }
+
+      /* ---- HUD ---- */
+      #hud {
+        position: fixed; inset: 0; pointer-events: none;
+        color: #e9f0ff; user-select: none;
+      }
+      .hud-top {
+        position: absolute; top: 0; left: 0; right: 0;
+        padding: 14px 22px;
+        display: flex; align-items: flex-start; justify-content: space-between;
+        gap: 16px;
+      }
+      .hud-left { display: flex; flex-direction: column; gap: 6px; }
+      .boss-name {
+        font-size: 13px; letter-spacing: 3px; text-transform: uppercase;
+        color: #ff5b87; text-shadow: 0 0 8px rgba(255,91,135,.7);
+      }
+      .hpbar-wrap {
+        width: min(46vw, 620px); height: 12px;
+        background: rgba(255,255,255,.08);
+        border: 1px solid rgba(255,255,255,.18);
+        border-radius: 7px; overflow: hidden;
+        box-shadow: 0 0 14px rgba(255,60,100,.25) inset;
+      }
+      #hpbar {
+        height: 100%; width: 100%;
+        background: linear-gradient(90deg,#ff2d55,#ff7b54,#ffd35b);
+        transition: width .08s linear;
+        box-shadow: 0 0 12px rgba(255,90,120,.8);
+      }
+      .phase-pips { display: flex; gap: 6px; margin-top: 2px; }
+      .pip { width: 26px; height: 4px; border-radius: 2px; background: rgba(255,255,255,.18); }
+      .pip.on { background: #ffd35b; box-shadow: 0 0 8px rgba(255,211,91,.9); }
+
+      .hud-right { text-align: right; display: flex; flex-direction: column; gap: 4px; }
+      .score { font-size: 26px; font-weight: 700; letter-spacing: 1px; text-shadow: 0 0 10px rgba(120,180,255,.6); }
+      .score-label { font-size: 10px; letter-spacing: 3px; color: #8fa6c8; text-transform: uppercase; }
+      .lives { font-size: 20px; letter-spacing: 2px; color: #6fe3ff; text-shadow: 0 0 8px rgba(111,227,255,.7); }
+
+      .stats {
+        position: absolute; bottom: 10px; left: 14px;
+        font-size: 11px; color: #6f8099; font-variant-numeric: tabular-nums;
+        line-height: 1.5;
+      }
+
+      /* ---- Overlays ---- */
+      .overlay {
+        position: fixed; inset: 0; pointer-events: auto;
+        display: flex; flex-direction: column; align-items: center; justify-content: center;
+        gap: 18px; text-align: center;
+        background: radial-gradient(circle at 50% 40%, rgba(20,24,48,.72), rgba(5,6,13,.92));
+        color: #eef3ff; z-index: 10;
+      }
+      .overlay.hidden { display: none; }
+      .title {
+        font-size: clamp(40px, 9vw, 96px); font-weight: 800; letter-spacing: 8px;
+        background: linear-gradient(90deg,#6fe3ff,#ff5b87,#ffd35b);
+        -webkit-background-clip: text; background-clip: text; color: transparent;
+        text-shadow: 0 0 40px rgba(120,180,255,.25);
+      }
+      .subtitle { font-size: 15px; color: #aebfdc; max-width: 560px; line-height: 1.7; }
+      .keyhint { color: #6fe3ff; font-weight: 600; }
+      .big-result { font-size: clamp(34px, 7vw, 72px); font-weight: 800; letter-spacing: 4px; }
+      .win { color: #7dffb0; text-shadow: 0 0 30px rgba(125,255,176,.5); }
+      .lose { color: #ff6b6b; text-shadow: 0 0 30px rgba(255,107,107,.5); }
+      .prompt {
+        margin-top: 6px; font-size: 14px; color: #c8d6f0;
+        animation: pulse 1.4s ease-in-out infinite;
+      }
+      @keyframes pulse { 0%,100% { opacity: .4 } 50% { opacity: 1 } }
+      .hit-flash {
+        position: fixed; inset: 0; pointer-events: none; z-index: 5;
+        background: radial-gradient(circle at 50% 55%, transparent 55%, rgba(255,40,80,.55));
+        opacity: 0; transition: opacity .12s ease-out;
+      }
+    </style>
+    <script type="module" crossorigin src="./assets/index-D4l2t3z3.js"></script>
+  </head>
+  <body>
+    <div id="app"></div>
+
+    <div class="hit-flash" id="hitflash"></div>
+
+    <div id="hud">
+      <div class="hud-top">
+        <div class="hud-left">
+          <div class="boss-name">◈ OVERSEER ◈</div>
+          <div class="hpbar-wrap"><div id="hpbar"></div></div>
+          <div class="phase-pips" id="pips"></div>
+        </div>
+        <div class="hud-right">
+          <div class="score-label">Score</div>
+          <div class="score" id="score">0</div>
+          <div class="lives" id="lives">♥ ♥ ♥</div>
+        </div>
+      </div>
+      <div class="stats" id="stats"></div>
+    </div>
+
+    <div class="overlay" id="startScreen">
+      <div class="title">BARRAGE</div>
+      <div class="subtitle">
+        A bullet-hell boss fight. Weave through hundreds of bullets, return fire,
+        and break the <b>Overseer</b> across three phases.<br/><br/>
+        <b>WASD / Arrows</b> — move &nbsp;·&nbsp; <b>hold Shift</b> — focus (slow, precise)<br/>
+        You fire automatically. One touch costs a life.
+      </div>
+      <div class="prompt">Press <span class="keyhint">SPACE</span> or click to begin</div>
+    </div>
+
+    <div class="overlay hidden" id="endScreen">
+      <div class="big-result" id="endResult">VICTORY</div>
+      <div class="subtitle" id="endDetail"></div>
+      <div class="prompt">Press <span class="keyhint">SPACE</span> or click to retry</div>
+    </div>
+
+  </body>
+</html>
