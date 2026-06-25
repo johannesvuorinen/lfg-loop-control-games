@@ -3,42 +3,95 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Bastion — Tower Defense</title>
-    <script type="module" crossorigin src="./assets/index-No7mf6PF.js"></script>
-    <link rel="stylesheet" crossorigin href="./assets/index-C9ar_z4H.css">
+    <title>Bastion — three.js</title>
+    <style>
+      :root {
+        --hud-fg: #e8f0ff;
+        --hud-accent: #6fd3ff;
+        --hud-win: #7CFC9A;
+      }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 100%; height: 100%; overflow: hidden; background: #0a0e16; }
+      #app { position: fixed; inset: 0; }
+      canvas { display: block; }
+
+      #hud {
+        position: fixed;
+        top: 16px;
+        left: 16px;
+        font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
+        color: var(--hud-fg);
+        text-shadow: 0 1px 3px rgba(0,0,0,0.7);
+        pointer-events: none;
+        user-select: none;
+        z-index: 10;
+      }
+      #hud .title {
+        font-size: 22px;
+        font-weight: 700;
+        letter-spacing: 2px;
+        color: var(--hud-accent);
+      }
+      #hud .sub {
+        font-size: 13px;
+        opacity: 0.7;
+        margin-top: 2px;
+      }
+      #hud .targets {
+        margin-top: 12px;
+        font-size: 18px;
+        font-weight: 600;
+      }
+      #hud .targets .n { color: var(--hud-accent); }
+      #hud .controls {
+        margin-top: 10px;
+        font-size: 12px;
+        opacity: 0.6;
+        line-height: 1.5;
+      }
+
+      #banner {
+        position: fixed;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        pointer-events: none;
+        z-index: 20;
+        opacity: 0;
+        transition: opacity 0.5s ease;
+      }
+      #banner.show { opacity: 1; }
+      #banner .big {
+        font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
+        font-size: 72px;
+        font-weight: 800;
+        letter-spacing: 6px;
+        color: var(--hud-win);
+        text-shadow: 0 0 30px rgba(124,252,154,0.6), 0 4px 10px rgba(0,0,0,0.8);
+      }
+      #banner .small {
+        margin-top: 8px;
+        font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
+        font-size: 16px;
+        color: var(--hud-fg);
+        opacity: 0.8;
+      }
+    </style>
+    <script type="module" crossorigin src="./assets/index-BSm3we-o.js"></script>
   </head>
   <body>
-    <div id="app">
-      <canvas id="game"></canvas>
-
-      <!-- HUD -->
-      <div id="hud">
-        <div class="hud-row">
-          <div class="stat" id="stat-wave"><span class="label">WAVE</span><span class="value" id="wave-val">0</span></div>
-          <div class="stat" id="stat-money"><span class="label">MONEY</span><span class="value" id="money-val">$0</span></div>
-          <div class="stat" id="stat-hp"><span class="label">BASE HP</span><span class="value" id="hp-val">0</span></div>
-        </div>
-      </div>
-
-      <!-- Build bar -->
-      <div id="buildbar">
-        <div class="build-info">
-          <span class="turret-name">TURRET</span>
-          <span class="turret-cost" id="turret-cost">$50</span>
-        </div>
-        <div class="hint">Click a green cell to build · turrets auto-fire</div>
-      </div>
-
-      <!-- Wave / start banner -->
-      <div id="banner" class="hidden">
-        <div class="banner-title" id="banner-title"></div>
-        <div class="banner-sub" id="banner-sub"></div>
-        <button id="banner-btn">START WAVE</button>
-      </div>
-
-      <!-- floating toast feedback -->
-      <div id="toast" class="hidden"></div>
+    <div id="app"></div>
+    <div id="hud">
+      <div class="title">BASTION</div>
+      <div class="sub">parented turret &middot; world-transform probe</div>
+      <div class="targets">Targets remaining: <span class="n" id="targets-n">0</span></div>
+      <div class="controls">WASD drive &middot; &larr;/&rarr; aim turret &middot; Space fire</div>
     </div>
-
+    <div id="banner">
+      <div class="big">FORTIFIED!</div>
+      <div class="small">All targets destroyed</div>
+    </div>
   </body>
 </html>
