@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>RAILGUN · charge &amp; fire</title>
+    <script type="module" crossorigin src="./assets/index-Dlo-hguR.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-C3zD9Kbv.css">
+  </head>
+  <body>
+    <div id="app">
+      <canvas id="scene"></canvas>
+
+      <!-- Crosshair -->
+      <div id="crosshair" aria-hidden="true">
+        <span class="ch-dot"></span>
+      </div>
+
+      <!-- HUD: stats -->
+      <div id="hud" class="hud">
+        <div class="hud-title">RAILGUN</div>
+        <div class="stat-row">
+          <span class="stat"><label>SCORE</label><b id="score">0</b></span>
+          <span class="stat"><label>SHOTS</label><b id="shots">0</b></span>
+          <span class="stat hit"><label>HITS</label><b id="hits">0</b></span>
+          <span class="stat miss"><label>MISS</label><b id="miss">0</b></span>
+          <span class="stat"><label>ACC</label><b id="acc">—</b></span>
+        </div>
+      </div>
+
+      <!-- Charge meter -->
+      <div id="charge-wrap" class="charge-wrap">
+        <div class="charge-label">
+          <span id="charge-state">READY</span>
+          <span id="charge-pct">0%</span>
+        </div>
+        <div class="charge-bar">
+          <div id="charge-fill" class="charge-fill"></div>
+          <div class="charge-ticks">
+            <i></i><i></i><i></i><i></i>
+          </div>
+        </div>
+        <div class="charge-hint">HOLD <kbd>MOUSE</kbd> / <kbd>SPACE</kbd> to charge · RELEASE to fire</div>
+      </div>
+
+      <!-- Hit toast -->
+      <div id="toast" class="toast"></div>
+
+      <!-- Start overlay -->
+      <div id="overlay" class="overlay">
+        <div class="overlay-card">
+          <h1>RAILGUN</h1>
+          <p>A charge-and-fire shooting gallery. Drag to aim, hold to spin up the rail,
+             release to launch a slug down-range. Bigger charge = faster slug.
+             Targets hide behind thin panels — full charge punches a fast slug clean through.</p>
+          <ul class="ctrl-list">
+            <li><kbd>Drag</kbd> aim</li>
+            <li><kbd>Mouse</kbd>/<kbd>Space</kbd> charge &amp; fire</li>
+            <li><kbd>R</kbd> reset range</li>
+          </ul>
+          <button id="start-btn">ENTER RANGE</button>
+          <div class="phys-badge">physics: <b>Rapier3D</b> · CCD <b>ON</b> for slugs</div>
+        </div>
+      </div>
+    </div>
+
+  </body>
+</html>
