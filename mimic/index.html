@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mimic — copy the move</title>
+    <link
+      rel="icon"
+      href="data:image/svg+xml,&lt;svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'&gt;&lt;text y='14' font-size='14'&gt;&#129302;&lt;/text&gt;&lt;/svg&gt;"
+    />
+    <script type="module" crossorigin src="./assets/index-RJAI5ivn.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-DoaubGC3.css">
+  </head>
+  <body>
+    <div id="app">
+      <!-- three.js renders into this canvas, filling the stage -->
+      <canvas id="stage"></canvas>
+
+      <!-- HUD overlay (HTML/CSS, drawn on top of the WebGL stage) -->
+      <div id="hud">
+        <header id="topbar">
+          <div class="stat">
+            <span class="stat-label">SCORE</span>
+            <span id="score" class="stat-value">0</span>
+          </div>
+          <div class="title">MIMIC</div>
+          <div class="stat right">
+            <span class="stat-label">LIVES</span>
+            <span id="lives" class="stat-value">&#9829;&#9829;&#9829;</span>
+          </div>
+        </header>
+
+        <div id="center-msg" class="hidden"></div>
+
+        <footer id="bottombar">
+          <div id="prompt">Copy the move!</div>
+
+          <!-- timer bar: width is driven to deplete exactly as the clip plays -->
+          <div id="timer-track">
+            <div id="timer-fill"></div>
+          </div>
+
+          <!-- the 4 offered moves for this round; press the matching number key -->
+          <div id="moves"></div>
+        </footer>
+      </div>
+
+      <!-- start / game-over splash -->
+      <div id="splash">
+        <h1>MIMIC</h1>
+        <p class="tag">Watch the robot. Press the number of the move it just did&nbsp;&mdash; before its animation finishes.</p>
+        <p class="keys">Keys <b>1</b> <b>2</b> <b>3</b> <b>4</b></p>
+        <button id="start-btn">Start</button>
+        <p id="final-line" class="hidden"></p>
+      </div>
+    </div>
+
+  </body>
+</html>
