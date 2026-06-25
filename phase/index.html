@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Phase — a phase-shift puzzle</title>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 100%; height: 100%; overflow: hidden; background: #0b0d17; font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; }
+      #app { position: fixed; inset: 0; }
+      canvas { display: block; }
+
+      /* ---------- HUD ---------- */
+      #hud {
+        position: fixed; top: 18px; left: 18px; z-index: 10;
+        display: flex; flex-direction: column; gap: 10px;
+        pointer-events: none; user-select: none;
+      }
+      .card {
+        background: rgba(12, 14, 26, 0.72);
+        backdrop-filter: blur(8px);
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 12px;
+        padding: 12px 16px;
+        color: #e7ecff;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.35);
+      }
+      #phaseCard { display: flex; align-items: center; gap: 12px; }
+      #phaseDot {
+        width: 18px; height: 18px; border-radius: 50%;
+        box-shadow: 0 0 14px currentColor;
+        transition: background 0.18s, color 0.18s;
+      }
+      #phaseLabel .small { font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; opacity: 0.6; }
+      #phaseLabel .big { font-size: 20px; font-weight: 700; line-height: 1.1; }
+      #goalCard { font-size: 13px; line-height: 1.5; max-width: 260px; opacity: 0.92; }
+      #goalCard b { color: #fff; }
+      kbd {
+        font-family: ui-monospace, Menlo, monospace; font-size: 12px;
+        background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.18);
+        border-bottom-width: 2px; border-radius: 6px; padding: 1px 7px; color: #fff;
+      }
+      .phase-a { color: #4ea2ff; background: #4ea2ff; }
+      .phase-b { color: #ff5d6c; background: #ff5d6c; }
+      .txt-a { color: #4ea2ff; }
+      .txt-b { color: #ff5d6c; }
+
+      /* ---------- Win overlay ---------- */
+      #win {
+        position: fixed; inset: 0; z-index: 20;
+        display: none; align-items: center; justify-content: center;
+        background: radial-gradient(circle at center, rgba(78,162,255,0.18), rgba(11,13,23,0.86));
+        backdrop-filter: blur(3px);
+      }
+      #win.show { display: flex; animation: fade 0.4s ease; }
+      @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+      #winBox { text-align: center; color: #fff; }
+      #winBox h1 { font-size: 56px; letter-spacing: 0.04em; margin-bottom: 8px;
+        background: linear-gradient(90deg, #4ea2ff, #ff5d6c); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+      #winBox p { font-size: 16px; opacity: 0.85; }
+      #winBox .hint { margin-top: 18px; font-size: 13px; opacity: 0.6; }
+    </style>
+    <script type="module" crossorigin src="./assets/index-u8ps0J92.js"></script>
+  </head>
+  <body>
+    <div id="app"></div>
+
+    <div id="hud">
+      <div class="card" id="phaseCard">
+        <div id="phaseDot" class="phase-a"></div>
+        <div id="phaseLabel">
+          <div class="small">Active phase</div>
+          <div class="big"><span id="phaseName" class="txt-a">PHASE A</span></div>
+        </div>
+      </div>
+      <div class="card" id="goalCard">
+        Reach the <b>green goal</b>. Only the active phase's walls are solid —
+        <kbd>Space</kbd> shifts phase to pass through the other color.
+        Move with <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> / arrows.
+      </div>
+    </div>
+
+    <div id="win">
+      <div id="winBox">
+        <h1>GOAL REACHED</h1>
+        <p>You phased through the puzzle.</p>
+        <div class="hint">Press <kbd>R</kbd> to play again</div>
+      </div>
+    </div>
+
+  </body>
+</html>
