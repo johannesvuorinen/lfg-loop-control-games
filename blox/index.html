@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Blox — voxel build/break sandbox</title>
+    <script type="module" crossorigin src="./assets/index-J3sX3o-Z.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-D116WPgI.css">
+  </head>
+  <body>
+    <div id="app">
+      <canvas id="scene"></canvas>
+
+      <!-- crosshair / cursor -->
+      <div id="crosshair" aria-hidden="true">
+        <div class="ch-line ch-h"></div>
+        <div class="ch-line ch-v"></div>
+      </div>
+
+      <!-- HUD -->
+      <div id="hud">
+        <div class="hud-row"><span class="hud-key">Blocks</span><span id="hud-count">0</span></div>
+        <div class="hud-row"><span class="hud-key">Color</span><span id="hud-color-name">—</span><span id="hud-color-swatch" class="swatch"></span></div>
+        <div class="hud-row"><span class="hud-key">Goal</span><span id="hud-goal">reach the marker</span></div>
+        <div class="palette" id="palette"></div>
+        <div class="help">
+          <b>L-click</b> place · <b>R-click / X</b> break · <b>drag</b> orbit · <b>wheel</b> zoom · <b>1–5</b> color
+        </div>
+      </div>
+
+      <div id="win-banner" class="hidden">GOAL REACHED — you built your way there!</div>
+    </div>
+
+  </body>
+</html>
