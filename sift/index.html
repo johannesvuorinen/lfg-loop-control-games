@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sift — Falling-Sand Cascade</title>
+    <script type="module" crossorigin src="./assets/index-d3b4WO2X.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-CSs-wtQL.css">
+  </head>
+  <body>
+    <div id="app">
+      <canvas id="c"></canvas>
+      <div id="crosshair"></div>
+
+      <div id="hud">
+        <div class="title">SIFT</div>
+        <div class="sub">falling-sand cascade</div>
+        <div class="row"><span class="k">Grains</span><span class="v" id="hud-grains">0</span></div>
+        <div class="row"><span class="k">Fill</span><span class="v" id="hud-fill">0%</span></div>
+        <div class="row"><span class="k">FPS</span><span class="v" id="hud-fps">--</span></div>
+        <div class="row"><span class="k">Walls</span><span class="v" id="hud-walls">0</span></div>
+        <div class="bar"><div class="bar-fill" id="hud-bar"></div></div>
+        <div id="status">channel the sand into the basin</div>
+      </div>
+
+      <div id="help">
+        <div><b>LMB</b> place guide wall &nbsp; <b>RMB</b> remove</div>
+        <div><b>1</b> amber sand &nbsp; <b>2</b> teal sand &nbsp; <b>3</b> water</div>
+        <div><b>SPACE</b> toggle pour &nbsp; <b>F</b> faucet move &nbsp; <b>R</b> reset</div>
+      </div>
+    </div>
+  </body>
+</html>
