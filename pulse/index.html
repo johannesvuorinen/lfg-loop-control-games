@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pulse — 4-Lane Rhythm</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { width: 100%; height: 100%; overflow: hidden; background: #07070d; }
+    #app { position: fixed; inset: 0; }
+    canvas { display: block; }
+
+    /* ---- HUD overlay ---- */
+    #hud {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, monospace;
+      color: #e8ecff;
+      user-select: none;
+    }
+    .stat-row {
+      position: absolute;
+      top: 18px;
+      left: 0; right: 0;
+      display: flex;
+      justify-content: center;
+      gap: 42px;
+    }
+    .stat {
+      text-align: center;
+      text-shadow: 0 0 12px rgba(90,140,255,0.55);
+    }
+    .stat .label {
+      font-size: 11px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      opacity: 0.6;
+    }
+    .stat .value {
+      font-size: 30px;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+    }
+    #combo .value { color: #6df0ff; }
+    #accuracy .value { color: #b6ff8a; }
+
+    #judge {
+      position: absolute;
+      top: 56%;
+      left: 0; right: 0;
+      text-align: center;
+      font-size: 34px;
+      font-weight: 800;
+      letter-spacing: 3px;
+      opacity: 0;
+      transition: opacity 0.06s linear;
+      text-shadow: 0 0 18px currentColor;
+    }
+
+    #banner {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      opacity: 0;
+      transition: opacity 0.5s ease;
+      background: radial-gradient(ellipse at center, rgba(10,16,40,0.55), rgba(4,4,10,0.85));
+    }
+    #banner.show { opacity: 1; }
+    #banner .title {
+      font-size: 72px;
+      font-weight: 900;
+      letter-spacing: 8px;
+      color: #b6ff8a;
+      text-shadow: 0 0 40px rgba(150,255,120,0.7);
+    }
+    #banner .sub {
+      font-size: 20px;
+      letter-spacing: 2px;
+      opacity: 0.85;
+    }
+
+    #probe {
+      position: absolute;
+      left: 14px;
+      bottom: 12px;
+      font-size: 11px;
+      line-height: 1.5;
+      font-family: ui-monospace, "SF Mono", Menlo, monospace;
+      color: #8da0d8;
+      opacity: 0.85;
+      background: rgba(8,10,24,0.5);
+      padding: 8px 10px;
+      border-radius: 6px;
+      border: 1px solid rgba(90,120,220,0.2);
+    }
+    #probe b { color: #cdd8ff; font-weight: 600; }
+  </style>
+  <script type="module" crossorigin src="./assets/index-CBTbvyjG.js"></script>
+</head>
+<body>
+  <div id="app"></div>
+  <div id="hud">
+    <div class="stat-row">
+      <div class="stat" id="score"><div class="label">Score</div><div class="value">0</div></div>
+      <div class="stat" id="combo"><div class="label">Combo</div><div class="value">0</div></div>
+      <div class="stat" id="accuracy"><div class="label">Accuracy</div><div class="value">100%</div></div>
+    </div>
+    <div id="judge"></div>
+    <div id="probe">
+      <div>song <b id="p-time">0.00</b>s &nbsp; dt <b id="p-dt">0.00</b>s</div>
+      <div>drift <b id="p-drift">0.0</b>ms &nbsp; max <b id="p-maxdrift">0.0</b>ms</div>
+    </div>
+    <div id="banner"><div class="title">CLEARED!</div><div class="sub"></div></div>
+  </div>
+</body>
+</html>
