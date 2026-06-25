@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bastion — Tower Defense</title>
+    <script type="module" crossorigin src="./assets/index-No7mf6PF.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-C9ar_z4H.css">
+  </head>
+  <body>
+    <div id="app">
+      <canvas id="game"></canvas>
+
+      <!-- HUD -->
+      <div id="hud">
+        <div class="hud-row">
+          <div class="stat" id="stat-wave"><span class="label">WAVE</span><span class="value" id="wave-val">0</span></div>
+          <div class="stat" id="stat-money"><span class="label">MONEY</span><span class="value" id="money-val">$0</span></div>
+          <div class="stat" id="stat-hp"><span class="label">BASE HP</span><span class="value" id="hp-val">0</span></div>
+        </div>
+      </div>
+
+      <!-- Build bar -->
+      <div id="buildbar">
+        <div class="build-info">
+          <span class="turret-name">TURRET</span>
+          <span class="turret-cost" id="turret-cost">$50</span>
+        </div>
+        <div class="hint">Click a green cell to build · turrets auto-fire</div>
+      </div>
+
+      <!-- Wave / start banner -->
+      <div id="banner" class="hidden">
+        <div class="banner-title" id="banner-title"></div>
+        <div class="banner-sub" id="banner-sub"></div>
+        <button id="banner-btn">START WAVE</button>
+      </div>
+
+      <!-- floating toast feedback -->
+      <div id="toast" class="hidden"></div>
+    </div>
+
+  </body>
+</html>
