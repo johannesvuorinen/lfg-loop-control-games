@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Carousel — survive the spinning blades</title>
+    <style>
+      :root {
+        color-scheme: dark;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background: #0b0d16;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui,
+          sans-serif;
+        -webkit-user-select: none;
+        user-select: none;
+      }
+      #app {
+        position: fixed;
+        inset: 0;
+      }
+      canvas {
+        display: block;
+      }
+
+      /* ---------- HUD ---------- */
+      #hud {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        z-index: 10;
+      }
+      .hud-top {
+        position: absolute;
+        top: 18px;
+        left: 0;
+        right: 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        padding: 0 22px;
+      }
+      .hud-block {
+        background: rgba(8, 10, 20, 0.55);
+        border: 1px solid rgba(120, 160, 255, 0.18);
+        border-radius: 12px;
+        padding: 10px 16px;
+        backdrop-filter: blur(6px);
+        color: #e8eeff;
+        line-height: 1.25;
+      }
+      .hud-label {
+        font-size: 11px;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: #7f8bb5;
+      }
+      .hud-value {
+        font-size: 26px;
+        font-weight: 700;
+        font-variant-numeric: tabular-nums;
+      }
+      #lives {
+        letter-spacing: 2px;
+        color: #ff5c7a;
+      }
+      #timer .hud-value {
+        color: #5cffb0;
+      }
+      #best {
+        font-size: 12px;
+        color: #9aa3c7;
+        margin-top: 2px;
+      }
+
+      /* ---------- Center overlay (start / game over) ---------- */
+      #overlay {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        gap: 14px;
+        background: radial-gradient(
+          ellipse at center,
+          rgba(6, 8, 16, 0.35) 0%,
+          rgba(6, 8, 16, 0.78) 100%
+        );
+        pointer-events: auto;
+        transition: opacity 0.35s ease;
+      }
+      #overlay.hidden {
+        opacity: 0;
+        pointer-events: none;
+      }
+      #overlay h1 {
+        font-size: 54px;
+        font-weight: 800;
+        letter-spacing: 0.02em;
+        background: linear-gradient(180deg, #fff 0%, #9ec5ff 100%);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        text-shadow: 0 8px 40px rgba(80, 130, 255, 0.25);
+      }
+      #overlay .sub {
+        font-size: 17px;
+        color: #c4ccea;
+        max-width: 460px;
+      }
+      #overlay .keys {
+        font-size: 14px;
+        color: #8a93bb;
+        margin-top: 2px;
+      }
+      #overlay .keys b {
+        color: #cdd6f7;
+        background: rgba(120, 160, 255, 0.12);
+        border: 1px solid rgba(120, 160, 255, 0.2);
+        border-radius: 6px;
+        padding: 2px 7px;
+        font-weight: 600;
+      }
+      #playBtn {
+        pointer-events: auto;
+        margin-top: 10px;
+        font: inherit;
+        font-size: 18px;
+        font-weight: 700;
+        color: #06223b;
+        background: linear-gradient(180deg, #7fdfff 0%, #36b6ff 100%);
+        border: none;
+        border-radius: 12px;
+        padding: 13px 34px;
+        cursor: pointer;
+        box-shadow: 0 10px 30px rgba(54, 182, 255, 0.35);
+        transition: transform 0.12s ease, box-shadow 0.12s ease;
+      }
+      #playBtn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 14px 36px rgba(54, 182, 255, 0.45);
+      }
+      #playBtn:active {
+        transform: translateY(0);
+      }
+      .flash {
+        animation: flash 0.45s ease;
+      }
+      @keyframes flash {
+        0% {
+          opacity: 0.85;
+        }
+        100% {
+          opacity: 0;
+        }
+      }
+      #hitFlash {
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(
+          ellipse at center,
+          rgba(255, 60, 90, 0) 35%,
+          rgba(255, 40, 70, 0.55) 100%
+        );
+        opacity: 0;
+        pointer-events: none;
+      }
+    </style>
+    <script type="module" crossorigin src="./assets/index-75ELHbhf.js"></script>
+  </head>
+  <body>
+    <div id="app"></div>
+
+    <div id="hud">
+      <div id="hitFlash"></div>
+      <div class="hud-top">
+        <div class="hud-block" id="lives-block">
+          <div class="hud-label">Lives</div>
+          <div class="hud-value" id="lives">♥ ♥ ♥</div>
+        </div>
+        <div class="hud-block" id="timer" style="text-align: right">
+          <div class="hud-label">Survive</div>
+          <div class="hud-value"><span id="time">0.0</span>s</div>
+          <div id="best">Best: 0.0s</div>
+        </div>
+      </div>
+
+      <div id="overlay">
+        <h1>CAROUSEL</h1>
+        <div class="sub">
+          Survive the spinning blades. Stay on the arena, slip between the
+          sweeping arms — survive <b>45&nbsp;seconds</b> to win.
+        </div>
+        <div class="keys">
+          Move <b>W A S D</b> / <b>arrows</b> &nbsp;·&nbsp; Jump <b>Space</b>
+        </div>
+        <button id="playBtn">PLAY</button>
+      </div>
+    </div>
+
+  </body>
+</html>
