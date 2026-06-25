@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Whirl</title>
+    <style>
+      :root { color-scheme: dark; }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 100%; height: 100%; overflow: hidden; background: #0b1020; }
+      #app { width: 100vw; height: 100vh; display: block; }
+      canvas { display: block; }
+
+      #hud {
+        position: fixed;
+        top: 16px;
+        left: 16px;
+        font-family: 'Segoe UI', system-ui, sans-serif;
+        color: #eaf2ff;
+        text-shadow: 0 2px 6px rgba(0, 0, 0, 0.6);
+        pointer-events: none;
+        user-select: none;
+      }
+      #hud .score { font-size: 34px; font-weight: 700; letter-spacing: 0.5px; }
+      #hud .combo { font-size: 18px; font-weight: 600; color: #ffd479; margin-top: 2px; min-height: 22px; }
+      #hud .sub   { font-size: 14px; opacity: 0.75; margin-top: 6px; }
+
+      #state {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-family: 'Segoe UI', system-ui, sans-serif;
+        color: #eaf2ff;
+        text-align: center;
+        pointer-events: none;
+        user-select: none;
+        text-shadow: 0 2px 10px rgba(0, 0, 0, 0.7);
+      }
+      #state .big { font-size: 22px; font-weight: 700; }
+      #state .small { font-size: 15px; opacity: 0.8; margin-top: 6px; }
+
+      #help {
+        position: fixed;
+        bottom: 16px;
+        left: 16px;
+        font-family: 'Segoe UI', system-ui, sans-serif;
+        color: #cdd9f0;
+        font-size: 13px;
+        opacity: 0.7;
+        pointer-events: none;
+        user-select: none;
+        line-height: 1.5;
+      }
+      kbd {
+        background: rgba(255,255,255,0.12);
+        border: 1px solid rgba(255,255,255,0.18);
+        border-radius: 4px;
+        padding: 1px 6px;
+        font-size: 12px;
+      }
+    </style>
+    <script type="module" crossorigin src="./assets/index-Dm_JRqIz.js"></script>
+  </head>
+  <body>
+    <canvas id="app"></canvas>
+    <div id="hud">
+      <div class="score">0</div>
+      <div class="combo"></div>
+      <div class="sub">Targets hit: 0</div>
+    </div>
+    <div id="state">
+      <div class="big">Click / Space to throw the boomerang</div>
+      <div class="small">Move the mouse to aim · catch it on the way back for a combo</div>
+    </div>
+    <div id="help">
+      <div><kbd>Move mouse</kbd> aim · <kbd>Click</kbd> / <kbd>Space</kbd> throw &amp; catch</div>
+    </div>
+  </body>
+</html>
