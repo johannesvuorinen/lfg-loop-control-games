@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Rift — a portal puzzle</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { width: 100%; height: 100%; overflow: hidden; background: #05060d; }
+    #app { position: fixed; inset: 0; }
+    canvas { display: block; }
+
+    #hud {
+      position: fixed;
+      top: 18px;
+      left: 18px;
+      font-family: 'SF Mono', 'Fira Code', ui-monospace, Menlo, monospace;
+      color: #cfe9ff;
+      pointer-events: none;
+      user-select: none;
+      text-shadow: 0 0 10px rgba(0, 200, 255, 0.5);
+      z-index: 10;
+    }
+    #hud .panel {
+      background: rgba(8, 14, 30, 0.55);
+      border: 1px solid rgba(90, 180, 255, 0.28);
+      border-radius: 12px;
+      padding: 14px 18px;
+      backdrop-filter: blur(8px);
+      min-width: 210px;
+    }
+    #hud .title {
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      color: #7fd0ff;
+      margin-bottom: 10px;
+    }
+    #hud .title small {
+      font-size: 11px;
+      letter-spacing: 2px;
+      color: #6a8db0;
+      display: block;
+      font-weight: 400;
+      margin-top: 2px;
+    }
+    #hud .row { font-size: 14px; margin: 5px 0; display: flex; justify-content: space-between; gap: 20px; }
+    #hud .row .k { color: #8fb3d6; }
+    #hud .row .v { color: #ffffff; font-weight: 600; }
+    #hud .v.A { color: #ff7ad0; }
+    #hud .v.B { color: #7affc8; }
+
+    #help {
+      position: fixed;
+      bottom: 16px;
+      left: 18px;
+      font-family: 'SF Mono', ui-monospace, Menlo, monospace;
+      font-size: 12px;
+      color: #6f93b8;
+      pointer-events: none;
+      user-select: none;
+      z-index: 10;
+    }
+    #help b { color: #a9d4ff; }
+
+    #win {
+      position: fixed;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      background: radial-gradient(circle at center, rgba(10,40,30,0.55), rgba(2,4,10,0.85));
+      z-index: 20;
+      font-family: 'SF Mono', ui-monospace, Menlo, monospace;
+      pointer-events: none;
+    }
+    #win.show { display: flex; }
+    #win .big {
+      font-size: 64px;
+      font-weight: 800;
+      letter-spacing: 8px;
+      color: #7affc8;
+      text-shadow: 0 0 30px rgba(60, 255, 180, 0.7);
+    }
+    #win .sub { margin-top: 14px; font-size: 16px; color: #bfeada; letter-spacing: 2px; }
+  </style>
+  <script type="module" crossorigin src="./assets/index-BtKfc8fm.js"></script>
+</head>
+<body>
+  <div id="app"></div>
+
+  <div id="hud">
+    <div class="panel">
+      <div class="title">RIFT<small>PORTAL PUZZLE</small></div>
+      <div class="row"><span class="k">Ball speed</span><span class="v" id="hud-speed">0.00</span></div>
+      <div class="row"><span class="k">Portal uses</span><span class="v" id="hud-uses">0</span></div>
+      <div class="row"><span class="k">Pair</span><span class="v"><span class="A">A</span> &rarr; <span class="B">B</span></span></div>
+      <div class="row"><span class="k">Status</span><span class="v" id="hud-status">rolling&hellip;</span></div>
+    </div>
+  </div>
+
+  <div id="help">
+    <b>WASD</b> / <b>Arrows</b> nudge the ball &nbsp;·&nbsp; <b>R</b> reset &nbsp;·&nbsp; reach the green goal
+  </div>
+
+  <div id="win">
+    <div class="big">RIFT CLEARED</div>
+    <div class="sub" id="win-sub">you guided the ball home</div>
+  </div>
+
+</body>
+</html>
