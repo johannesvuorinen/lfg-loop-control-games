@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Morph</title>
+    <style>
+      :root { color-scheme: dark; }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 100%; height: 100%; overflow: hidden; background: #0d1018; }
+      #app { position: fixed; inset: 0; }
+      canvas { display: block; }
+
+      #hud {
+        position: fixed;
+        left: 0; right: 0; top: 0;
+        padding: 18px 22px;
+        font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+        color: #eef2ff;
+        pointer-events: none;
+        user-select: none;
+        text-shadow: 0 1px 3px rgba(0,0,0,0.6);
+      }
+      #hud .title { font-size: 15px; font-weight: 600; letter-spacing: 0.5px; opacity: 0.85; }
+      #hud .target { font-size: 13px; opacity: 0.7; margin-top: 2px; }
+      #hud .score { font-size: 13px; margin-top: 8px; opacity: 0.85; }
+      #hud .match {
+        margin-top: 10px;
+        width: 220px; height: 8px;
+        background: rgba(255,255,255,0.12);
+        border-radius: 6px; overflow: hidden;
+      }
+      #hud .match > i {
+        display: block; height: 100%;
+        width: 0%;
+        background: linear-gradient(90deg, #5dcaa5, #7f77dd);
+        border-radius: 6px;
+        transition: width 0.08s linear;
+      }
+      #hud .matchlabel { font-size: 12px; margin-top: 6px; opacity: 0.7; }
+
+      #help {
+        position: fixed; left: 0; right: 0; bottom: 0;
+        padding: 14px 22px;
+        font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+        font-size: 12.5px; color: #c8d0e8; opacity: 0.72;
+        pointer-events: none; user-select: none;
+        text-shadow: 0 1px 2px rgba(0,0,0,0.6);
+        line-height: 1.6;
+      }
+      #help kbd {
+        background: rgba(255,255,255,0.10); border: 1px solid rgba(255,255,255,0.18);
+        border-radius: 4px; padding: 1px 6px; font-family: ui-monospace, monospace; font-size: 11px;
+      }
+      #toast {
+        position: fixed; left: 50%; top: 38%; transform: translate(-50%,-50%) scale(0.9);
+        font-family: ui-sans-serif, system-ui, sans-serif; font-weight: 700; font-size: 34px;
+        color: #fff; opacity: 0; pointer-events: none; transition: opacity 0.25s, transform 0.25s;
+        text-shadow: 0 2px 12px rgba(0,0,0,0.5);
+      }
+      #toast.show { opacity: 1; transform: translate(-50%,-50%) scale(1); }
+    </style>
+    <script type="module" crossorigin src="./assets/index-loIvEggy.js"></script>
+  </head>
+  <body>
+    <div id="app"></div>
+    <div id="hud">
+      <div class="title">MORPH</div>
+      <div class="target">Match the target shape</div>
+      <div class="score">Score <b id="score">0</b> &nbsp;·&nbsp; Round <b id="round">1</b></div>
+      <div class="match"><i id="matchbar"></i></div>
+      <div class="matchlabel"><span id="matchpct">0</span>% match · target: <b id="targetname">—</b></div>
+    </div>
+    <div id="toast"></div>
+    <div id="help">
+      <kbd>1</kbd> sphere &nbsp; <kbd>2</kbd> cube &nbsp; <kbd>3</kbd> star &nbsp; <kbd>4</kbd> spike &nbsp;·&nbsp;
+      blend toward a shape, hold near 90%+ to lock it in &nbsp;·&nbsp; drag to orbit
+    </div>
+  </body>
+</html>
