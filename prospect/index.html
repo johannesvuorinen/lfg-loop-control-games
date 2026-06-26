@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Prospect — Seeded Ore Field</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><text y='14' font-size='14'>⛏️</text></svg>" />
+
+    <style>
+      :root { color-scheme: dark; }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 100%; height: 100%; overflow: hidden; background: #05070d; }
+      #app { position: fixed; inset: 0; }
+      canvas { display: block; }
+      #hud {
+        position: fixed;
+        top: 12px;
+        left: 12px;
+        font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+        font-size: 13px;
+        line-height: 1.5;
+        color: #cfe3ff;
+        background: rgba(8, 14, 26, 0.72);
+        border: 1px solid rgba(90, 140, 220, 0.35);
+        border-radius: 8px;
+        padding: 10px 14px;
+        pointer-events: none;
+        text-shadow: 0 1px 2px #000;
+        min-width: 230px;
+      }
+      #hud .seed { color: #7fffd4; font-weight: 700; }
+      #hud .score { color: #ffd479; font-weight: 700; }
+      #hud .status { color: #9ec1ff; }
+      #hud .status.cleared { color: #7fff9e; font-weight: 700; }
+      #hud .label { color: #6f86b0; }
+      #hud h1 { font-size: 14px; letter-spacing: 2px; color: #8fb4ff; margin-bottom: 6px; }
+    </style>
+    <script type="module" crossorigin src="./assets/index-DqHVGWZN.js"></script>
+  </head>
+  <body>
+    <div id="app"></div>
+    <div id="hud">
+      <h1>PROSPECT</h1>
+      <div><span class="label">seed:</span> <span class="seed" id="hud-seed">—</span></div>
+      <div><span class="label">score:</span> <span class="score" id="hud-score">0</span></div>
+      <div><span class="label">deposits:</span> <span id="hud-deposits">0 / 0</span></div>
+      <div><span class="label">status:</span> <span class="status" id="hud-status">PROSPECTING</span></div>
+    </div>
+  </body>
+</html>
