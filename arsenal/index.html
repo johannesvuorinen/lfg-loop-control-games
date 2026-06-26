@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Arsenal — Wave Survival Roguelite</title>
+    <script type="module" crossorigin src="./assets/index-DjPY1uvu.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-BbGM0SbD.css">
+  </head>
+  <body>
+    <div id="app">
+      <canvas id="game"></canvas>
+
+      <!-- HUD: plain HTML/CSS overlaid on the same page as the game canvas. -->
+      <div id="hud">
+        <div class="hud-row">
+          <div class="hud-stat hp">
+            <span class="label">HP</span>
+            <div class="bar"><div id="hp-fill" class="bar-fill"></div></div>
+            <span id="hp-text" class="value">100 / 100</span>
+          </div>
+          <div class="hud-stat currency">
+            <span class="coin">◈</span>
+            <span id="currency-text" class="value">0</span>
+          </div>
+          <div class="hud-stat wave">
+            <span class="label">WAVE</span>
+            <span id="wave-text" class="value">1 / 6</span>
+          </div>
+        </div>
+        <div id="wave-banner" class="wave-banner"></div>
+      </div>
+
+      <!-- SHOP MODAL: pure DOM. Its buttons mutate the game-state object directly. -->
+      <div id="shop-overlay" class="overlay hidden">
+        <div id="shop" class="modal">
+          <h1>UPGRADE SHOP</h1>
+          <p class="subtitle">
+            Wave cleared — spend your <span class="coin">◈</span>
+            <span id="shop-currency">0</span> before the next assault.
+          </p>
+          <div id="shop-list" class="shop-list"></div>
+          <button id="next-wave-btn" class="next-btn">START NEXT WAVE →</button>
+        </div>
+      </div>
+
+      <!-- Victory / Game-over end card. -->
+      <div id="end-overlay" class="overlay hidden">
+        <div id="end-card" class="modal end">
+          <h1 id="end-title">VICTORY</h1>
+          <p id="end-sub" class="subtitle"></p>
+          <button id="restart-btn" class="next-btn">PLAY AGAIN</button>
+        </div>
+      </div>
+    </div>
+
+  </body>
+</html>
