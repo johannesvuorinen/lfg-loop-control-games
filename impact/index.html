@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="data:," />
+    <title>Impact — three.js + cannon-es control</title>
+    <style>
+      html, body { margin: 0; height: 100%; background: #0b0d16; overflow: hidden; }
+      #app { position: fixed; inset: 0; }
+      #hud {
+        position: fixed; left: 12px; top: 10px; z-index: 10;
+        font: 13px/1.45 ui-monospace, SFMono-Regular, Menlo, monospace;
+        color: #ffe9c2; text-shadow: 0 1px 3px #000; pointer-events: none;
+        white-space: pre;
+      }
+      #title {
+        position: fixed; right: 12px; top: 10px; z-index: 10;
+        font: 11px/1.4 ui-monospace, SFMono-Regular, Menlo, monospace;
+        color: #8aa0c0; text-shadow: 0 1px 2px #000; pointer-events: none;
+        text-align: right;
+      }
+      #banner {
+        position: fixed; left: 50%; top: 38%; transform: translate(-50%,-50%);
+        z-index: 11; font: 700 56px/1.1 ui-sans-serif, system-ui, sans-serif;
+        color: #ffd36b; text-shadow: 0 2px 12px #000, 0 0 30px #ff8a3c;
+        pointer-events: none; opacity: 0; transition: opacity .25s;
+      }
+      canvas { display: block; }
+    </style>
+    <script type="module" crossorigin src="./assets/index-DIRoO4P2.js"></script>
+  </head>
+  <body>
+    <div id="app"></div>
+    <div id="hud">Impact</div>
+    <div id="title">three.js + cannon-es CONTROL<br/>wrecking ball vs block stack<br/>contact-point sparks · force damage</div>
+    <div id="banner"></div>
+  </body>
+</html>
