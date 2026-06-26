@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Salvo — three.js</title>
+  <style>
+    :root { color-scheme: dark; }
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0; padding: 0; height: 100%; overflow: hidden;
+      background: #05070d;
+      font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+      color: #e8eefc;
+    }
+    #app { position: fixed; inset: 0; }
+    canvas { display: block; width: 100%; height: 100%; }
+
+    /* ---- HTML/CSS HUD overlay (not drawn in WebGL) ---- */
+    #hud {
+      position: fixed; inset: 0; pointer-events: none;
+      display: flex; flex-direction: column; justify-content: space-between;
+      padding: 16px 22px;
+    }
+    #hud-top { display: flex; justify-content: space-between; align-items: flex-start; }
+    .panel {
+      background: rgba(10, 16, 30, 0.55);
+      border: 1px solid rgba(120, 160, 255, 0.35);
+      border-radius: 10px;
+      padding: 8px 14px;
+      backdrop-filter: blur(3px);
+      box-shadow: 0 2px 18px rgba(0,0,0,0.45);
+    }
+    .label { font-size: 11px; letter-spacing: 2px; text-transform: uppercase; opacity: 0.65; }
+    .value { font-size: 26px; font-weight: 700; line-height: 1.05; }
+    #enemies .value { color: #ff5d6c; }
+    #hp .value { color: #5dff9b; }
+    #title { text-align: right; }
+    #title .name { font-size: 22px; font-weight: 800; letter-spacing: 3px; color: #8fb4ff; }
+    #title .sub { font-size: 11px; opacity: 0.6; letter-spacing: 1px; }
+
+    /* HP pips */
+    #hp-bar { display: flex; gap: 4px; margin-top: 5px; }
+    .pip { width: 16px; height: 8px; border-radius: 2px; background: #5dff9b; box-shadow: 0 0 6px #5dff9b88; }
+    .pip.dead { background: #33405a; box-shadow: none; }
+
+    #hud-bottom { display: flex; justify-content: center; }
+    #hint { font-size: 12px; opacity: 0.55; letter-spacing: 1px; }
+
+    /* Win/lose banner */
+    #banner {
+      position: fixed; inset: 0; display: none;
+      align-items: center; justify-content: center; flex-direction: column;
+      pointer-events: none; text-align: center;
+    }
+    #banner.show { display: flex; animation: pop .4s ease; }
+    #banner .big {
+      font-size: 72px; font-weight: 900; letter-spacing: 6px;
+      text-shadow: 0 0 30px currentColor;
+    }
+    #banner .cleared { color: #5dff9b; }
+    #banner .lost { color: #ff5d6c; }
+    #banner .small { font-size: 16px; opacity: 0.75; margin-top: 6px; letter-spacing: 2px; }
+    @keyframes pop { from { transform: scale(0.7); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+  </style>
+  <script type="module" crossorigin src="./assets/index-Xj0mNnix.js"></script>
+</head>
+<body>
+  <div id="app"></div>
+  <div id="hud">
+    <div id="hud-top">
+      <div id="enemies" class="panel">
+        <div class="label">Enemies</div>
+        <div class="value"><span id="enemy-count">0</span></div>
+      </div>
+      <div id="title">
+        <div class="name">SALVO</div>
+        <div class="sub">three.js · top-down arena shmup</div>
+      </div>
+    </div>
+    <div id="hud-bottom">
+      <div id="hint">WASD move &nbsp;·&nbsp; SPACE / hold to fire</div>
+    </div>
+  </div>
+  <!-- HP panel placed bottom-left via JS-friendly absolute positioning -->
+  <div id="hp" class="panel" style="position:fixed; left:22px; bottom:16px; pointer-events:none;">
+    <div class="label">Hull</div>
+    <div class="value"><span id="hp-val">0</span></div>
+    <div id="hp-bar"></div>
+  </div>
+  <div id="banner">
+    <div id="banner-big" class="big"></div>
+    <div id="banner-sub" class="small"></div>
+  </div>
+</body>
+</html>
