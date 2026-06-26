@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Snap — physics demolition</title>
+    <style>
+      :root {
+        --fg: #e8eef5;
+        --muted: #8aa0b4;
+        --accent: #ffb347;
+        --danger: #ff5252;
+      }
+      * { box-sizing: border-box; }
+      html, body { margin: 0; height: 100%; overflow: hidden; background: #0b1018; }
+      #app { position: fixed; inset: 0; }
+      canvas { display: block; }
+
+      #hud {
+        position: fixed;
+        top: 16px; left: 16px;
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        color: var(--fg);
+        pointer-events: none;
+        text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+        user-select: none;
+      }
+      #hud h1 {
+        margin: 0 0 6px;
+        font-size: 20px;
+        letter-spacing: 2px;
+        font-weight: 700;
+      }
+      #hud .row { font-size: 13px; line-height: 1.6; color: var(--muted); }
+      #hud b { color: var(--fg); }
+
+      /* Load meter */
+      #meter-wrap {
+        margin-top: 10px;
+        width: 240px;
+        height: 14px;
+        border: 1px solid #2a3a4d;
+        border-radius: 7px;
+        background: #131c28;
+        overflow: hidden;
+      }
+      #meter {
+        height: 100%;
+        width: 0%;
+        background: linear-gradient(90deg, #4caf50, #ffb347 65%, #ff5252);
+        transition: width 0.12s linear;
+      }
+
+      #controls {
+        position: fixed;
+        bottom: 18px; left: 50%;
+        transform: translateX(-50%);
+        display: flex; gap: 10px;
+        font-family: ui-monospace, monospace;
+      }
+      #controls button {
+        background: #18222f;
+        color: var(--fg);
+        border: 1px solid #2f4356;
+        padding: 9px 16px;
+        border-radius: 8px;
+        font-size: 13px;
+        cursor: pointer;
+        transition: background 0.15s, border-color 0.15s;
+      }
+      #controls button:hover { background: #21303f; border-color: var(--accent); }
+      #controls button:active { transform: translateY(1px); }
+
+      /* DEMOLISHED banner */
+      #banner {
+        position: fixed;
+        top: 50%; left: 50%;
+        transform: translate(-50%, -50%) scale(0.7);
+        font-family: ui-monospace, monospace;
+        font-weight: 900;
+        font-size: 64px;
+        letter-spacing: 6px;
+        color: var(--danger);
+        text-shadow: 0 0 24px rgba(255,82,82,0.7), 0 4px 12px rgba(0,0,0,0.9);
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.35s ease, transform 0.35s cubic-bezier(.2,1.4,.4,1);
+      }
+      #banner.show { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+    </style>
+    <script type="module" crossorigin src="./assets/index-BUVD0je4.js"></script>
+  </head>
+  <body>
+    <div id="app"></div>
+
+    <div id="hud">
+      <h1>S N A P</h1>
+      <div class="row">load on span: <b id="hud-load">0</b> kg</div>
+      <div class="row">peak joint stress: <b id="hud-stress">0%</b></div>
+      <div class="row">links: <b id="hud-links">0</b> · broken: <b id="hud-broken">0</b></div>
+      <div id="meter-wrap"><div id="meter"></div></div>
+    </div>
+
+    <div id="controls">
+      <button id="btn-load">+ Add load</button>
+      <button id="btn-auto">Auto-demolish</button>
+      <button id="btn-reset">Reset</button>
+    </div>
+
+    <div id="banner">DEMOLISHED!</div>
+
+  </body>
+</html>
