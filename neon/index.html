@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NEON</title>
+  <style>
+    :root {
+      --neon-cyan: #00f0ff;
+      --neon-magenta: #ff2bd6;
+      --neon-purple: #b14bff;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { width: 100%; height: 100%; overflow: hidden; background: #05010f; }
+    #app { position: fixed; inset: 0; }
+    canvas { display: block; }
+
+    /* ---- Neon HUD ---- */
+    #hud {
+      position: fixed; inset: 0; pointer-events: none;
+      font-family: 'Courier New', ui-monospace, monospace;
+      z-index: 10;
+    }
+    #counter {
+      position: absolute; top: 22px; left: 24px;
+      color: var(--neon-cyan);
+      font-size: 22px; letter-spacing: 3px; font-weight: bold;
+      text-shadow: 0 0 6px var(--neon-cyan), 0 0 14px var(--neon-cyan), 0 0 28px #0088ff;
+    }
+    #counter .num { color: var(--neon-magenta); text-shadow: 0 0 6px var(--neon-magenta), 0 0 16px var(--neon-magenta); }
+    #hint {
+      position: absolute; bottom: 20px; left: 24px;
+      color: var(--neon-purple); opacity: .8;
+      font-size: 13px; letter-spacing: 2px;
+      text-shadow: 0 0 8px var(--neon-purple);
+    }
+    /* OVERLOAD! win banner */
+    #banner {
+      position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%, -50%) scale(.6);
+      color: #fff; font-size: 76px; font-weight: 900; letter-spacing: 8px;
+      text-shadow:
+        0 0 8px #fff, 0 0 20px var(--neon-magenta),
+        0 0 40px var(--neon-magenta), 0 0 80px var(--neon-cyan);
+      opacity: 0; transition: opacity .4s ease, transform .5s cubic-bezier(.2,1.4,.4,1);
+    }
+    #banner.show { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+    #banner .sub {
+      display: block; text-align: center; margin-top: 10px;
+      font-size: 20px; letter-spacing: 6px; color: var(--neon-cyan);
+      text-shadow: 0 0 10px var(--neon-cyan);
+    }
+  </style>
+  <script type="module" crossorigin src="./assets/index-C1UgDqgJ.js"></script>
+</head>
+<body>
+  <div id="app"></div>
+  <div id="hud">
+    <div id="counter">PICKUPS <span class="num" id="remaining">0</span> / <span id="total">0</span></div>
+    <div id="hint">WASD / ARROWS &mdash; COLLECT ALL ORBS</div>
+    <div id="banner">OVERLOAD!<span class="sub">GRID CLEARED</span></div>
+  </div>
+</body>
+</html>
