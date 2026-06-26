@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Latch — physics carousel</title>
+    <style>
+      :root {
+        --bg-0: #0b1020;
+        --bg-1: #16203a;
+        --accent: #ffce4a;
+        --good: #46e08a;
+        --loose: #6fb6ff;
+        --panel: rgba(12, 18, 34, 0.78);
+        --ink: #eaf1ff;
+        --muted: #9fb0d0;
+      }
+      * { box-sizing: border-box; }
+      html, body { margin: 0; height: 100%; overflow: hidden; background: var(--bg-0); }
+      #app { position: fixed; inset: 0; }
+      canvas { display: block; }
+
+      #hud {
+        position: fixed;
+        top: 16px;
+        left: 16px;
+        z-index: 10;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        color: var(--ink);
+        user-select: none;
+        pointer-events: none;
+      }
+      .card {
+        background: var(--panel);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 14px;
+        padding: 14px 18px;
+        backdrop-filter: blur(8px);
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45);
+      }
+      #title {
+        font-size: 13px;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        color: var(--accent);
+        font-weight: 700;
+        margin-bottom: 6px;
+      }
+      #count { font-size: 30px; font-weight: 800; line-height: 1.05; }
+      #count .total { color: var(--muted); font-weight: 600; }
+      #hint { margin-top: 8px; font-size: 12px; color: var(--muted); max-width: 240px; line-height: 1.5; }
+      .legend { display: flex; gap: 14px; margin-top: 10px; font-size: 12px; color: var(--muted); }
+      .legend .dot { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 6px; vertical-align: -1px; }
+      .dot.loose { background: var(--loose); }
+      .dot.latched { background: var(--good); }
+
+      #banner {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) scale(0.9);
+        z-index: 20;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        font-size: 64px;
+        font-weight: 900;
+        letter-spacing: 0.04em;
+        color: var(--good);
+        text-shadow: 0 6px 30px rgba(70, 224, 138, 0.55), 0 2px 6px rgba(0, 0, 0, 0.6);
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.4s ease, transform 0.4s cubic-bezier(0.2, 1.4, 0.4, 1);
+      }
+      #banner.show { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+
+      #controls {
+        position: fixed;
+        bottom: 16px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 10;
+        display: flex;
+        gap: 10px;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      }
+      button {
+        background: var(--bg-1);
+        color: var(--ink);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 10px;
+        padding: 10px 16px;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.15s ease, transform 0.05s ease;
+      }
+      button:hover { background: #1f2c4d; }
+      button:active { transform: translateY(1px); }
+      button.primary { background: var(--accent); color: #1a1400; border-color: transparent; }
+      button.primary:hover { background: #ffd968; }
+    </style>
+    <script type="module" crossorigin src="./assets/index-BLtyiy9R.js"></script>
+  </head>
+  <body>
+    <div id="app"></div>
+
+    <div id="hud">
+      <div class="card">
+        <div id="title">Latch · Cargo Carousel</div>
+        <div id="count"><span id="secured">0</span> <span class="total">/ <span id="target">3</span> secured</span></div>
+        <div class="legend">
+          <span><span class="dot loose"></span>loose</span>
+          <span><span class="dot latched"></span>latched</span>
+        </div>
+        <div id="hint">Click a crate to LATCH it onto the spinning platform. Latched crates ride the rotation into the gold target zone.</div>
+      </div>
+    </div>
+
+    <div id="banner">SECURED!</div>
+
+    <div id="controls">
+      <button id="btn-latch-all" class="primary">Latch all crates</button>
+      <button id="btn-reset">Reset</button>
+    </div>
+
+  </body>
+</html>
