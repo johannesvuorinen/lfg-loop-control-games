@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bound — a 2.5D one-way-platformer</title>
+    <style>
+      html, body { margin: 0; height: 100%; overflow: hidden; background: #0b0f1a; }
+      #app { position: fixed; inset: 0; }
+      canvas { display: block; }
+
+      #hud {
+        position: fixed; top: 14px; left: 16px;
+        font: 600 16px/1.4 ui-monospace, "SF Mono", Menlo, monospace;
+        color: #e8eefc; text-shadow: 0 1px 2px rgba(0,0,0,.6);
+        pointer-events: none; user-select: none;
+      }
+      #hud .coins { color: #ffd34d; }
+      #hud .height { color: #7fd1ff; }
+      #hud .goal { color: #7CFFB2; }
+
+      #help {
+        position: fixed; bottom: 12px; left: 16px;
+        font: 500 13px/1.5 ui-monospace, Menlo, monospace;
+        color: #9fb0d0; pointer-events: none; user-select: none;
+      }
+      #banner {
+        position: fixed; inset: 0; display: none;
+        align-items: center; justify-content: center;
+        font: 800 64px/1 ui-monospace, Menlo, monospace;
+        color: #7CFFB2; text-shadow: 0 4px 24px rgba(0,0,0,.8);
+        background: rgba(8,12,24,.55); pointer-events: none;
+      }
+    </style>
+    <script type="module" crossorigin src="./assets/index-BBHSFo8B.js"></script>
+  </head>
+  <body>
+    <div id="app"></div>
+    <div id="hud">
+      <div>Coins <span class="coins" id="coinCount">0</span> / <span id="coinTotal">0</span></div>
+      <div>Height <span class="height" id="height">0.0</span> m</div>
+      <div class="goal" id="goalLine">Reach the green goal at the top!</div>
+    </div>
+    <div id="help">← → / A D move &nbsp;·&nbsp; ↑ / W / Space jump &nbsp;·&nbsp; ↓ / S drop through &nbsp;·&nbsp; R restart</div>
+    <div id="banner">YOU WIN!</div>
+  </body>
+</html>
