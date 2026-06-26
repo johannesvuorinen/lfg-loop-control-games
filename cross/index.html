@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cross — endless lane hopper</title>
+    <style>
+      html, body { margin: 0; height: 100%; overflow: hidden; background: #87c5e8; }
+      #app { position: fixed; inset: 0; }
+      canvas { display: block; }
+
+      /* HUD */
+      #hud {
+        position: fixed; top: 14px; left: 16px; right: 16px;
+        display: flex; justify-content: space-between; align-items: flex-start;
+        font-family: 'Trebuchet MS', 'Segoe UI', system-ui, sans-serif;
+        color: #fff; pointer-events: none; user-select: none;
+        text-shadow: 0 2px 4px rgba(0,0,0,.45);
+      }
+      #score { font-size: 52px; font-weight: 800; line-height: 1; letter-spacing: 1px; }
+      #best  { font-size: 20px; font-weight: 700; margin-top: 8px; opacity: .92; }
+      #right { text-align: right; }
+
+      /* Center banner (start / game-over) */
+      #banner {
+        position: fixed; inset: 0; display: flex; flex-direction: column;
+        align-items: center; justify-content: center; pointer-events: none;
+        font-family: 'Trebuchet MS', 'Segoe UI', system-ui, sans-serif; color: #fff;
+        text-shadow: 0 3px 8px rgba(0,0,0,.5);
+      }
+      #banner.hidden { display: none; }
+      #banner h1 { font-size: 64px; margin: 0 0 6px; font-weight: 900; letter-spacing: 2px; }
+      #banner p  { font-size: 22px; margin: 4px 0; font-weight: 600; }
+      #banner .big { font-size: 40px; font-weight: 800; }
+      .pill {
+        margin-top: 18px; padding: 12px 26px; border-radius: 999px;
+        background: rgba(0,0,0,.32); font-size: 20px; font-weight: 700;
+        animation: pulse 1.4s ease-in-out infinite;
+      }
+      @keyframes pulse { 0%,100%{opacity:.65} 50%{opacity:1} }
+
+      /* tiny perf readout */
+      #perf {
+        position: fixed; bottom: 8px; left: 10px;
+        font-family: ui-monospace, 'SF Mono', Menlo, monospace; font-size: 12px;
+        color: rgba(255,255,255,.85); text-shadow: 0 1px 2px rgba(0,0,0,.6);
+        pointer-events: none; user-select: none; white-space: pre;
+      }
+    </style>
+    <script type="module" crossorigin src="./assets/index-Cl9NyJMc.js"></script>
+  </head>
+  <body>
+    <div id="app"></div>
+
+    <div id="hud">
+      <div>
+        <div id="score">0</div>
+        <div id="best">BEST 0</div>
+      </div>
+      <div id="right"></div>
+    </div>
+
+    <div id="banner">
+      <h1>CROSS</h1>
+      <p>Hop across the endless lanes. Dodge the traffic.</p>
+      <p style="opacity:.85">↑ / W forward &nbsp;·&nbsp; ← ↓ → move &nbsp;·&nbsp; don't get hit</p>
+      <div class="pill">Press ↑ or W to start</div>
+    </div>
+
+    <div id="perf"></div>
+
+  </body>
+</html>
