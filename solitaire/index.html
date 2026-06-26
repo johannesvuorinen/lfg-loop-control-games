@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Klondike Solitaire — three.js control</title>
+    <script type="module" crossorigin src="./assets/index-CoRu5O38.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-Byw0YZka.css">
+  </head>
+  <body>
+    <!-- three.js canvas: the felt table / background lives here -->
+    <canvas id="bg"></canvas>
+    <!-- HTML/CSS overlay: the entire interactive card UI lives here, layered over the canvas -->
+    <div id="board"></div>
+    <div id="hud">
+      <span id="hud-moves">Moves: 0</span>
+      <span id="hud-stock">Stock: 24</span>
+      <span id="hud-found">Foundations: 0/52</span>
+      <span id="hud-status">Playing</span>
+    </div>
+    <div id="controls">
+      <button id="btn-new">New Deal</button>
+      <button id="btn-auto">Auto-Play</button>
+      <button id="btn-step">Step</button>
+    </div>
+    <div id="win-banner" class="hidden">YOU WIN</div>
+  </body>
+</html>
