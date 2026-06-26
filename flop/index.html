@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Flop — Knockdown Range</title>
+    <style>
+      :root {
+        color-scheme: dark;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        overflow: hidden;
+        background: #141a26;
+        font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+        color: #e8ecf2;
+        cursor: crosshair;
+      }
+      #app {
+        position: fixed;
+        inset: 0;
+      }
+      canvas {
+        display: block;
+      }
+
+      /* ---- HUD ---- */
+      #hud {
+        position: fixed;
+        top: 16px;
+        left: 16px;
+        z-index: 10;
+        padding: 14px 18px;
+        border-radius: 12px;
+        background: rgba(16, 20, 28, 0.72);
+        backdrop-filter: blur(8px);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        box-shadow: 0 8px 28px rgba(0, 0, 0, 0.45);
+        user-select: none;
+        min-width: 200px;
+      }
+      #hud h1 {
+        margin: 0 0 2px;
+        font-size: 19px;
+        letter-spacing: 1px;
+        font-weight: 800;
+      }
+      #hud .sub {
+        margin: 0 0 12px;
+        font-size: 11px;
+        color: #8b93a3;
+      }
+      .stat {
+        display: flex;
+        align-items: baseline;
+        gap: 8px;
+        margin: 4px 0;
+      }
+      .stat .label {
+        font-size: 12px;
+        color: #8b93a3;
+        width: 92px;
+      }
+      .stat .val {
+        font-size: 22px;
+        font-weight: 800;
+        font-variant-numeric: tabular-nums;
+        color: #ffd76e;
+      }
+      .stat .val.small {
+        font-size: 15px;
+        color: #aab2c2;
+      }
+      #win {
+        margin-top: 12px;
+        padding: 10px 12px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 800;
+        text-align: center;
+        display: none;
+        letter-spacing: 0.5px;
+      }
+      #win.show {
+        display: block;
+        background: linear-gradient(135deg, #1f8a4c, #2bd17a);
+        color: #04140a;
+        animation: pop 0.4s ease;
+      }
+      @keyframes pop {
+        0% {
+          transform: scale(0.9);
+          opacity: 0;
+        }
+        100% {
+          transform: scale(1);
+          opacity: 1;
+        }
+      }
+      .hint {
+        margin-top: 14px;
+        font-size: 11px;
+        color: #6c7484;
+        line-height: 1.6;
+      }
+      kbd {
+        display: inline-block;
+        padding: 1px 5px;
+        border-radius: 4px;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        font-size: 10px;
+        font-family: inherit;
+      }
+      /* center crosshair dot */
+      #cross {
+        position: fixed;
+        left: 50%;
+        top: 50%;
+        width: 7px;
+        height: 7px;
+        margin: -3.5px 0 0 -3.5px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.55);
+        box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.35);
+        pointer-events: none;
+        z-index: 9;
+      }
+      #loading {
+        position: fixed;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+        color: #6c7484;
+        z-index: 5;
+      }
+    </style>
+    <script type="module" crossorigin src="./assets/index-Do_WvyuK.js"></script>
+  </head>
+  <body>
+    <div id="loading">Loading range…</div>
+    <div id="app"></div>
+    <div id="cross"></div>
+
+    <div id="hud" style="display: none">
+      <h1>🎯 FLOP</h1>
+      <p class="sub">Knockdown range &middot; three.js + cannon-es ragdolls</p>
+
+      <div class="stat">
+        <span class="label">Knockdowns</span>
+        <span class="val" id="score">0</span>
+        <span class="val small">/ <span id="target">8</span></span>
+      </div>
+      <div class="stat">
+        <span class="label">Down now</span>
+        <span class="val small" id="down">0</span>
+      </div>
+
+      <div id="win">🏆 RANGE CLEARED!</div>
+
+      <p class="hint">
+        <kbd>Click</kbd> anywhere to launch a ball at the dummies.<br />
+        Hit one to flop it (ragdoll); they get back up after a few seconds.<br />
+        <kbd>R</kbd> resets the range.
+      </p>
+    </div>
+
+  </body>
+</html>
