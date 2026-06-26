@@ -1,126 +1,59 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Latch — physics carousel</title>
+    <title>Latch — bone-attachment melee arena</title>
     <style>
-      :root {
-        --bg-0: #0b1020;
-        --bg-1: #16203a;
-        --accent: #ffce4a;
-        --good: #46e08a;
-        --loose: #6fb6ff;
-        --panel: rgba(12, 18, 34, 0.78);
-        --ink: #eaf1ff;
-        --muted: #9fb0d0;
-      }
-      * { box-sizing: border-box; }
-      html, body { margin: 0; height: 100%; overflow: hidden; background: var(--bg-0); }
-      #app { position: fixed; inset: 0; }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 100%; height: 100%; overflow: hidden; background: #0b0e16; }
+      #app { width: 100vw; height: 100vh; position: relative; }
       canvas { display: block; }
 
       #hud {
-        position: fixed;
-        top: 16px;
-        left: 16px;
-        z-index: 10;
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-        color: var(--ink);
-        user-select: none;
-        pointer-events: none;
-      }
-      .card {
-        background: var(--panel);
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        border-radius: 14px;
+        position: absolute; top: 0; left: 0; right: 0;
         padding: 14px 18px;
-        backdrop-filter: blur(8px);
-        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45);
+        font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        color: #e8eefc; pointer-events: none;
+        display: flex; justify-content: space-between; align-items: flex-start;
+        text-shadow: 0 1px 3px rgba(0,0,0,0.8);
       }
-      #title {
-        font-size: 13px;
-        letter-spacing: 0.22em;
-        text-transform: uppercase;
-        color: var(--accent);
-        font-weight: 700;
-        margin-bottom: 6px;
+      #title { font-size: 22px; font-weight: 700; letter-spacing: 0.5px; }
+      #title small { display:block; font-size: 11px; font-weight: 400; opacity: 0.65; letter-spacing: 0; margin-top: 2px; }
+      #score {
+        font-size: 26px; font-weight: 800; text-align: right;
+        color: #ffd34d;
       }
-      #count { font-size: 30px; font-weight: 800; line-height: 1.05; }
-      #count .total { color: var(--muted); font-weight: 600; }
-      #hint { margin-top: 8px; font-size: 12px; color: var(--muted); max-width: 240px; line-height: 1.5; }
-      .legend { display: flex; gap: 14px; margin-top: 10px; font-size: 12px; color: var(--muted); }
-      .legend .dot { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 6px; vertical-align: -1px; }
-      .dot.loose { background: var(--loose); }
-      .dot.latched { background: var(--good); }
+      #score small { display:block; font-size: 12px; font-weight: 500; color:#9fb0d0; }
 
-      #banner {
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%) scale(0.9);
-        z-index: 20;
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-        font-size: 64px;
-        font-weight: 900;
-        letter-spacing: 0.04em;
-        color: var(--good);
-        text-shadow: 0 6px 30px rgba(70, 224, 138, 0.55), 0 2px 6px rgba(0, 0, 0, 0.6);
-        opacity: 0;
-        pointer-events: none;
-        transition: opacity 0.4s ease, transform 0.4s cubic-bezier(0.2, 1.4, 0.4, 1);
+      #hint {
+        position: absolute; bottom: 16px; left: 50%; transform: translateX(-50%);
+        font-family: 'Segoe UI', system-ui, sans-serif; font-size: 13px;
+        color: #aebbd6; background: rgba(12,16,26,0.55); padding: 7px 16px;
+        border-radius: 20px; pointer-events: none; white-space: nowrap;
+        border: 1px solid rgba(255,255,255,0.08);
       }
-      #banner.show { opacity: 1; transform: translate(-50%, -50%) scale(1); }
 
-      #controls {
-        position: fixed;
-        bottom: 16px;
-        left: 50%;
-        transform: translateX(-50%);
-        z-index: 10;
-        display: flex;
-        gap: 10px;
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      #win {
+        position: absolute; inset: 0; display: none;
+        align-items: center; justify-content: center; flex-direction: column;
+        background: rgba(8,10,18,0.78); backdrop-filter: blur(3px);
+        font-family: 'Segoe UI', system-ui, sans-serif; color: #fff; pointer-events: none;
       }
-      button {
-        background: var(--bg-1);
-        color: var(--ink);
-        border: 1px solid rgba(255, 255, 255, 0.12);
-        border-radius: 10px;
-        padding: 10px 16px;
-        font-size: 13px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: background 0.15s ease, transform 0.05s ease;
-      }
-      button:hover { background: #1f2c4d; }
-      button:active { transform: translateY(1px); }
-      button.primary { background: var(--accent); color: #1a1400; border-color: transparent; }
-      button.primary:hover { background: #ffd968; }
+      #win.show { display: flex; }
+      #win .big { font-size: 56px; font-weight: 900; color: #6effa8; letter-spacing: 2px; }
+      #win .sub { font-size: 16px; margin-top: 8px; color: #cdd8ee; }
     </style>
-    <script type="module" crossorigin src="./assets/index-BLtyiy9R.js"></script>
+    <script type="module" crossorigin src="./assets/index-BeY9SpAL.js"></script>
   </head>
   <body>
-    <div id="app"></div>
-
-    <div id="hud">
-      <div class="card">
-        <div id="title">Latch · Cargo Carousel</div>
-        <div id="count"><span id="secured">0</span> <span class="total">/ <span id="target">3</span> secured</span></div>
-        <div class="legend">
-          <span><span class="dot loose"></span>loose</span>
-          <span><span class="dot latched"></span>latched</span>
-        </div>
-        <div id="hint">Click a crate to LATCH it onto the spinning platform. Latched crates ride the rotation into the gold target zone.</div>
+    <div id="app">
+      <div id="hud">
+        <div id="title">LATCH<small>bone-attached sword · melee arena</small></div>
+        <div id="score"><span id="score-val">0</span><small>HITS &middot; win at <span id="score-max">8</span></small></div>
       </div>
+      <div id="hint">Move mouse to aim &middot; <b>Click / Space</b> to swing</div>
+      <div id="win"><div class="big">VICTORY</div><div class="sub">All targets struck. Refresh to play again.</div></div>
     </div>
-
-    <div id="banner">SECURED!</div>
-
-    <div id="controls">
-      <button id="btn-latch-all" class="primary">Latch all crates</button>
-      <button id="btn-reset">Reset</button>
-    </div>
-
   </body>
 </html>
