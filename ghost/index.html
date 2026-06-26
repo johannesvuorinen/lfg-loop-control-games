@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ghost — Physics Time-Trial (three.js)</title>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 100%; height: 100%; overflow: hidden; background: #0a0c14; }
+      #app { position: fixed; inset: 0; }
+      canvas { display: block; }
+
+      #hud {
+        position: fixed; top: 16px; left: 16px;
+        font-family: 'SF Mono', 'Menlo', 'Consolas', monospace;
+        color: #e8eefc; pointer-events: none; user-select: none;
+        text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+      }
+      #timer { font-size: 42px; font-weight: 700; letter-spacing: 1px; color: #fff; }
+      #status { font-size: 22px; font-weight: 700; margin-top: 4px; min-height: 26px; }
+      #status.win { color: #4ade80; }
+      #hint { font-size: 13px; margin-top: 10px; color: #9fb0d0; line-height: 1.6; }
+      .key { display:inline-block; background:#1c2438; border:1px solid #34406a;
+             border-radius:4px; padding:1px 6px; color:#cfe0ff; font-weight:600; }
+
+      #probe {
+        position: fixed; bottom: 16px; left: 16px;
+        font-family: 'SF Mono','Menlo','Consolas', monospace;
+        font-size: 12px; color: #bcd0f0; line-height: 1.55;
+        background: rgba(10,14,26,0.72); border: 1px solid #25304f;
+        border-radius: 8px; padding: 10px 14px; max-width: 360px;
+        pointer-events: none; user-select: none;
+        text-shadow: 0 1px 2px rgba(0,0,0,0.7);
+      }
+      #probe .title { color:#7dd3fc; font-weight:700; letter-spacing:0.5px; margin-bottom:4px; }
+      #probe .ok { color:#4ade80; font-weight:700; }
+      #probe .warn { color:#fbbf24; font-weight:700; }
+      #legend {
+        position: fixed; top: 16px; right: 16px;
+        font-family: 'SF Mono','Menlo','Consolas', monospace;
+        font-size: 12px; color: #cdd8ee; line-height: 1.7;
+        background: rgba(10,14,26,0.7); border:1px solid #25304f;
+        border-radius: 8px; padding: 8px 12px; pointer-events:none; user-select:none;
+      }
+      .dot { display:inline-block; width:10px; height:10px; border-radius:50%; margin-right:6px; vertical-align:middle; }
+    </style>
+    <script type="module" crossorigin src="./assets/index-w3PJ_Kda.js"></script>
+  </head>
+  <body>
+    <div id="app"></div>
+
+    <div id="hud">
+      <div id="timer">0.00</div>
+      <div id="status"></div>
+      <div id="hint">
+        <span class="key">W</span><span class="key">A</span><span class="key">S</span><span class="key">D</span> nudge the ball &nbsp;·&nbsp;
+        <span class="key">R</span> reset
+        <br>Reach the green FINISH zone. A ghost replays your run.
+      </div>
+    </div>
+
+    <div id="legend">
+      <div><span class="dot" style="background:#ff7043"></span>Player ball</div>
+      <div><span class="dot" style="background:#7e8cff"></span>Ghost (replay)</div>
+      <div><span class="dot" style="background:#4ade80"></span>Finish zone</div>
+      <div><span class="dot" style="background:#3a4a7a"></span>Bumpers / walls</div>
+    </div>
+
+    <div id="probe"><div class="title">★ DETERMINISM PROBE</div><div id="probe-body">running…</div></div>
+
+  </body>
+</html>
