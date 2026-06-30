@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Crate — Sokoban (three.js)</title>
+    <style>
+      :root {
+        font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+        color: #e5e7eb;
+      }
+      * { box-sizing: border-box; }
+      html, body { margin: 0; height: 100%; overflow: hidden; background: #1a1d24; }
+      #game { position: fixed; inset: 0; display: block; width: 100vw; height: 100vh; }
+
+      #hud {
+        position: fixed;
+        top: 12px;
+        left: 12px;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        padding: 12px 14px;
+        background: rgba(17, 20, 27, 0.78);
+        border: 1px solid rgba(148, 163, 184, 0.25);
+        border-radius: 10px;
+        backdrop-filter: blur(6px);
+        user-select: none;
+        min-width: 220px;
+      }
+      #hud-level { font-weight: 700; font-size: 15px; color: #f8fafc; }
+      .stat-row { display: flex; gap: 16px; font-variant-numeric: tabular-nums; font-size: 14px; color: #cbd5e1; }
+      #hud-deadlock { color: #fca5a5; font-size: 12px; display: none; }
+      .controls { display: flex; gap: 8px; margin-top: 4px; }
+      button {
+        font: inherit;
+        font-size: 13px;
+        color: #e5e7eb;
+        background: #2b313c;
+        border: 1px solid rgba(148, 163, 184, 0.3);
+        border-radius: 7px;
+        padding: 5px 11px;
+        cursor: pointer;
+      }
+      button:hover { background: #353c49; }
+      button:active { transform: translateY(1px); }
+      #btn-next { background: #166534; border-color: #22c55e55; }
+      #btn-next:hover { background: #1a7a3f; }
+
+      .hint {
+        position: fixed;
+        bottom: 12px;
+        left: 12px;
+        font-size: 12px;
+        color: #94a3b8;
+        background: rgba(17, 20, 27, 0.7);
+        padding: 7px 11px;
+        border-radius: 8px;
+        user-select: none;
+      }
+      kbd {
+        font: inherit;
+        font-size: 11px;
+        background: #2b313c;
+        border: 1px solid rgba(148, 163, 184, 0.35);
+        border-bottom-width: 2px;
+        border-radius: 4px;
+        padding: 1px 5px;
+      }
+
+      #banner {
+        position: fixed;
+        inset: 0;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        gap: 16px;
+        background: rgba(10, 12, 16, 0.55);
+        backdrop-filter: blur(2px);
+      }
+      #banner-text {
+        font-size: 30px;
+        font-weight: 800;
+        color: #f8fafc;
+        text-shadow: 0 2px 16px rgba(0, 0, 0, 0.6);
+      }
+      #banner button { font-size: 16px; padding: 9px 20px; }
+    </style>
+    <script type="module" crossorigin src="./assets/index-DYXhurbM.js"></script>
+  </head>
+  <body>
+    <canvas id="game"></canvas>
+
+    <div id="hud">
+      <div id="hud-level">Level</div>
+      <div class="stat-row">
+        <span id="hud-moves">Moves: 0</span>
+        <span id="hud-pushes">Pushes: 0</span>
+        <span id="hud-progress">Crates: 0/0</span>
+      </div>
+      <div id="hud-deadlock">⚠ A crate is stuck in a corner — undo or restart.</div>
+      <div class="controls">
+        <button id="btn-undo">↶ Undo (U)</button>
+        <button id="btn-restart">⟳ Restart (R)</button>
+        <button id="btn-next">▶ Next (N)</button>
+      </div>
+    </div>
+
+    <div class="hint">
+      <kbd>↑</kbd><kbd>↓</kbd><kbd>←</kbd><kbd>→</kbd> / <kbd>WASD</kbd> move ·
+      <kbd>U</kbd> undo · <kbd>R</kbd> restart · push crates onto the gold rings
+    </div>
+
+    <div id="banner">
+      <div id="banner-text">Solved!</div>
+      <button id="btn-next-banner">▶ Next Level (N)</button>
+    </div>
+
+  </body>
+</html>
