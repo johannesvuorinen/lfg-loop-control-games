@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Quad — Four in a Row</title>
+    <style>
+      :root {
+        --bg-top: #0e1726;
+        --bg-bot: #060a12;
+        --hud: #e8eef7;
+      }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { height: 100%; overflow: hidden; }
+      body {
+        background: radial-gradient(120% 100% at 50% 0%, var(--bg-top), var(--bg-bot));
+        font-family: "Segoe UI", system-ui, -apple-system, Arial, sans-serif;
+        color: var(--hud);
+        -webkit-font-smoothing: antialiased;
+      }
+      #app { position: fixed; inset: 0; }
+      canvas { display: block; }
+
+      /* ---- HUD (DOM overlay — no text primitive in three.js) ---- */
+      #hud {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: space-between;
+        padding: 20px;
+      }
+      #title {
+        font-size: 26px;
+        font-weight: 800;
+        letter-spacing: 6px;
+        text-transform: uppercase;
+        opacity: 0.85;
+        text-shadow: 0 2px 12px rgba(0,0,0,0.6);
+      }
+      #title small { font-size: 12px; letter-spacing: 3px; opacity: 0.6; display: block; text-align: center; margin-top: 2px; }
+      #turn {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-size: 20px;
+        font-weight: 700;
+        padding: 10px 22px;
+        border-radius: 999px;
+        background: rgba(255,255,255,0.06);
+        border: 1px solid rgba(255,255,255,0.12);
+        backdrop-filter: blur(6px);
+        box-shadow: 0 6px 24px rgba(0,0,0,0.35);
+        transition: box-shadow .25s ease, border-color .25s ease;
+      }
+      #turn .chip {
+        width: 22px; height: 22px; border-radius: 50%;
+        box-shadow: inset 0 -3px 6px rgba(0,0,0,0.4), 0 0 14px currentColor;
+      }
+      #turn.red  { border-color: rgba(232,72,72,0.5);  box-shadow: 0 6px 30px rgba(232,72,72,0.25); }
+      #turn.red .chip  { background: #e84848; color: #e84848; }
+      #turn.yellow { border-color: rgba(244,198,48,0.5); box-shadow: 0 6px 30px rgba(244,198,48,0.25); }
+      #turn.yellow .chip { background: #f4c630; color: #f4c630; }
+
+      /* ---- Game-over banner ---- */
+      #banner {
+        position: fixed; inset: 0;
+        display: none;
+        align-items: center; justify-content: center;
+        flex-direction: column;
+        background: rgba(4,8,14,0.55);
+        backdrop-filter: blur(3px);
+        pointer-events: auto;
+        z-index: 10;
+        animation: fade .4s ease both;
+      }
+      #banner.show { display: flex; }
+      #banner .card {
+        text-align: center;
+        padding: 40px 56px;
+        border-radius: 22px;
+        background: linear-gradient(180deg, rgba(24,34,52,0.92), rgba(12,18,30,0.92));
+        border: 1px solid rgba(255,255,255,0.12);
+        box-shadow: 0 24px 80px rgba(0,0,0,0.6);
+        animation: pop .45s cubic-bezier(.2,1.3,.4,1) both;
+      }
+      #banner h1 {
+        font-size: 64px; font-weight: 900; letter-spacing: 4px; margin-bottom: 6px;
+        text-shadow: 0 4px 24px rgba(0,0,0,0.5);
+      }
+      #banner.win  h1 { color: #6be07a; }
+      #banner.lose h1 { color: #e84848; }
+      #banner.draw h1 { color: #cfd6e0; }
+      #banner p { opacity: 0.7; font-size: 16px; margin-bottom: 26px; letter-spacing: 1px; }
+      #restart {
+        pointer-events: auto;
+        cursor: pointer;
+        font: inherit; font-weight: 700; font-size: 18px; letter-spacing: 2px;
+        color: #0c121e;
+        background: linear-gradient(180deg,#fff,#cdd6e2);
+        border: none; border-radius: 999px;
+        padding: 14px 38px;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+        transition: transform .12s ease, box-shadow .12s ease;
+      }
+      #restart:hover { transform: translateY(-2px); box-shadow: 0 12px 30px rgba(0,0,0,0.5); }
+      #restart:active { transform: translateY(0); }
+
+      #hint {
+        position: fixed; bottom: 16px; left: 0; right: 0;
+        text-align: center; font-size: 13px; opacity: 0.45; letter-spacing: 1px;
+        pointer-events: none;
+      }
+
+      @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+      @keyframes pop  { from { opacity: 0; transform: scale(.85) translateY(10px); } to { opacity: 1; transform: none; } }
+    </style>
+    <script type="module" crossorigin src="./assets/index-hNytzB_0.js"></script>
+  </head>
+  <body>
+    <div id="app"></div>
+    <div id="hud">
+      <div id="title">Quad<small>four in a row</small></div>
+      <div id="turn" class="red"><span class="chip"></span><span id="turn-label">Your turn</span></div>
+      <div></div>
+    </div>
+    <div id="hint">Click a column to drop your disc</div>
+    <div id="banner">
+      <div class="card">
+        <h1 id="banner-title">WIN</h1>
+        <p id="banner-sub">Four in a row!</p>
+        <button id="restart">PLAY AGAIN</button>
+      </div>
+    </div>
+  </body>
+</html>
