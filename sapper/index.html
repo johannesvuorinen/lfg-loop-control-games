@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Sapper — three.js Minesweeper</title>
+    <script type="module" crossorigin src="./assets/index-Ck6tSFNP.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-BuOjmW9j.css">
+  </head>
+  <body>
+    <div id="app">
+      <header id="hud">
+        <h1>SAPPER</h1>
+        <div class="hud-row">
+          <div class="readout" title="Mines remaining">
+            <span class="icon">💣</span>
+            <span id="mines-remaining">10</span>
+          </div>
+          <button id="restart" class="status-btn" title="New game">
+            <span id="status-face">🙂</span>
+          </button>
+          <div class="readout" title="Time">
+            <span class="icon">⏱</span>
+            <span id="timer">00:00</span>
+          </div>
+        </div>
+        <div class="diff-row">
+          <button class="diff-btn active" data-diff="beginner">Beginner · 9×9 · 10</button>
+          <button class="diff-btn" data-diff="intermediate">Intermediate · 16×16 · 40</button>
+        </div>
+        <div id="banner" class="banner"></div>
+      </header>
+      <main id="board"></main>
+      <footer id="help">
+        Left-click / tap to reveal · Right-click, Ctrl-click, or long-press to flag
+      </footer>
+    </div>
+  </body>
+</html>
