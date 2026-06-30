@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Patience — Klondike Solitaire</title>
+    <style>
+      :root {
+        color-scheme: dark;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        height: 100%;
+        overflow: hidden;
+        font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+        background: #07502b;
+      }
+      #app {
+        position: absolute;
+        inset: 0;
+      }
+      #app canvas {
+        display: block;
+      }
+      #hud {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        padding: 10px 16px;
+        color: #eafff2;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+        pointer-events: none;
+        user-select: none;
+      }
+      #hud .title {
+        font-weight: 700;
+        font-size: 18px;
+        letter-spacing: 0.5px;
+      }
+      #hud .spacer {
+        flex: 1;
+      }
+      #hud .stat {
+        font-variant-numeric: tabular-nums;
+        font-size: 15px;
+        opacity: 0.95;
+      }
+      #hud button {
+        pointer-events: auto;
+        cursor: pointer;
+        border: 1px solid rgba(255, 255, 255, 0.35);
+        background: rgba(255, 255, 255, 0.12);
+        color: #fff;
+        padding: 6px 14px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 600;
+      }
+      #hud button:hover {
+        background: rgba(255, 255, 255, 0.22);
+      }
+      #win {
+        position: absolute;
+        inset: 0;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        gap: 18px;
+        background: rgba(0, 0, 0, 0.45);
+        backdrop-filter: blur(2px);
+        z-index: 10;
+      }
+      #win.show {
+        display: flex;
+      }
+      #win .banner {
+        font-size: 56px;
+        font-weight: 800;
+        color: #ffe680;
+        text-shadow: 0 3px 10px rgba(0, 0, 0, 0.6);
+        letter-spacing: 2px;
+      }
+      #win .sub {
+        color: #eafff2;
+        font-size: 18px;
+      }
+      #win button {
+        cursor: pointer;
+        border: none;
+        background: #ffd34d;
+        color: #4a3500;
+        padding: 12px 28px;
+        border-radius: 10px;
+        font-size: 17px;
+        font-weight: 700;
+      }
+    </style>
+    <script type="module" crossorigin src="./assets/index-Cq7Ean50.js"></script>
+  </head>
+  <body>
+    <div id="app"></div>
+    <div id="hud">
+      <span class="title">Patience</span>
+      <button id="newgame">New Game</button>
+      <span class="spacer"></span>
+      <span class="stat">Moves: <span id="moves">0</span></span>
+    </div>
+    <div id="win">
+      <div class="banner">YOU WIN!</div>
+      <div class="sub">Solved in <span id="winmoves">0</span> moves</div>
+      <button id="winnew">New Game</button>
+    </div>
+  </body>
+</html>
