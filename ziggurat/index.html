@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ziggurat — Tower of Hanoi</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        --bg: #0b1020;
+        --panel: rgba(18, 24, 44, 0.82);
+        --ink: #e8ecf7;
+        --muted: #9aa6c4;
+        --accent: #6ee7ff;
+        --gold: #ffd15c;
+      }
+      * { box-sizing: border-box; }
+      html, body { margin: 0; height: 100%; overflow: hidden; }
+      body {
+        background: radial-gradient(120% 120% at 50% 0%, #16203f 0%, var(--bg) 60%);
+        color: var(--ink);
+        font: 14px/1.4 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      }
+      #app { position: fixed; inset: 0; }
+      canvas { display: block; width: 100%; height: 100%; }
+
+      /* HUD overlay (the DOM UI layer three.js does not give you) */
+      #hud {
+        position: fixed;
+        top: 14px;
+        left: 14px;
+        right: 14px;
+        display: flex;
+        gap: 12px;
+        align-items: flex-start;
+        justify-content: space-between;
+        pointer-events: none;
+      }
+      .panel {
+        background: var(--panel);
+        border: 1px solid rgba(110, 231, 255, 0.18);
+        border-radius: 12px;
+        padding: 10px 14px;
+        backdrop-filter: blur(8px);
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
+        pointer-events: auto;
+      }
+      .title { font-weight: 700; letter-spacing: 0.5px; }
+      .title .sub { color: var(--muted); font-weight: 400; font-size: 12px; }
+      .stat { display: flex; gap: 16px; align-items: baseline; }
+      .stat b { font-size: 22px; color: var(--accent); font-variant-numeric: tabular-nums; }
+      .stat .opt b { color: var(--gold); }
+      .stat span { color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: 0.6px; }
+      .controls { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+      button, select {
+        font: inherit;
+        color: var(--ink);
+        background: rgba(110, 231, 255, 0.10);
+        border: 1px solid rgba(110, 231, 255, 0.35);
+        border-radius: 8px;
+        padding: 6px 12px;
+        cursor: pointer;
+        transition: background 0.15s, border-color 0.15s;
+      }
+      button:hover, select:hover { background: rgba(110, 231, 255, 0.22); }
+      button:disabled { opacity: 0.5; cursor: default; }
+      label { color: var(--muted); font-size: 12px; }
+
+      #banner {
+        position: fixed;
+        left: 50%;
+        top: 40%;
+        transform: translate(-50%, -50%) scale(0.9);
+        background: linear-gradient(135deg, rgba(255, 209, 92, 0.95), rgba(255, 149, 92, 0.95));
+        color: #201400;
+        font-size: 26px;
+        font-weight: 800;
+        padding: 18px 34px;
+        border-radius: 16px;
+        box-shadow: 0 12px 50px rgba(0, 0, 0, 0.5);
+        text-align: center;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.4s, transform 0.4s;
+      }
+      #banner.show { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+      #banner .small { display: block; font-size: 14px; font-weight: 600; margin-top: 4px; opacity: 0.85; }
+
+      #hint {
+        position: fixed;
+        bottom: 12px;
+        left: 50%;
+        transform: translateX(-50%);
+        color: var(--muted);
+        font-size: 12px;
+        background: var(--panel);
+        border: 1px solid rgba(110, 231, 255, 0.12);
+        border-radius: 20px;
+        padding: 6px 16px;
+        pointer-events: none;
+      }
+    </style>
+    <script type="module" crossorigin src="./assets/index-CGDKeYGB.js"></script>
+  </head>
+  <body>
+    <div id="app"></div>
+
+    <div id="hud">
+      <div class="panel title">
+        ZIGGURAT<br />
+        <span class="sub">Tower of Hanoi</span>
+      </div>
+      <div class="panel stat">
+        <div><b id="moves">0</b><br /><span>Moves</span></div>
+        <div class="opt"><b id="optimal">31</b><br /><span>Optimal</span></div>
+      </div>
+      <div class="panel controls">
+        <label for="disks">Disks</label>
+        <select id="disks">
+          <option value="3">3</option>
+          <option value="4">4</option>
+          <option value="5" selected>5</option>
+          <option value="6">6</option>
+          <option value="7">7</option>
+        </select>
+        <button id="restart">Restart</button>
+        <button id="solve">Solve</button>
+      </div>
+    </div>
+
+    <div id="banner"></div>
+    <div id="hint">Click a peg to lift its top disk, click another peg to drop it.</div>
+
+  </body>
+</html>
