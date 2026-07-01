@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Spire</title>
+    <style>
+      :root {
+        --ink: #f4f7ff;
+        --muted: #9fb0d0;
+      }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { height: 100%; overflow: hidden; background: #0b0f1c; }
+      body {
+        font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+        color: var(--ink);
+        -webkit-user-select: none;
+        user-select: none;
+        touch-action: none;
+      }
+      #app { position: fixed; inset: 0; }
+      canvas { display: block; }
+
+      /* ---- HUD (three.js has no text primitive; DOM overlay does the typography) ---- */
+      #hud {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        z-index: 10;
+      }
+      .hud-top {
+        position: absolute;
+        top: max(18px, env(safe-area-inset-top));
+        left: 0;
+        right: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 2px;
+      }
+      #score {
+        font-size: clamp(44px, 12vw, 92px);
+        font-weight: 800;
+        letter-spacing: -0.02em;
+        line-height: 1;
+        text-shadow: 0 4px 24px rgba(0, 0, 0, 0.55);
+        font-variant-numeric: tabular-nums;
+      }
+      #best {
+        font-size: clamp(12px, 3.2vw, 16px);
+        font-weight: 600;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+      #combo {
+        margin-top: 6px;
+        font-size: clamp(13px, 3.4vw, 18px);
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        color: #ffd76b;
+        opacity: 0;
+        transition: opacity 0.18s ease;
+      }
+      #combo.show { opacity: 1; }
+
+      #hint {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: max(34px, env(safe-area-inset-bottom));
+        text-align: center;
+        font-size: clamp(13px, 3.6vw, 17px);
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        color: var(--muted);
+        text-transform: uppercase;
+        transition: opacity 0.3s ease;
+      }
+
+      /* ---- Game-over banner ---- */
+      #over {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        background: radial-gradient(120% 80% at 50% 40%, rgba(6, 9, 20, 0.35), rgba(6, 9, 20, 0.82));
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.35s ease, visibility 0.35s ease;
+        pointer-events: none;
+      }
+      #over.show { opacity: 1; visibility: visible; pointer-events: auto; }
+      #over .title {
+        font-size: clamp(40px, 13vw, 96px);
+        font-weight: 900;
+        letter-spacing: -0.03em;
+        line-height: 0.95;
+        text-transform: uppercase;
+        text-shadow: 0 6px 32px rgba(0, 0, 0, 0.6);
+      }
+      #over .stat { font-size: clamp(15px, 4.4vw, 22px); color: var(--ink); font-weight: 700; }
+      #over .stat b { color: #ffd76b; }
+      #over .sub { font-size: clamp(12px, 3.4vw, 15px); color: var(--muted); letter-spacing: 0.14em; text-transform: uppercase; }
+      #over .again {
+        margin-top: 16px;
+        padding: 13px 30px;
+        border-radius: 999px;
+        border: 1.5px solid rgba(255, 255, 255, 0.22);
+        background: rgba(255, 255, 255, 0.06);
+        color: var(--ink);
+        font-size: clamp(14px, 3.8vw, 17px);
+        font-weight: 800;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        cursor: pointer;
+      }
+    </style>
+    <script type="module" crossorigin src="./assets/index-DLi7MQ8t.js"></script>
+  </head>
+  <body>
+    <div id="app"></div>
+    <div id="hud">
+      <div class="hud-top">
+        <div id="score">0</div>
+        <div id="best">Best 0</div>
+        <div id="combo">Perfect!</div>
+      </div>
+      <div id="hint">Tap to drop</div>
+      <div id="over">
+        <div class="title">Game Over</div>
+        <div class="stat">Height <b id="over-score">0</b></div>
+        <div class="sub" id="over-best">Best 0</div>
+        <button class="again" id="again">Tap to restart</button>
+      </div>
+    </div>
+  </body>
+</html>
