@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kalah (6,4) — three.js</title>
+    <script type="module" crossorigin src="./assets/index-DW3ecDCK.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-C8Nt6G_D.css">
+  </head>
+  <body>
+    <div id="app">
+      <canvas id="board-canvas"></canvas>
+
+      <!-- DOM overlay: numeric labels for each pit/store (three.js has no text
+           primitive; we project 3D positions to screen and place DOM nodes). -->
+      <div id="labels"></div>
+
+      <!-- HUD -->
+      <div id="hud">
+        <div id="turn-indicator">Your turn</div>
+        <div id="score">
+          <span class="score-chip score-south">You <b id="score-south">0</b></span>
+          <span class="score-chip score-north">AI <b id="score-north">0</b></span>
+        </div>
+        <div id="hint">Click one of your (bottom) pits to sow.</div>
+      </div>
+
+      <!-- Game-over banner -->
+      <div id="banner" class="hidden">
+        <div class="banner-card">
+          <h1 id="banner-title">Game Over</h1>
+          <p id="banner-totals"></p>
+          <button id="restart-btn">Play again</button>
+        </div>
+      </div>
+    </div>
+
+  </body>
+</html>
