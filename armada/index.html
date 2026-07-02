@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Armada — Battleship</title>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 100%; height: 100%; overflow: hidden; background: #0a1826; }
+      #app { position: relative; width: 100vw; height: 100vh; }
+      canvas { display: block; }
+      #hud {
+        position: absolute; top: 0; left: 0; right: 0;
+        padding: 10px 16px;
+        font-family: "Segoe UI", system-ui, sans-serif;
+        color: #dfe9f2; pointer-events: none;
+        text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+      }
+      #hud .title { font-size: 22px; font-weight: 700; letter-spacing: 2px; }
+      #hud .row { font-size: 14px; margin-top: 4px; }
+      #msg { color: #ffd479; font-weight: 600; }
+      #labels {
+        position: absolute; bottom: 12px; left: 0; right: 0;
+        display: flex; justify-content: space-around;
+        font-family: system-ui, sans-serif; color: #9fb4c8; font-size: 13px;
+        pointer-events: none;
+      }
+      #hint {
+        position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%);
+        font-family: system-ui, sans-serif; color: #6f8aa3; font-size: 12px;
+        pointer-events: none;
+      }
+    </style>
+    <script type="module" crossorigin src="./assets/index-DAMiSr5B.js"></script>
+  </head>
+  <body>
+    <div id="app">
+      <div id="hud">
+        <div class="title">ARMADA</div>
+        <div class="row">Turn: <span id="turn">—</span> &nbsp;|&nbsp; You sunk: <span id="youSunk">0</span>/5 &nbsp;|&nbsp; Enemy sunk: <span id="enemySunk">0</span>/5</div>
+        <div class="row" id="msg">Click a cell on the ENEMY ocean (right) to fire.</div>
+      </div>
+      <div id="labels">
+        <div>YOUR OCEAN</div>
+        <div>ENEMY OCEAN</div>
+      </div>
+      <div id="hint">Click ENEMY cell to fire · press N to advance AI turn (or auto)</div>
+    </div>
+  </body>
+</html>
